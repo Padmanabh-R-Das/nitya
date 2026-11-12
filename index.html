@@ -3,169 +3,419 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="description" content="Nitya — an execution layer that owns the schedule, re-plans daily against what actually happened, researches the user's goal domain and recalibrates targets.">
-<style>html{-webkit-text-size-adjust:100%}img{max-width:100%}[hidden]{display:none!important}</style>
-<title>Nitya</title>
-
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<title>Nitya — the plan that survives a bad week</title>
+<meta name="description" content="Nitya owns your schedule. It decides each day against what actually happened, moves missed work forward instead of piling it, and tells you the truth every week.">
+<meta property="og:title" content="Nitya — the plan that survives a bad week">
+<meta property="og:description" content="Planning is free. Execution is the scarce thing. Nitya is the execution layer.">
+<meta property="og:type" content="website">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 62 64'%3E%3Crect x='0' y='16' width='10' height='40' fill='%23E9EDF1'/%3E%3Crect x='16' y='16' width='10' height='40' fill='%23E9EDF1'/%3E%3Crect x='32' y='38' width='10' height='18' fill='%2356636F'/%3E%3Crect x='48' y='4' width='10' height='52' fill='%23E9A33A'/%3E%3C/svg%3E">
 <style>
-/* Instrument panel: the loop across the top, what it plans underneath, state on the right. */
+/* Instrument-grade dark product page. One accent (amber) carries every CTA; teal marks truth/proof. */
 :root{
-  --ink:#F5F4F0; --bg:#0A0F14; --panel:#141C24; --sunk:#111820;
-  --fg:#E9EDF1; --muted:#8A98A6; --line:#28323C;
-  --amber:#E9A33A; --teal:#4FB3A6; --alert:#E0685C;
+  --bg:#070B0F; --panel:#111922; --sunk:#0D141B; --raise:#18222C;
+  --fg:#E9EDF1; --dim:#93A1AF; --faint:#7C8995; --line:#232E39;
+  --amber:#E9A33A; --amber-ink:#140E02; --teal:#4FB3A6; --alert:#E0685C;
   --disp:'Space Grotesk',Verdana,sans-serif; --body:'IBM Plex Sans',Arial,sans-serif; --mono:'JetBrains Mono',ui-monospace,'Courier New',monospace;
-  color-scheme:dark;
+  --r:4px; color-scheme:dark;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
-.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
-h1,h2,h3{margin:0;text-wrap:balance;font-family:var(--disp);font-weight:700;letter-spacing:-.01em}
+html{-webkit-text-size-adjust:100%;scroll-behavior:smooth}
+@media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}*{animation:none!important;transition:none!important}}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased}
+img{max-width:100%}
+h1,h2,h3,h4{margin:0;font-family:var(--disp);font-weight:700;letter-spacing:-.025em;text-wrap:balance;line-height:1.08}
 p{margin:0}
-.eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--amber)}
+a{color:inherit}
+.wrap{max-width:1140px;margin:0 auto;padding-left:max(18px,env(safe-area-inset-left,0px));padding-right:max(18px,env(safe-area-inset-right,0px))}
+.eyebrow{font-family:var(--mono);font-size:.7rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--amber)}
+.eyebrow.t{color:var(--teal)}
 .mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+.dim{color:var(--dim)}
 
-header{border-bottom:1px solid var(--line);background:var(--panel)}
-header .wrap{padding-block:34px 30px;display:flex;flex-direction:column;gap:20px}
-.brand{display:flex;align-items:center;gap:16px}
-.brand svg{flex:none}
-.brand .nm{font-family:var(--disp);font-size:2.2rem;font-weight:700;letter-spacing:-.03em;line-height:1}
-.brand .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:3px}
-header h1{font-size:clamp(1.7rem,4.6vw,2.7rem);line-height:1.08}
-header .lede{font-size:clamp(1rem,2.2vw,1.15rem);color:var(--muted);max-width:60ch}
-.pill{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:6px 14px;font-size:.84rem;color:var(--muted)}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex:none}
+/* nav */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:rgba(7,11,15,.88);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--bg);z-index:21}
+nav .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;padding-block:13px}
+.brand{display:flex;align-items:center;gap:11px;text-decoration:none}
+.brand .nm{font-family:var(--disp);font-size:1.3rem;font-weight:700;letter-spacing:-.04em}
+.navlinks{display:flex;align-items:center;gap:26px}
+.navlinks a{font-size:.9rem;color:var(--dim);text-decoration:none}
+.navlinks a.btn{color:var(--amber-ink)}
+.navlinks a:hover{color:var(--fg)}
+@media (max-width:760px){.navlinks a:not(.btn){display:none}}
 
-main .wrap{padding-block:40px 60px;display:flex;flex-direction:column;gap:40px}
-section{display:flex;flex-direction:column;gap:16px}
-section>h2{font-size:1.4rem}
-.sub{color:var(--muted);font-size:.95rem;max-width:66ch}
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;font-family:var(--body);font-size:.95rem;font-weight:600;padding:12px 22px;border-radius:var(--r);border:1px solid var(--amber);background:var(--amber);color:var(--amber-ink);text-decoration:none;cursor:pointer;transition:transform .12s ease,filter .12s ease}
+.btn:hover{filter:brightness(1.08);transform:translateY(-1px)}
+.btn.sm{font-size:.87rem;padding:9px 16px}
+.btn.ghost{background:transparent;color:var(--fg);border-color:var(--line)}
+.btn.ghost:hover{border-color:var(--dim)}
+.btn:focus-visible{outline:2px solid var(--teal);outline-offset:3px}
 
-.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
-.step{background:var(--panel);padding:18px 16px;display:flex;flex-direction:column;gap:7px;min-width:0}
-.step .t{font-family:var(--mono);font-size:.72rem;color:var(--amber);letter-spacing:.08em}
-.step h3{font-size:1rem}
-.step p{font-size:.86rem;color:var(--muted)}
+/* hero */
+.hero{border-bottom:1px solid var(--line);background:
+  radial-gradient(900px 420px at 18% -10%, rgba(233,163,58,.13), transparent 62%),
+  radial-gradient(760px 380px at 88% 8%, rgba(79,179,166,.09), transparent 60%)}
+.hero .wrap{padding-block:72px 64px;display:grid;grid-template-columns:1.12fr .88fr;gap:52px;align-items:center}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr;gap:38px;padding-block:52px 48px}}
+.hero h1{font-size:clamp(2.35rem,5.6vw,4rem)}
+.hero .lede{font-size:clamp(1.05rem,2.1vw,1.26rem);color:var(--dim);margin-top:20px;max-width:56ch}
+.ctarow{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-top:30px}
+.micro{font-size:.84rem;color:var(--faint);margin-top:13px}
 
-.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:12px}
-.card{background:var(--panel);border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:8px;min-width:0}
-.card h3{font-size:1rem}
-.card p{font-size:.88rem;color:var(--muted)}
-.card .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+/* hero panel: the mechanic, shown */
+.demo{background:var(--panel);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.demo .hd{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 16px;border-bottom:1px solid var(--line);background:var(--sunk)}
+.demo .hd span{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--faint)}
+.cmp{display:grid;grid-template-columns:1fr 1fr}
+.cmp>div{padding:15px 16px;min-width:0}
+.cmp>div+div{border-left:1px solid var(--line)}
+.cmp h4{font-size:.82rem;font-family:var(--mono);font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--faint);margin-bottom:11px}
+.cmp h4.on{color:var(--amber)}
+.wk{display:flex;flex-direction:column;gap:5px}
+.day{display:flex;align-items:center;gap:8px;font-size:.78rem}
+.day .dn{font-family:var(--mono);color:var(--faint);width:26px;flex:none}
+.bars{display:flex;gap:3px;flex:1;min-width:0}
+.b{height:16px;flex:1;border-radius:2px;background:var(--raise);transition:background .3s ease,opacity .3s ease}
+.b.f{background:#38505F}
+.b.done{background:var(--teal)}
+.b.miss{background:var(--alert);opacity:.55}
+.b.moved{background:var(--amber)}
+.demo .ft{padding:12px 16px;border-top:1px solid var(--line);background:var(--sunk);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.score{font-family:var(--mono);font-size:.82rem}
+.score b{font-size:1.1rem}
+.s-bad{color:var(--alert)} .s-good{color:var(--teal)}
 
-table{width:100%;border-collapse:collapse;font-size:.88rem}
-.scroller{overflow-x:auto;border:1px solid var(--line)}
-th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
-th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--sunk);font-weight:700}
-td:first-child{color:var(--fg);font-weight:600;white-space:nowrap}
-td{color:var(--muted)}
+/* sections */
+section{border-bottom:1px solid var(--line)}
+section .wrap{padding-block:64px}
+@media (max-width:760px){section .wrap{padding-block:48px}}
+.shead{max-width:62ch;display:flex;flex-direction:column;gap:13px;margin-bottom:34px}
+.shead h2{font-size:clamp(1.65rem,3.6vw,2.4rem)}
+.shead p{color:var(--dim);font-size:1.03rem}
 
-.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
-.stat{background:var(--panel);border-top:3px solid var(--amber);padding:18px}
-.stat b{display:block;font-family:var(--mono);font-size:1.75rem;font-weight:700;line-height:1.1}
-.stat span{display:block;font-size:.85rem;color:var(--muted);margin-top:5px}
-.stat.teal{border-top-color:var(--teal)}
+.grid3{display:grid;grid-template-columns:repeat(auto-fit,minmax(252px,1fr));gap:14px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:22px;display:flex;flex-direction:column;gap:9px;min-width:0}
+.card h3{font-size:1.08rem}
+.card p{font-size:.92rem;color:var(--dim)}
+.card .n{font-family:var(--mono);font-size:.7rem;letter-spacing:.14em;color:var(--amber)}
 
-.note{border-left:3px solid var(--amber);background:var(--sunk);padding:16px 18px;display:flex;flex-direction:column;gap:7px}
-.note h3{font-size:.98rem}
-.note p{font-size:.88rem;color:var(--muted)}
-footer{border-top:1px solid var(--line);background:var(--panel)}
-footer .wrap{padding-block:22px;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(186px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.lstep{background:var(--panel);padding:20px 18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.lstep .t{font-family:var(--mono);font-size:.72rem;color:var(--amber);letter-spacing:.07em}
+.lstep h3{font-size:1rem}
+.lstep p{font-size:.87rem;color:var(--dim)}
+
+.proof{display:grid;grid-template-columns:repeat(auto-fit,minmax(236px,1fr));gap:14px}
+.pf{background:var(--panel);border:1px solid var(--line);border-top:3px solid var(--teal);border-radius:var(--r);padding:22px;min-width:0}
+.pf b{display:block;font-family:var(--mono);font-size:1.9rem;font-weight:700;line-height:1}
+.pf p{font-size:.9rem;color:var(--dim);margin-top:9px}
+.pf cite{display:block;font-family:var(--mono);font-size:.72rem;color:var(--faint);margin-top:11px;font-style:normal}
+
+.scroller{overflow-x:auto;border:1px solid var(--line);border-radius:var(--r)}
+table{width:100%;border-collapse:collapse;font-size:.92rem;min-width:620px}
+th,td{text-align:left;padding:13px 16px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.12em;text-transform:uppercase;color:var(--faint);background:var(--sunk);font-weight:700}
+td{color:var(--dim)}
+td:first-child{color:var(--fg);font-weight:600}
+tr:last-child td{border-bottom:none}
+.yes{color:var(--teal);font-weight:600} .no{color:var(--faint)}
+
+.price{display:grid;grid-template-columns:repeat(auto-fit,minmax(272px,1fr));gap:14px;align-items:start}
+.plan{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:26px;display:flex;flex-direction:column;gap:15px;min-width:0}
+.plan.hi{border-color:var(--amber);box-shadow:0 0 0 1px rgba(233,163,58,.28)}
+.plan .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.14em;text-transform:uppercase;color:var(--amber)}
+.plan .amt{font-family:var(--mono);font-size:2.1rem;font-weight:700;line-height:1}
+.plan .amt small{font-size:.86rem;color:var(--faint);font-weight:500}
+.plan ul{margin:0;padding-left:0;list-style:none;display:flex;flex-direction:column;gap:9px;font-size:.9rem;color:var(--dim)}
+.plan li{display:flex;gap:9px;align-items:flex-start}
+.plan li::before{content:"";width:6px;height:6px;border-radius:50%;background:var(--teal);flex:none;margin-top:8px}
+
+details{background:var(--panel);border:1px solid var(--line);border-radius:var(--r);padding:0}
+details+details{margin-top:9px}
+summary{cursor:pointer;padding:16px 20px;font-weight:600;font-size:.98rem;list-style:none;display:flex;justify-content:space-between;gap:14px;align-items:center}
+summary::-webkit-details-marker{display:none}
+summary::after{content:"+";font-family:var(--mono);color:var(--amber);font-size:1.2rem;flex:none}
+details[open] summary::after{content:"\2212"}
+details .ans{padding:0 20px 18px;color:var(--dim);font-size:.93rem}
+summary:focus-visible{outline:2px solid var(--teal);outline-offset:-2px}
+
+.final{background:linear-gradient(180deg,var(--sunk),var(--bg))}
+.final .wrap{padding-block:72px;display:flex;flex-direction:column;align-items:center;gap:20px;text-align:center}
+.final h2{font-size:clamp(1.8rem,4.2vw,2.8rem);max-width:19ch}
+.final p{color:var(--dim);max-width:54ch}
+footer .wrap{padding-block:30px;display:flex;flex-wrap:wrap;gap:14px;justify-content:space-between;align-items:center;font-size:.84rem;color:var(--faint)}
+footer a{color:var(--dim)}
 </style>
-
 </head>
 <body>
-<header>
+
+<nav>
   <div class="wrap">
-    <div class="brand">
-      <svg width="46" height="47" viewBox="0 0 62 64" aria-label="Nitya mark: four day columns, the third short where work was missed, the fourth taller where it was carried onto">
-        <rect x="0" y="16" width="10" height="40" fill="#E9EDF1"></rect>
-        <rect x="16" y="16" width="10" height="40" fill="#E9EDF1"></rect>
-        <rect x="32" y="38" width="10" height="18" fill="#56636F"></rect>
-        <rect x="48" y="4" width="10" height="52" fill="#E9A33A"></rect>
-      </svg>
-      <div><div class="nm">Nitya</div><div class="tag">The daily duty that gets done</div></div>
+    <a class="brand" href="#top">
+      <svg width="24" height="25" viewBox="0 0 62 64" aria-label="Nitya"><rect x="0" y="16" width="10" height="40" fill="#E9EDF1"/><rect x="16" y="16" width="10" height="40" fill="#E9EDF1"/><rect x="32" y="38" width="10" height="18" fill="#56636F"/><rect x="48" y="4" width="10" height="52" fill="#E9A33A"/></svg>
+      <span class="nm">Nitya</span>
+    </a>
+    <div class="navlinks">
+      <a href="#how">How it works</a>
+      <a href="#proof">Evidence</a>
+      <a href="#pricing">Pricing</a>
+      <a class="btn sm" href="#start">Start free</a>
     </div>
-    <h1>Planning is free. Execution is the scarce thing.</h1>
-    <p class="lede">Nitya is an execution layer for people carrying several tracks at once. It owns the schedule, decides each day against what actually happened yesterday, moves missed work forward instead of piling it, and reports completion honestly.</p>
-    <span class="pill"><span class="dot"></span> Running daily since March 2026 · solo founder · second instance now in daily use</span>
+  </div>
+</nav>
+
+<header class="hero" id="top">
+  <div class="wrap">
+    <div>
+      <p class="eyebrow">Execution layer · not another planner</p>
+      <h1>The plan that survives a bad week.</h1>
+      <p class="lede">You don't need another app to type plans into. You need something that notices when the week breaks and rebuilds it. Nitya owns your schedule, decides each day against what actually happened, and tells you the truth on Sunday.</p>
+      <div class="ctarow">
+        <a class="btn" href="#start">Start free →</a>
+        <a class="btn ghost" href="#how">See how it works</a>
+      </div>
+      <p class="micro">No card. Four questions to your first usable day.</p>
+    </div>
+
+    <div class="demo">
+      <div class="hd"><span>Monday breaks. Watch both.</span><button class="btn ghost sm" id="run" type="button">Miss Tuesday</button></div>
+      <div class="cmp">
+        <div>
+          <h4>A normal planner</h4>
+          <div class="wk" id="wkA"></div>
+        </div>
+        <div>
+          <h4 class="on">Nitya</h4>
+          <div class="wk" id="wkB"></div>
+        </div>
+      </div>
+      <div class="ft">
+        <span class="score">Week done <b class="s-bad" id="sA">—</b> <span class="dim">vs</span> <b class="s-good" id="sB">—</b></span>
+        <span class="score dim" id="msg">Press the button.</span>
+      </div>
+    </div>
   </div>
 </header>
 
-<main>
+<section id="how">
   <div class="wrap">
-
-    <section>
-      <h2>The loop, every day</h2>
-      <p class="sub">The user makes no planning decisions and maintains no calendar. These five steps run whether or not anyone opens the page.</p>
-      <div class="loop">
-        <div class="step"><span class="t">06:11</span><h3>Agent wakes</h3><p>Reads yesterday's marks, the calendar, deadlines and anything that slipped.</p></div>
-        <div class="step"><span class="t">06:11</span><h3>Re-plans</h3><p>Rebuilds the day. Missed work moves forward; it is never doubled or stacked.</p></div>
-        <div class="step"><span class="t">06:11</span><h3>Asks, narrowly</h3><p>At most two closed questions a day, with buttons. Never an open prompt.</p></div>
-        <div class="step"><span class="t">All day</span><h3>User executes</h3><p>Blocks and problems are marked done, done-with-help, or missed.</p></div>
-        <div class="step"><span class="t">Weekly</span><h3>Verdict</h3><p>Completion stated as a number, unsoftened, and next week is cut to fit.</p></div>
-      </div>
-    </section>
-
-    <section>
-      <h2>It researches, then changes its own plan</h2>
-      <p class="sub">Nitya does not only schedule what it was told. A weekly research pass reads across the user's stated goals and interest domains — opportunities, deadlines, contests, programmes, market and hiring signals — vets what it finds against several sources, and recalibrates the plan and the targets when the evidence warrants it. Every such change is surfaced on the interface with its reason, so the user can see what moved and why.</p>
-      <div class="grid">
-        <div class="card"><span class="k">Intake</span><h3>Sources, vetted</h3><p>Subscribed channels, official pages, programme and contest calendars, mail. Several sources are cross-read to separate substance from marketing.</p></div>
-        <div class="card"><span class="k">Recalibration</span><h3>Goals move, not just tasks</h3><p>A newly found deadline, a changed requirement or a dead end rewrites the targets themselves, not merely the week's blocks.</p></div>
-        <div class="card"><span class="k">Transparency</span><h3>Every change is shown</h3><p>Plan changes appear on the dashboard with their reason and status, and anything needing a human decision is escalated rather than assumed.</p></div>
-      </div>
-    </section>
-
-    <section>
-      <h2>What it plans across</h2>
-      <p class="sub">One engine, several life tracks, each with its own ladder, targets and review cadence. The engine is domain-agnostic; the opinions are per track.</p>
-      <div class="scroller">
-        <table>
-          <thead><tr><th>Track</th><th>What the system holds</th><th>How it is reviewed</th></tr></thead>
-          <tbody>
-            <tr><td>Coursework</td><td>Per-course study plans built from the real syllabus, exam dates, assignment deadlines and lab work</td><td>Daily blocks; trimmed to essentials in the days before a paper</td></tr>
-            <tr><td>Technical practice</td><td>A problem ladder across several platforms, with every problem named and linked, and marks for solved alone, solved with help, or skipped</td><td>Helped problems return after three days and only count once re-solved unaided</td></tr>
-            <tr><td>Projects &amp; deadlines</td><td>Multi-step work broken into one step a day, with slip rules when a step is missed</td><td>Deadline-aware ordering; the most overdue surfaces first</td></tr>
-            <tr><td>Earning track</td><td>Income checkpoints with dated gates, opportunity watch, and pivot rules when a route stalls</td><td>Checkpoint review; a missed gate changes the route, not the date</td></tr>
-            <tr><td>Body</td><td>A training programme with session-level detail, adapted around injuries and timetable collisions</td><td>Weekly desk run; adherence counted, not assumed</td></tr>
-            <tr><td>Language &amp; skills</td><td>Long-horizon ladders with staged entry rules, so a new track only starts when the existing floor is being met</td><td>Start gates; nothing new begins while the floor is failing</td></tr>
-          </tbody>
-        </table>
-      </div>
-    </section>
-
-    <section>
-      <h2>Under the surface</h2>
-      <div class="grid">
-        <div class="card"><span class="k">Scheduled agents</span><h3>Nine recurring runs</h3><p>A daily planning agent, a weekly review, several domain research desks, a mail triage, a usage steward. Model tiering keeps cost per user low: a small model daily, a larger one weekly.</p></div>
-        <div class="card"><span class="k">State</span><h3>Versioned document store</h3><p>Plan, decisions, directives, assumptions, risks and logs. Every write is version-pinned, so a background agent and a human edit cannot overwrite each other.</p></div>
-        <div class="card"><span class="k">Interface</span><h3>Dashboard, not an inbox</h3><p>Today's plan, the practice ladder, the long-range roadmap, the record. Closed-question inputs with buttons; a decision queue for anything needing a human.</p></div>
-        <div class="card"><span class="k">Guardrails</span><h3>Built against dependence</h3><p>A weekly timed session with no AI assistance and a monthly defend-your-own-work drill, both scored, so capability is measured rather than assumed.</p></div>
-        <div class="card"><span class="k">Reporting</span><h3>Three channels</h3><p>A daily one-line note, a weekly summary with the plain numbers, and a message whenever a decision is genuinely required.</p></div>
-        <div class="card"><span class="k">Honesty</span><h3>No congratulation</h3><p>The weekly number is reported as measured. A failed week shrinks the next plan instead of repeating it.</p></div>
-      </div>
-    </section>
-
-    <section>
-      <h2>Why this should work</h2>
-      <p class="sub">The two mechanisms are not invented. Both have been measured across large bodies of published research.</p>
-      <div class="stats">
-        <div class="stat"><b>d = 0.65</b><span>effect of if-then implementation plans over goal intentions alone, across 94 studies (Gollwitzer &amp; Sheeran, 2006) — Nitya makes every plan concrete and timed</span></div>
-        <div class="stat teal"><b>d = 0.40</b><span>behaviour change from increased progress monitoring, across 138 interventions (Harkin et al., 2016) — Nitya monitors and reports by default</span></div>
-        <div class="stat teal"><b>~50%</b><span>of intentions translate into action (Sheeran &amp; Webb, 2016) — the gap the product exists to close</span></div>
-      </div>
-    </section>
-
-    <div class="note">
-      <h3>Status</h3>
-      <p>A full multi-user instance opens here shortly. Until then this page describes the system as it runs today: one founder-operated instance in continuous daily use since March 2026, and a second shared instance now being used heavily by another student, whose plan and decisions it runs independently.</p>
+    <div class="shead">
+      <p class="eyebrow">How it works</p>
+      <h2>Five steps that run whether or not you open the app</h2>
+      <p>Most tools wait to be opened. That is the thing that already failed. Nitya acts first and asks second.</p>
     </div>
-
+    <div class="loop">
+      <div class="lstep"><span class="t">06:11</span><h3>It wakes</h3><p>Reads yesterday's marks, your calendar, your deadlines, and whatever slipped.</p></div>
+      <div class="lstep"><span class="t">06:11</span><h3>It re-plans</h3><p>Rebuilds today. Missed work moves forward — never doubled, never stacked onto a full day.</p></div>
+      <div class="lstep"><span class="t">06:11</span><h3>It asks, narrowly</h3><p>Two closed questions a day at most, with buttons. Never a blank box demanding a decision.</p></div>
+      <div class="lstep"><span class="t">All day</span><h3>You execute</h3><p>Mark each block done, done-with-help, or missed. That is the entire interaction.</p></div>
+      <div class="lstep"><span class="t">Sunday</span><h3>It reports</h3><p>Your real completion number, unsoftened — and next week is cut to the size you actually deliver.</p></div>
+    </div>
   </div>
-</main>
+</section>
 
-<footer><div class="wrap">Nitya · an execution layer · Prince Jha · 26BDA087 · IIIT Dharwad</div></footer>
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">Beyond scheduling</p>
+      <h2>It researches your field and moves your goals</h2>
+      <p>A planner schedules what you told it. Nitya goes and finds what you didn't know to tell it.</p>
+    </div>
+    <div class="grid3">
+      <div class="card"><span class="n">01 · INTAKE</span><h3>It reads your domain</h3><p>Each week it reads across your stated goals and interests — openings, deadlines, contests, programmes, hiring and market signals — and cross-reads several sources to separate substance from marketing.</p></div>
+      <div class="card"><span class="n">02 · RECALIBRATION</span><h3>Targets move, not just tasks</h3><p>A deadline it discovers, a changed requirement, a route that has gone nowhere — these rewrite the goals themselves, not merely this week's blocks.</p></div>
+      <div class="card"><span class="n">03 · TRANSPARENCY</span><h3>Every change, with its reason</h3><p>Nothing is altered silently. Each change appears on your dashboard with why it happened, and anything needing a real decision is escalated to you instead of assumed.</p></div>
+    </div>
+  </div>
+</section>
 
+<section id="proof">
+  <div class="wrap">
+    <div class="shead">
+      <p class="eyebrow t">Evidence</p>
+      <h2>Why this works, according to people who measured it</h2>
+      <p>Nitya's two mechanisms — concrete timed plans, and monitoring you can't argue with — are among the most replicated findings in behavioural science. We didn't invent them. We automated them.</p>
+    </div>
+    <div class="proof">
+      <div class="pf"><b>d = 0.65</b><p>Effect of concrete if-then plans over vague goal intentions. Nitya makes every plan specific and timed, by default.</p><cite>Gollwitzer &amp; Sheeran, 94 studies, 2006</cite></div>
+      <div class="pf"><b>d = 0.40</b><p>Behaviour change produced by increased progress monitoring. Nitya monitors and reports whether you want it to or not.</p><cite>Harkin et al., 138 interventions, 2016</cite></div>
+      <div class="pf"><b>~50%</b><p>Share of human intentions that ever become action. This gap is the entire reason the product exists.</p><cite>Sheeran &amp; Webb, 422 studies, 2016</cite></div>
+      <div class="pf" style="border-top-color:var(--alert)"><b>~6%</b><p>Average 30-day retention across mobile apps. Planning tools are overwhelmingly abandoned, not used.</p><cite>Industry retention benchmark</cite></div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">Honest comparison</p>
+      <h2>You have tried a planner before. Here is the difference.</h2>
+      <p>This is the objection worth taking seriously, so it gets a table rather than a slogan.</p>
+    </div>
+    <div class="scroller">
+      <table>
+        <thead><tr><th>&nbsp;</th><th>Notes &amp; to-do apps</th><th>Fixed study sheets</th><th>Nitya</th></tr></thead>
+        <tbody>
+          <tr><td>Who writes the plan</td><td>You, every week</td><td>Someone else, once</td><td class="yes">The system, every day</td></tr>
+          <tr><td>When you miss a day</td><td>Nothing happens</td><td>You fall behind the sheet</td><td class="yes">Work moves forward, week is re-cut</td></tr>
+          <tr><td>Knows if you finished</td><td class="no">No — it never asks</td><td class="no">No</td><td class="yes">Yes, and it reports the number</td></tr>
+          <tr><td>Adapts to your goals</td><td class="no">No</td><td class="no">One domain, one sequence</td><td class="yes">Several tracks, each with its own rules</td></tr>
+          <tr><td>Finds things you missed</td><td class="no">No</td><td class="no">No</td><td class="yes">Researches your field weekly</td></tr>
+          <tr><td>Effort to maintain</td><td>High — it's a second job</td><td>Low, but rigid</td><td class="yes">Two button taps a day</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">Pricing</p>
+      <h2>Free while we are small</h2>
+      <p>Nitya has two users today: the founder, who has run it daily since March 2026, and one other student. We are opening it to a first cohort now — which is exactly why it costs nothing yet.</p>
+    </div>
+    <div class="price">
+      <div class="plan hi">
+        <span class="tag">First cohort · now</span>
+        <div><div class="amt">Free</div><small>while the cohort is open</small></div>
+        <ul>
+          <li>The full daily loop and weekly report</li>
+          <li>Unlimited tracks and goals</li>
+          <li>Weekly research and recalibration</li>
+          <li>Your feedback shapes what gets built</li>
+        </ul>
+        <a class="btn" href="#start">Join the first cohort</a>
+      </div>
+      <div class="plan">
+        <span class="tag">Individual · later</span>
+        <div><div class="amt">₹149<small> / month</small></div><small>when the cohort closes</small></div>
+        <ul>
+          <li>Everything in the free cohort</li>
+          <li>Priority on new tracks</li>
+          <li>Export your full record</li>
+        </ul>
+        <a class="btn ghost" href="#start">Start free today</a>
+      </div>
+      <div class="plan">
+        <span class="tag">Institutions</span>
+        <div><div class="amt">₹900<small> / student / year</small></div><small>minimum cohort applies</small></div>
+        <ul>
+          <li>Cohort-level completion data</li>
+          <li>Early warning on students falling behind</li>
+          <li>Placement-readiness reporting</li>
+        </ul>
+        <a class="btn ghost" href="#start">Talk to us</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="wrap">
+    <div class="shead">
+      <p class="eyebrow">Questions</p>
+      <h2>The things people actually ask</h2>
+    </div>
+    <details><summary>I've abandoned every planner I've tried. Why is this different?</summary><div class="ans">Because you never have to open it to keep it alive. Every planner you abandoned required you to maintain it — to re-plan after a bad week, which is precisely when you have least appetite for it. Nitya does that step itself at 06:11 whether you show up or not. You only mark what happened.</div></details>
+    <details><summary>Does it actually make me do the work?</summary><div class="ans">No, and anyone claiming otherwise is selling you something. It removes the decision load and the dead-plan problem, which is what defeats most people who are already willing to work. If you genuinely do not want to do the work, this will simply tell you so, weekly, in a number.</div></details>
+    <details><summary>Is it only for students?</summary><div class="ans">The engine is domain-agnostic — it plans anything with goals, resources and deadlines. We are starting with students carrying several tracks at once because that is where the problem bites hardest and where we can be genuinely opinionated. Opinionated plans beat generic ones.</div></details>
+    <details><summary>What do you do with my data?</summary><div class="ans">Your plan and your record are yours and are not sold, shared or used to train anything. Each user's data is private to that user. You can export your full record at any time.</div></details>
+    <details><summary>How many people use it?</summary><div class="ans">Two, today. We would rather tell you that than invent a number. One is the founder, running it daily since March 2026 with a complete log; the other is a student using a shared instance. The first cohort is how that changes, and it is why it is free.</div></details>
+    <details><summary>Who built this?</summary><div class="ans">One founder — a Data Science &amp; AI undergraduate at IIIT Dharwad — who built it to solve his own problem and has run it on himself every day for eight months. It is not a weekend project or a mock-up.</div></details>
+  </div>
+</section>
+
+<section class="final" id="start">
+  <div class="wrap">
+    <p class="eyebrow">First cohort</p>
+    <h2>Stop re-planning. Start executing.</h2>
+    <p>Four questions, then your first day is on the screen. Free while the cohort is open, no card, and you can export everything you put in.</p>
+    <a class="btn" href="https://claude.ai/artifact/Gw3tpjZTsKTAzx8B7gsXvb">Open Nitya →</a>
+    <p class="micro">Takes about three minutes to set up.</p>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <span>Nitya — an execution layer.</span>
+    <span>Built by Prince Jha · IIIT Dharwad · <a href="https://github.com/Padmanabh-R-Das/nitya">source</a></span>
+  </div>
+</footer>
+
+<script>
+(function(){
+  "use strict";
+  var D=["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  var A=document.getElementById('wkA'), B=document.getElementById('wkB');
+  var sA=document.getElementById('sA'), sB=document.getElementById('sB'), msg=document.getElementById('msg');
+  var btn=document.getElementById('run'), state=0;
+
+  // each day = 4 slots. plan: filled slots; then outcomes per scenario.
+  function base(){ return D.map(function(){return [1,1,1,1]}) }
+
+  function paint(host,wk,marks){
+    host.innerHTML='';
+    wk.forEach(function(day,i){
+      var row=document.createElement('div'); row.className='day';
+      var dn=document.createElement('span'); dn.className='dn'; dn.textContent=D[i];
+      var bars=document.createElement('div'); bars.className='bars';
+      day.forEach(function(v,j){
+        var b=document.createElement('span'); b.className='b';
+        var m=marks && marks[i] && marks[i][j];
+        if(v){ b.className='b '+(m||'f'); }
+        bars.appendChild(b);
+      });
+      row.appendChild(dn); row.appendChild(bars); host.appendChild(row);
+    });
+  }
+  function rate(marks){
+    var d=0,t=0;
+    marks.forEach(function(r){ r.forEach(function(m){ if(m){t++; if(m==='done'||m==='moved')d++;} }) });
+    return t?Math.round(d/t*100):0;
+  }
+
+  function reset(){
+    var wk=base();
+    var mA=wk.map(function(r){return r.map(function(){return 'f'})});
+    var mB=wk.map(function(r){return r.map(function(){return 'f'})});
+    paint(A,wk,mA); paint(B,wk,mB);
+    sA.textContent='—'; sB.textContent='—';
+    msg.textContent='Press the button.';
+    btn.textContent='Miss Tuesday';
+  }
+
+  function run(){
+    var wkA=base(), wkB=base();
+    var mA=[],mB=[];
+    for(var i=0;i<7;i++){ mA.push([]); mB.push([]); }
+    for(var i=0;i<7;i++){
+      for(var j=0;j<4;j++){
+        if(i===1){ mA[i][j]='miss'; mB[i][j]='miss'; }          // Tuesday lost in both
+        else if(i===0){ mA[i][j]='done'; mB[i][j]='done'; }
+        else {
+          // a normal planner: the week stays as typed, and adherence decays after the break
+          mA[i][j]= (j<2 && i<4) ? 'done' : (i>=4 ? 'miss' : 'f');
+          mB[i][j]='done';
+        }
+      }
+    }
+    // Nitya redistributes Tuesday's four blocks across Wed–Sun as a 5th slot each
+    for(var i=2;i<7;i++){ wkB[i].push(1); mB[i].push(i<6?'moved':'f'); }
+    paint(A,wkA,mA); paint(B,wkB,mB);
+    var ra=rate(mA), rb=rate(mB);
+    sA.textContent=ra+'%'; sB.textContent=rb+'%';
+    msg.textContent='Same lost day. One plan absorbed it.';
+    btn.textContent='Reset';
+  }
+
+  btn.addEventListener('click',function(){ state=1-state; state?run():reset(); });
+  reset();
+})();
+</script>
 </body>
 </html>
