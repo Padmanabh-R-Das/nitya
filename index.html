@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Nitya — an execution layer that owns the schedule, re-plans daily against what actually happened, researches the user's goal domain and recalibrates targets.">
+<style>html{-webkit-text-size-adjust:100%}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Nitya</title>
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=IBM+Plex+Sans:wght@400;600&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Instrument panel: the loop across the top, what it plans underneath, state on the right. */
+:root{
+  --ink:#F5F4F0; --bg:#0A0F14; --panel:#141C24; --sunk:#111820;
+  --fg:#E9EDF1; --muted:#8A98A6; --line:#28323C;
+  --amber:#E9A33A; --teal:#4FB3A6; --alert:#E0685C;
+  --disp:'Space Grotesk',Verdana,sans-serif; --body:'IBM Plex Sans',Arial,sans-serif; --mono:'JetBrains Mono',ui-monospace,'Courier New',monospace;
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--fg);font-family:var(--body);font-size:16px;line-height:1.5;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1120px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{margin:0;text-wrap:balance;font-family:var(--disp);font-weight:700;letter-spacing:-.01em}
+p{margin:0}
+.eyebrow{font-family:var(--mono);font-size:.72rem;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:var(--amber)}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+
+header{border-bottom:1px solid var(--line);background:var(--panel)}
+header .wrap{padding-block:34px 30px;display:flex;flex-direction:column;gap:20px}
+.brand{display:flex;align-items:center;gap:16px}
+.brand svg{flex:none}
+.brand .nm{font-family:var(--disp);font-size:2.2rem;font-weight:700;letter-spacing:-.03em;line-height:1}
+.brand .tag{font-family:var(--mono);font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-top:3px}
+header h1{font-size:clamp(1.7rem,4.6vw,2.7rem);line-height:1.08}
+header .lede{font-size:clamp(1rem,2.2vw,1.15rem);color:var(--muted);max-width:60ch}
+.pill{display:inline-flex;align-items:center;gap:8px;align-self:flex-start;border:1px solid var(--line);background:var(--sunk);border-radius:999px;padding:6px 14px;font-size:.84rem;color:var(--muted)}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--teal);flex:none}
+
+main .wrap{padding-block:40px 60px;display:flex;flex-direction:column;gap:40px}
+section{display:flex;flex-direction:column;gap:16px}
+section>h2{font-size:1.4rem}
+.sub{color:var(--muted);font-size:.95rem;max-width:66ch}
+
+.loop{display:grid;grid-template-columns:repeat(auto-fit,minmax(176px,1fr));gap:1px;background:var(--line);border:1px solid var(--line)}
+.step{background:var(--panel);padding:18px 16px;display:flex;flex-direction:column;gap:7px;min-width:0}
+.step .t{font-family:var(--mono);font-size:.72rem;color:var(--amber);letter-spacing:.08em}
+.step h3{font-size:1rem}
+.step p{font-size:.86rem;color:var(--muted)}
+
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--line);padding:18px;display:flex;flex-direction:column;gap:8px;min-width:0}
+.card h3{font-size:1rem}
+.card p{font-size:.88rem;color:var(--muted)}
+.card .k{font-family:var(--mono);font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--teal)}
+
+table{width:100%;border-collapse:collapse;font-size:.88rem}
+.scroller{overflow-x:auto;border:1px solid var(--line)}
+th,td{text-align:left;padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-family:var(--mono);font-size:.68rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);background:var(--sunk);font-weight:700}
+td:first-child{color:var(--fg);font-weight:600;white-space:nowrap}
+td{color:var(--muted)}
+
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px}
+.stat{background:var(--panel);border-top:3px solid var(--amber);padding:18px}
+.stat b{display:block;font-family:var(--mono);font-size:1.75rem;font-weight:700;line-height:1.1}
+.stat span{display:block;font-size:.85rem;color:var(--muted);margin-top:5px}
+.stat.teal{border-top-color:var(--teal)}
+
+.note{border-left:3px solid var(--amber);background:var(--sunk);padding:16px 18px;display:flex;flex-direction:column;gap:7px}
+.note h3{font-size:.98rem}
+.note p{font-size:.88rem;color:var(--muted)}
+footer{border-top:1px solid var(--line);background:var(--panel)}
+footer .wrap{padding-block:22px;font-family:var(--mono);font-size:.72rem;color:var(--muted)}
+</style>
+
+</head>
+<body>
+<header>
+  <div class="wrap">
+    <div class="brand">
+      <svg width="46" height="47" viewBox="0 0 62 64" aria-label="Nitya mark: four day columns, the third short where work was missed, the fourth taller where it was carried onto">
+        <rect x="0" y="16" width="10" height="40" fill="#E9EDF1"></rect>
+        <rect x="16" y="16" width="10" height="40" fill="#E9EDF1"></rect>
+        <rect x="32" y="38" width="10" height="18" fill="#56636F"></rect>
+        <rect x="48" y="4" width="10" height="52" fill="#E9A33A"></rect>
+      </svg>
+      <div><div class="nm">Nitya</div><div class="tag">The daily duty that gets done</div></div>
+    </div>
+    <h1>Planning is free. Execution is the scarce thing.</h1>
+    <p class="lede">Nitya is an execution layer for people carrying several tracks at once. It owns the schedule, decides each day against what actually happened yesterday, moves missed work forward instead of piling it, and reports completion honestly.</p>
+    <span class="pill"><span class="dot"></span> Running daily since March 2026 · solo founder · second instance now in daily use</span>
+  </div>
+</header>
+
+<main>
+  <div class="wrap">
+
+    <section>
+      <h2>The loop, every day</h2>
+      <p class="sub">The user makes no planning decisions and maintains no calendar. These five steps run whether or not anyone opens the page.</p>
+      <div class="loop">
+        <div class="step"><span class="t">06:11</span><h3>Agent wakes</h3><p>Reads yesterday's marks, the calendar, deadlines and anything that slipped.</p></div>
+        <div class="step"><span class="t">06:11</span><h3>Re-plans</h3><p>Rebuilds the day. Missed work moves forward; it is never doubled or stacked.</p></div>
+        <div class="step"><span class="t">06:11</span><h3>Asks, narrowly</h3><p>At most two closed questions a day, with buttons. Never an open prompt.</p></div>
+        <div class="step"><span class="t">All day</span><h3>User executes</h3><p>Blocks and problems are marked done, done-with-help, or missed.</p></div>
+        <div class="step"><span class="t">Weekly</span><h3>Verdict</h3><p>Completion stated as a number, unsoftened, and next week is cut to fit.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>It researches, then changes its own plan</h2>
+      <p class="sub">Nitya does not only schedule what it was told. A weekly research pass reads across the user's stated goals and interest domains — opportunities, deadlines, contests, programmes, market and hiring signals — vets what it finds against several sources, and recalibrates the plan and the targets when the evidence warrants it. Every such change is surfaced on the interface with its reason, so the user can see what moved and why.</p>
+      <div class="grid">
+        <div class="card"><span class="k">Intake</span><h3>Sources, vetted</h3><p>Subscribed channels, official pages, programme and contest calendars, mail. Several sources are cross-read to separate substance from marketing.</p></div>
+        <div class="card"><span class="k">Recalibration</span><h3>Goals move, not just tasks</h3><p>A newly found deadline, a changed requirement or a dead end rewrites the targets themselves, not merely the week's blocks.</p></div>
+        <div class="card"><span class="k">Transparency</span><h3>Every change is shown</h3><p>Plan changes appear on the dashboard with their reason and status, and anything needing a human decision is escalated rather than assumed.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>What it plans across</h2>
+      <p class="sub">One engine, several life tracks, each with its own ladder, targets and review cadence. The engine is domain-agnostic; the opinions are per track.</p>
+      <div class="scroller">
+        <table>
+          <thead><tr><th>Track</th><th>What the system holds</th><th>How it is reviewed</th></tr></thead>
+          <tbody>
+            <tr><td>Coursework</td><td>Per-course study plans built from the real syllabus, exam dates, assignment deadlines and lab work</td><td>Daily blocks; trimmed to essentials in the days before a paper</td></tr>
+            <tr><td>Technical practice</td><td>A problem ladder across several platforms, with every problem named and linked, and marks for solved alone, solved with help, or skipped</td><td>Helped problems return after three days and only count once re-solved unaided</td></tr>
+            <tr><td>Projects &amp; deadlines</td><td>Multi-step work broken into one step a day, with slip rules when a step is missed</td><td>Deadline-aware ordering; the most overdue surfaces first</td></tr>
+            <tr><td>Earning track</td><td>Income checkpoints with dated gates, opportunity watch, and pivot rules when a route stalls</td><td>Checkpoint review; a missed gate changes the route, not the date</td></tr>
+            <tr><td>Body</td><td>A training programme with session-level detail, adapted around injuries and timetable collisions</td><td>Weekly desk run; adherence counted, not assumed</td></tr>
+            <tr><td>Language &amp; skills</td><td>Long-horizon ladders with staged entry rules, so a new track only starts when the existing floor is being met</td><td>Start gates; nothing new begins while the floor is failing</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section>
+      <h2>Under the surface</h2>
+      <div class="grid">
+        <div class="card"><span class="k">Scheduled agents</span><h3>Nine recurring runs</h3><p>A daily planning agent, a weekly review, several domain research desks, a mail triage, a usage steward. Model tiering keeps cost per user low: a small model daily, a larger one weekly.</p></div>
+        <div class="card"><span class="k">State</span><h3>Versioned document store</h3><p>Plan, decisions, directives, assumptions, risks and logs. Every write is version-pinned, so a background agent and a human edit cannot overwrite each other.</p></div>
+        <div class="card"><span class="k">Interface</span><h3>Dashboard, not an inbox</h3><p>Today's plan, the practice ladder, the long-range roadmap, the record. Closed-question inputs with buttons; a decision queue for anything needing a human.</p></div>
+        <div class="card"><span class="k">Guardrails</span><h3>Built against dependence</h3><p>A weekly timed session with no AI assistance and a monthly defend-your-own-work drill, both scored, so capability is measured rather than assumed.</p></div>
+        <div class="card"><span class="k">Reporting</span><h3>Three channels</h3><p>A daily one-line note, a weekly summary with the plain numbers, and a message whenever a decision is genuinely required.</p></div>
+        <div class="card"><span class="k">Honesty</span><h3>No congratulation</h3><p>The weekly number is reported as measured. A failed week shrinks the next plan instead of repeating it.</p></div>
+      </div>
+    </section>
+
+    <section>
+      <h2>Why this should work</h2>
+      <p class="sub">The two mechanisms are not invented. Both have been measured across large bodies of published research.</p>
+      <div class="stats">
+        <div class="stat"><b>d = 0.65</b><span>effect of if-then implementation plans over goal intentions alone, across 94 studies (Gollwitzer &amp; Sheeran, 2006) — Nitya makes every plan concrete and timed</span></div>
+        <div class="stat teal"><b>d = 0.40</b><span>behaviour change from increased progress monitoring, across 138 interventions (Harkin et al., 2016) — Nitya monitors and reports by default</span></div>
+        <div class="stat teal"><b>~50%</b><span>of intentions translate into action (Sheeran &amp; Webb, 2016) — the gap the product exists to close</span></div>
+      </div>
+    </section>
+
+    <div class="note">
+      <h3>Status</h3>
+      <p>A full multi-user instance opens here shortly. Until then this page describes the system as it runs today: one founder-operated instance in continuous daily use since March 2026, and a second shared instance now being used heavily by another student, whose plan and decisions it runs independently.</p>
+    </div>
+
+  </div>
+</main>
+
+<footer><div class="wrap">Nitya · an execution layer · Prince Jha · 26BDA087 · IIIT Dharwad</div></footer>
+
+</body>
+</html>
