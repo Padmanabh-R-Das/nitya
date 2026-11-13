@@ -460,15 +460,18 @@ function sendRow(row){
 }
 function flush(){
   var box=outbox(); if(!FOUNDER_URL||!box.length||!navigator.onLine) return Promise.resolve(box.length);
-  return fetch(FOUNDER_URL,{method:"POST",mode:"no-cors",credentials:"omit",referrerPolicy:"no-referrer",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({rows:box})})
-    .then(function(){ ls.set("nitya.outbox","[]"); var log=sentLog(); log.unshift({at:new Date().toISOString(),n:box.length,kinds:box.map(function(r){return r.kind}).join(",")}); ls.set("nitya.sent",JSON.stringify(log.slice(0,30))); return 0; })
+  // text/plain skips the CORS preflight (Apps Script can't answer one); the 302 to googleusercontent is followed and its JSON read
+  return fetch(FOUNDER_URL,{method:"POST",redirect:"follow",credentials:"omit",referrerPolicy:"no-referrer",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({rows:box})})
+    .then(function(r){ return r.json(); }).then(function(j){ if(!j||!j.ok) throw new Error("not accepted"); ls.set("nitya.outbox","[]"); var log=sentLog(); log.unshift({at:new Date().toISOString(),n:box.length,kinds:box.map(function(r){return r.kind}).join(",")}); ls.set("nitya.sent",JSON.stringify(log.slice(0,30))); return 0; })
     .catch(function(){ return box.length; });
 }
 function sentLog(){ try{ return JSON.parse(ls.get("nitya.sent","[]"))||[]; }catch(e){ return []; } }
 
 /* ── Bring your own AI. The app writes a handoff; you paste it into any AI; you paste its answer back.
    The answer must be one JSON block in a fixed shape. Every change is checked, shown, and can be undone. ── */
-var AI_SITES=[["ChatGPT","https://chatgpt.com/"],["Gemini","https://gemini.google.com/app"],["Claude","https://claude.ai/new"],["Copilot","https://copilot.microsoft.com/"]];
+// [name, home, prefill prefix or ""]: a prompt short enough is opened prefilled; otherwise it is copied and the site just opens
+var AI_SITES=[["ChatGPT","https://chatgpt.com/","https://chatgpt.com/?q="],["Claude","https://claude.ai/new","https://claude.ai/new?q="],["Gemini","https://gemini.google.com/app",""],["Copilot","https://copilot.microsoft.com/","https://copilot.microsoft.com/?q="],["Perplexity","https://www.perplexity.ai/","https://www.perplexity.ai/search?q="]];
+var aiLink=function(site,prompt){ var q=encodeURIComponent(prompt); return site[2]&&q.length<1800?site[2]+q:site[1]; };
 function stateSummary(P,S,d){
   var pl=dayPlan(P,S,d), rep=weekReport(P,S,d), ph=phaseAt(P,d);
   var last14=[]; for(var i=14;i>=1;i--){ var x=addDays(d,-i); if(isWork(S,x)) last14.push(floorMet(P,S,x)?"1":"0"); }
@@ -662,7 +665,7 @@ function Onboard(p){
     h("div",null,
       h("div",{className:"card",style:{padding:"14px 16px"}},
         h("p",{style:{margin:"0 0 6px",fontSize:13.5,fontWeight:700}},"Help improve Nitya, anonymously?"),
-        h("p",{className:"sm",style:{marginBottom:8}},"If you say yes, once a week the app sends the founder (Prince Jha, a student) a row of numbers: your goal type, hours, how many units you ticked, your weekly %, your floor level, which features you used. It's tagged with a random code made on this phone, not with you. He can't tell who you are, and he doesn't get your IP address."),
+        h("p",{className:"sm",style:{marginBottom:8}},"If you say yes, once a week the app sends the founder (Prince Jha, a student) a row of numbers: your goal type, hours, how many units you ticked, your weekly %, your floor level, which features you used. It's tagged with a random code made on this phone, not with you. He can't tell who you are, and he never gets your IP address (Google, which runs the inbox, sees the connection the way any website does)."),
         h("details",null,h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"Exactly what is and isn't sent"),
           h("p",{className:"sm",style:{marginTop:6}},h("b",null,"Sent: "),"goal type, weeks to deadline, hours band, work days count, chosen aspects, floor size and level, units done, weekly %, streak, A2Z solved count, rating band (if you typed one), which resources you picked, features used, app version, region (like \"Asia\"), phone or wide screen."),
           h("p",{className:"sm",style:{marginTop:4}},h("b",null,"Never sent: "),"your name, email, phone, college or roll number, IP address, location, what you type in tasks or notes, or anything you ask your AI.")),
@@ -973,8 +976,9 @@ function Handoff(p){
     h("pre",{className:"code"},prompt),
     h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",margin:"8px 0 4px"}},
       h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"9px 14px"},onClick:copy},"Copy"),
-      AI_SITES.map(function(x){ return h("a",{key:x[0],href:x[1],target:"_blank",rel:"noopener noreferrer",className:"tbtn",style:{textDecoration:"none"}},x[0]+" ↗"); })),
+      AI_SITES.map(function(x){ return h("a",{key:x[0],href:aiLink(x,prompt),target:"_blank",rel:"noopener noreferrer",className:"tbtn",style:{textDecoration:"none"},onClick:function(){ copyText(prompt); }},x[0]+" ↗"); })),
     copied?h("p",{className:"sm",style:{color:D.green}},copied):null,
+    h("p",{className:"sm t3",style:{margin:"2px 0 0",fontSize:11}},"Tapping an AI also copies the text; if the box there is empty, just paste."),
     kind==="research"?h("p",{className:"sm t3",style:{marginTop:4}},"Use an AI with web search switched on, so it reads real pages instead of remembering."):null,
     IN_CLAUDE?h("button",{className:"tbtn",style:{marginTop:8},disabled:busy,onClick:hereAI},busy?"Asking Claude…":"Or ask Claude right here"):null,
     h("p",{className:"eb",style:{color:D.t2,marginTop:14}},"2 · Paste its whole answer"),
@@ -999,6 +1003,7 @@ function Desk(p){
       h("p",{className:"sm",style:{marginBottom:10}},"Once a week, let your own AI search the web for contests, programmes and deadlines that fit your plan. What it finds comes back as events you approve, and each one lands on your Roadmap and in Coming up."),
       h("button",{className:"big",style:{width:"100%",background:D.purple,color:"#fff"},onClick:function(){p.open("research")}},"Run this week's research with my AI"),
       h("p",{className:"sm t3",style:{marginTop:8}},"Last run: "+(((S.changes||[]).filter(function(c){return c.source==="research"}).slice(-1)[0]||{}).at||"never")+". Sunday is a good day for it.")),
+    h(Fold,{id:"desk-live",title:"Upcoming Codeforces rounds (live)"},h(LiveCF,{S:S,save:p.save})),
     h(Fold,{id:"desk-src",title:"Free places worth checking yourself"},h("div",{className:"card",style:{padding:"6px 18px"}},src.map(function(x){
       return h("div",{key:x[0],style:{padding:"9px 0",borderTop:"1px solid "+D.b}},h("a",{href:x[1],target:"_blank",rel:"noopener noreferrer",style:{fontSize:13,fontWeight:600}},x[0]+" ↗"),h("p",{className:"sm t3",style:{fontSize:11.5}},x[2])); }))));
 }
@@ -1035,6 +1040,26 @@ function Report(p){
       text.trim()?h("div",{style:{marginTop:8}},h("p",{className:"sm t3",style:{marginBottom:4}},"This is exactly what will be sent (names, emails, numbers and links are removed on your device):"),h("pre",{className:"code"},clean)):null,
       h("button",{className:"big",style:{width:"100%",marginTop:10,background:D.s2,border:"1px solid "+D.b,color:D.t1},onClick:sendFb},"Send feedback anonymously"),
       msg?h("p",{className:"sm",style:{marginTop:8,color:D.green}},msg):null)));
+}
+
+/* Live from the Codeforces API (it allows browser calls): the next rated rounds, with one-tap add to the plan. */
+function LiveCF(p){
+  var D=useContext(TC), st=useState(null), list=st[0], setList=st[1], er=useState(""), err=er[0], setErr=er[1];
+  useEffect(function(){ var on=true;
+    fetch("https://codeforces.com/api/contest.list?gym=false",{credentials:"omit"}).then(function(r){return r.json()}).then(function(j){
+      if(!on) return; if(!j||j.status!=="OK") throw new Error("bad");
+      setList(j.result.filter(function(c){return c.phase==="BEFORE"}).sort(function(a,b){return a.startTimeSeconds-b.startTimeSeconds}).slice(0,8)); })
+      .catch(function(){ if(on) setErr("Couldn't reach Codeforces just now. Open codeforces.com/contests instead."); });
+    return function(){ on=false; }; },[]);
+  var S=p.S, mine=S.events||[];
+  if(err) return h("div",{className:"card"},h("p",{className:"sm t3",style:{margin:0}},err));
+  if(!list) return h("div",{className:"card"},h("p",{className:"sm t3",style:{margin:0}},"Loading…"));
+  return h("div",{className:"card",style:{padding:"6px 18px"}},list.map(function(c){ var t=new Date(c.startTimeSeconds*1000), day=iso(t), id="e-cf"+c.id, has=mine.some(function(e){return e.id===id});
+    return h("div",{key:c.id,className:"row",style:{padding:"9px 0",borderTop:"1px solid "+D.b,alignItems:"center"}},
+      h("div",{style:{flex:1,minWidth:0}},h("a",{href:"https://codeforces.com/contests/"+c.id,target:"_blank",rel:"noopener noreferrer",style:{fontSize:12.5,fontWeight:600}},c.name+" ↗"),
+        h("p",{className:"mono",style:{margin:"2px 0 0",fontSize:10,color:D.t3}},t.toLocaleString(undefined,{weekday:"short",day:"numeric",month:"short",hour:"numeric",minute:"2-digit"})+" · "+Math.round(c.durationSeconds/60)+" min")),
+      has?h("span",{className:"mono",style:{fontSize:10,color:D.green,fontWeight:700}},"ADDED"):
+      h("button",{className:"tbtn",style:{fontSize:10.5,padding:"4px 8px"},onClick:function(){ p.save(Object.assign({},S,{events:mine.concat([{id:id,date:day,name:c.name,why:"Rated round: your rating only moves in contests like this.",url:"https://codeforces.com/contests/"+c.id,src:"codeforces"}])})); }},"Add")); }));
 }
 
 /* ── Settings: everything you chose, editable; your data, visible. ─────────────────────────── */
@@ -1094,7 +1119,7 @@ function Settings(p){
     h(Fold,{id:"set-data",title:"Your data"},h("div",{className:"card"},
       h("div",{className:"row",style:{alignItems:"center",marginBottom:8}},h("span",{style:{flex:1,fontSize:13,fontWeight:700}},"Share anonymous numbers with the founder"),
         h("button",{className:"tbtn","aria-pressed":!!(S.consent||{}).usage,style:(S.consent||{}).usage?{background:D.green,borderColor:D.green,color:"#fff"}:null,onClick:function(){ upd({consent:{usage:!(S.consent||{}).usage,at:today()}}); }},(S.consent||{}).usage?"On":"Off")),
-      h("p",{className:"sm",style:{marginBottom:6}},"Counts and choices only, tagged with your anonymous code ",h("span",{className:"mono"},S.anon),". Never your name, email, phone, college ID, IP address, location, or anything you type in tasks or to your AI."),
+      h("p",{className:"sm",style:{marginBottom:6}},"Counts and choices only, tagged with your anonymous code ",h("span",{className:"mono"},S.anon),". Never your name, email, phone, college ID, IP address, location, or anything you type in tasks or to your AI. (Google, which hosts the inbox, sees the connection like any website; the founder does not.)"),
       h("button",{className:"tbtn",style:{fontSize:11},onClick:function(){ upd({anon:"u-"+uid(8)}); }},"Give me a new anonymous code"),
       h("details",{style:{marginTop:10}},h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"Show me a sample of what is sent"),h("pre",{className:"code",style:{marginTop:6}},JSON.stringify(reportRow("weekly",P,S),null,1))),
       h("p",{className:"sm",style:{marginTop:10}},h("b",null,"Sent so far: "),log.length?log.slice(0,5).map(function(x){return fmt(x.at.slice(0,10))+" ("+x.kinds+")"}).join(", "):"nothing yet",box.length?" · "+box.length+" waiting to send":""),
@@ -1195,7 +1220,7 @@ function App(){
   var docked=side&&wide;
   var nm=P.stones.map(function(s){return Object.assign({},s,stoneStat(P,S,s,d))}).filter(function(s){return !s.met&&s.at>=d})[0];
   var navProps={P:P,tab:tab,sec:sec,go:go,hide:function(){goSide(false)},full:full,theme:flipTheme};
-  var view=tab==="prac"?h(Practice,{S:S,save:save}):tab==="road"?h(Roadmap,{S:S,P:P,d:d,sec:sec,save:save}):tab==="desk"?h(Desk,{S:S,P:P,open:setModal}):
+  var view=tab==="prac"?h(Practice,{S:S,save:save}):tab==="road"?h(Roadmap,{S:S,P:P,d:d,sec:sec,save:save}):tab==="desk"?h(Desk,{S:S,P:P,open:setModal,save:save}):
     tab==="rep"?h(Report,{S:S,P:P,d:d,save:save}):tab==="set"?h(Settings,{S:S,P:P,save:save,go:go,tour:function(){setTour(0)}}):tab==="guide"?h(Guide,{tour:function(){setTour(0)}}):
     h(Today,{S:S,P:P,d:d,save:save,open:setModal,go:go});
   var crumb=(NAVS.filter(function(n){return n[0]===tab})[0]||NAVS[0])[2]+(tab==="road"&&sec!=="main"?" › "+((P.aspects.filter(function(a){return a.id===sec})[0]||{}).name||""):"");
