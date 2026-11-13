@@ -193,6 +193,35 @@ var RES = {
 };
 
 /* ── Goal templates. Each track: ONE number you control, the resources it can point at, and what one unit is. ── */
+
+/* One plain line per resource: what it is, cost, who it suits. Shown only when someone looks, so the choice never overwhelms. */
+var RES_D={a2z:"Free. 450+ DSA problems from basics to DP, in topic order with video solutions. The best first sheet if you're starting.",
+  nc150:"Free. 150 interview problems grouped by pattern, each with a video. Best once basics are done and interviews are near.",
+  lc:"The main interview-practice site. Free problems, plus weekly contests that give you a rating.",
+  gfg:"Free problems and articles on every DSA topic. Gentler problems and long explanations; good for revising a concept.",
+  cf:"Free contest site for competitive programming, rated contests most weeks. Harder than interview prep.",
+  cses:"Free set of 300 short problems; its core sections are the classic CP checklist. Strict tests, no hand-holding.",
+  usaco:"Free, structured CP course from Bronze to Platinum, with an explanation and problems for every topic.",
+  obs:"Free student-made helper: maps each CSES problem to the right handbook pages and gives three hints in order.",
+  cph:"Free book (Antti Laaksonen) explaining the algorithms behind CSES. Read it alongside CSES.",
+  mlng:"Andrew Ng's beginner ML course on Coursera. Free to audit, certificate paid. Clear maths, light coding.",
+  fastai:"Free, code-first deep learning: you train real models from lesson one. Needs some Python.",
+  kaggle:"Free short courses (Python, pandas, ML) in browser notebooks, plus competitions to practise on.",
+  gmlcc:"Free Google crash course on ML basics. Short videos and exercises, a few days of work.",
+  odin:"Free full web-development path, HTML/CSS/JS to full-stack, built around projects.",
+  fso:"Free University of Helsinki course on modern web apps (React, Node). Fast and project-heavy.",
+  fcc:"Free self-paced certifications in web development, Python and more. Beginner-friendly.",
+  cs50:"Harvard's free intro to computer science (C, Python, SQL, web). A strong foundation in fundamentals.",
+  nptel:"Free IIT/IISc video courses on core CS subjects; a paid proctored exam is optional, for a certificate.",
+  ocw:"Free MIT lectures, notes and problem sets for almost every CS and maths subject.",
+  khan:"Free maths from school level up to linear algebra and calculus. Good for filling gaps.",
+  b3:"Free YouTube videos that make linear algebra, calculus and neural networks intuitive. Watch, don't grind.",
+  notes:"Your own college notes and slides. Nitya schedules them unit by unit.",
+  pyq:"Previous years' question papers for your exams: the best predictor of what gets asked.",
+  gh:"Your own repositories, where the projects you build live.",
+  yc:"Free online course from Y Combinator on starting a startup."};
+Object.keys(RES_D).forEach(function(k){ if(RES[k]) RES[k].d=RES_D[k]; });
+
 var GOALS = [
 { id:"sde", label:"Land a software job or internship", blurb:"DSA, one real project, and the CS basics an interviewer asks.",
   tracks:[
@@ -224,7 +253,7 @@ var GOALS = [
   phases:[["Ground","Python, NumPy, the maths refresher, the first course's first third."],["Core","Supervised learning, evaluation, the first Kaggle notebook of your own."],["Deep","Neural networks, a project on your own data."],["Show","One polished project, written up, deployed or published."]],
   stones:[[.25,"Course one third done, 10 maths topics","A notebook per lesson."],[.5,"Course done, first Kaggle submission","A public notebook."],[.75,"A model on your own data, written up","A write-up someone else can follow."],[.93,"One polished project shared","A link people can try."]],
   practice:false },
-{ id:"exam", label:"Clear an exam", blurb:"Semester exams, GATE, or any dated paper. Coverage, then past papers, then timed revision.",
+{ id:"exam", label:"Clear a CS exam (GATE CS / DA, or my CS semester papers)", blurb:"Only computer-science exams: GATE CS or DA, or the end-sems of your CS / IT / AI courses. Coverage, then past papers, then timed revision.",
   tracks:[
     {id:"syll",name:"Syllabus units closed", unit:"units", item:"One unit, with its problems done", why:"Closed means you solved its problems, not watched a lecture.", res:["notes","nptel","khan"]},
     {id:"pyq", name:"Past papers attempted full-length", unit:"papers", item:"One past paper, full length, on the clock", why:"A paper attempted in pieces teaches nothing about time.", res:["pyq"]},
@@ -233,7 +262,7 @@ var GOALS = [
   phases:[["Coverage","Every unit touched once."],["Problems","Each unit's problem set by hand."],["Papers","Full past papers on the real clock."],["Revision","Only what you got wrong."]],
   stones:[[.3,"Half the syllabus closed","Half the unit list ticked."],[.55,"Every unit touched once","A map of what is weak."],[.78,"3 full past papers on time","Three scores on paper."],[.94,"Every wrong answer re-cleared","An error log, closed."]],
   practice:false },
-{ id:"grades", label:"Raise my grades", blurb:"Course by course. What moves a grade happens the same week as the class.",
+{ id:"grades", label:"Raise my grades in CS / IT / AI courses", blurb:"Course by course. What moves a grade happens the same week as the class.",
   tracks:[
     {id:"same",name:"Classes closed the same week", unit:"classes", item:"One class closed: notes redone, examples by hand", why:"A class revisited inside 7 days costs a third of the time.", res:["notes"]},
     {id:"prob",name:"Problem sets done by hand", unit:"sets", item:"One problem set, by hand, solutions closed", why:"Reading a worked solution feels like learning. It isn't.", res:["notes","nptel"]},
@@ -315,8 +344,9 @@ function derive(S){
   var tracks=g.tracks.map(function(t){
     var rks=[].concat((S.trackRes||{})[t.id]||t.res[0]).filter(function(k){return RES[k]}), rk=rks[0]||t.res[0], cu=(S.customRes||{})[t.id];
     var list=(cu&&cu.u?[{n:cu.n||"My resource",u:cu.u}]:[]).concat(rks.map(function(k){return RES[k]}));
-    var r=list[0]||RES[rk]||null;
-    return {id:t.id,name:t.name,unit:t.unit,why:t.why,item:t.item,ladder:t.ladder&&rks.indexOf("a2z")>-1,res:r,resList:list,resKey:rk,
+    var pd=(S.paid||{})[t.id]||null, mix=pd?mixFor(t,pd,rks):null, pres=pd?{n:pd.n,u:pd.u||"",paid:true}:null;
+    var r=pres||list[0]||RES[rk]||null;
+    return {id:t.id,name:t.name,unit:t.unit,why:t.why,item:t.item,ladder:t.ladder&&rks.indexOf("a2z")>-1,res:r,resList:list,resKey:rk,paid:pd,paidRes:pres,mix:mix,
             target:t.id==="crs"?Math.max(3,(S.courses||[]).reduce(function(a,c){return a+(c.units||[]).length},0)*2):Math.max(3,Math.round(total*(g.share[t.id]||0)))};
   });
   var phases=g.phases.map(function(ph,i){
@@ -350,8 +380,11 @@ function allDone(S){ var hit={}; Object.keys(S.done||{}).forEach(function(d){ (S
 function queue(P,S){
   var out=[];
   var units=[]; (S.courses||[]).forEach(function(c){ (c.units||[]).forEach(function(u,i){ units.push((c.code||c.name)+" · "+u); }); });
-  P.tracks.forEach(function(t){ var L=t.resList&&t.resList.length?t.resList:[t.res];
-    for(var k=1;k<=t.target;k++) out.push({id:t.id+":"+k,tr:t.id,name:t.id==="crs"&&units.length?"Close "+units[(k-1)%units.length]+(k>units.length?" (second pass: problems only)":""):t.item,track:t.name,unit:t.unit,k:k,of:t.target,res:L[(k-1)%L.length]}); });
+  P.tracks.forEach(function(t){ var L=t.resList&&t.resList.length?t.resList:[t.res], pat=t.mix?t.mix.pat:null, pu=(t.paid&&t.paid.units)||[], pi=0, fi=0;
+    for(var k=1;k<=t.target;k++){ var base={id:t.id+":"+k,tr:t.id,track:t.name,unit:t.unit,k:k,of:t.target};
+      if(pat&&pat[(k-1)%pat.length]==="p"){ var u=pu.length?pu[pi%pu.length]:null; out.push(Object.assign(base,{name:u?u.t+(pi>=pu.length?" (second pass: redo its problems)":""):t.item,res:t.paidRes})); pi++; }
+      else if(pat){ out.push(Object.assign(base,{name:t.item,res:L[fi%L.length]})); fi++; }
+      else out.push(Object.assign(base,{name:t.id==="crs"&&units.length?"Close "+units[(k-1)%units.length]+(k>units.length?" (second pass: problems only)":""):t.item,res:L[(k-1)%L.length]})); } });
   var pace=function(x){ return x.tr==="crs"?((x.k-1)/x.of)*.35:(x.k/x.of); }; // your own syllabus units come early: exams don't wait
   out.sort(function(a,b){ return pace(a)-pace(b)||a.tr.localeCompare(b.tr); });
   var hit=allDone(S);
@@ -361,7 +394,7 @@ function bindItems(P,S,items){
   var used={}, prob=S.prob||{};
   return items.map(function(it){
     var t=P.tracks.filter(function(x){return x.id===it.tr})[0];
-    if(t&&t.ladder&&(!it.res||it.res===RES.a2z)){ var pr=ladder().filter(function(x){ return x.tier===1&&!prob[x.key]&&!used[x.key]; })[0];
+    if(t&&t.ladder&&(!it.res||it.res===RES.a2z)){ var lv=S.level||2, pr=ladder().filter(function(x){ return ladderOk(x,lv)&&!prob[x.key]&&!used[x.key]; })[0];
       if(pr){ used[pr.key]=1; return Object.assign({},it,{name:pr.name,url:pr.url,sub:"A2Z · Step "+pr.step+" · "+pr.stepName,pk:pr.key}); } }
     if(it.res&&it.res.u) return Object.assign({},it,{url:it.res.u,sub:it.res.n});
     if(it.res) return Object.assign({},it,{sub:it.res.n});
@@ -473,6 +506,8 @@ function weekQuota(P,S,mon){
   var q=(S.hours||2)>=3||S.goal==="cp"?2:1, why=q===2?"2 a week (your hours / goal)":"1 a week";
   var last=weekReport(P,S,addDays(mon,-1));
   if(last.plan>0&&last.pct<60){ q=Math.min(q,1); why="1 this week: last week was "+last.pct+"%"; }
+  if((S.level||2)===3){ q=Math.min(3,q+1); why=q+" a week (Advanced level)"; }
+  if((S.level||2)===1&&!S.lcReady&&q>1){ q=1; why="1 a week (Foundation level)"; }
   if(lvlOf(S,mon)>0){ q=Math.min(3,q+1); why=q+" this week: your floor is stretching"; }
   var ex=(S.exams||[]).some(function(e){ return e.date>=mon&&e.date<=addDays(mon,6); });
   if(ex){ q=0; why="none this week: exams"; }
@@ -506,6 +541,69 @@ function assignContests(P,S,d){
   var byDay={}; out.filter(function(c){return c.pick}).forEach(function(c){ (byDay[c.day]=byDay[c.day]||[]).push(c); });
   return {list:out,byDay:byDay,weeks:weeks};
 }
+
+/* ── Starting level: read college, branch and semester however they're typed, set a default, let progress move it. ── */
+var LV={1:"Foundation",2:"Standard",3:"Advanced"};
+var LV_WHAT={1:"Warm-up problems first, then the core ladder. One rated contest a week, from when you're ready.",
+  2:"The core ladder from sorting onward. Contests at a normal pace.",
+  3:"Core ladder with the easy ones skipped and the hard ones added. One extra contest a week."};
+function normTxt(s){ return " "+String(s||"").toLowerCase().replace(/&/g," and ").replace(/[.,()\/\\_\-–—|:;'"+#@!?]+/g," ").replace(/\s+/g," ").trim()+" "; }
+function anyOf(t,list){ for(var i=0;i<list.length;i++){ if(list[i] instanceof RegExp?list[i].test(t):t.indexOf(list[i])>-1) return true; } return false; }
+// Top group: institutions whose students usually arrive with a stronger start. Matching is on lower-cased text with spaces at both ends.
+var COL_TOP=[/ iit ?[a-z]{0,4} /,/ iit$/,"indian institute of technology"," iisc ","indian institute of science"," bits ","birla institute",/ iiit ?h(yd|yderabad)? /,"iiit hyderabad",/ iiit ?d(elhi)? /,"iiit delhi","indraprastha institute",/ iiit ?b(angalore|lr)? /,"iiit bangalore",/ iiit ?a(llahabad)? /,"iiit allahabad",
+  " dtu ","delhi technological"," nsut ","netaji subhas"," nsit ",/ nit ?(trichy|t|tiruchirappalli) /,"tiruchirappalli",/ nit ?(warangal|w) /,/ nit ?(surathkal|k|karnataka) /,/ nitk /,/ nit ?(calicut|c) /,"mnnit"," isi ","indian statistical"," cmi ","chennai mathematical","jadavpur"];
+var COL_MID=[/ nit ?[a-z]{0,12} /,/ n i t /,"national institute of technology",/ iiit ?[a-z]{0,10} /,"indian institute of information technology","iiest","thapar","vjti","coep"," pict ",/ pec /,"punjab engineering","rvce","bmsce","bms college","lnmiit","daiict","dhirubhai","psg ","anna university"," ceg ","jamia"," amu ","aligarh","bit mesra","mesra","manipal"," vit ","vellore","srm","kiit"," pes ","pesu","msrit","ramaiah","nirma","dayananda sagar"," iem ","heritage institute","kj somaiya","somaiya","spit","sardar patel institute","djsce","mnit","vnit","svnit","manit","iiitm","iiitdm"];
+var BR_CS=[/ cse? /,/ cs ?e /,"computer","comp sci",/ comps? /," it ","information technology",/ ai /,/ ml /,"artificial intelligence","machine learning","data science",/ ds /,"dsai","aids","aiml","ai and ds","ai and ml","ds and ai","cse ds","cse ai",/ mnc /,"mathematics and computing","math and computing","software"," bca "," mca ","bsc cs","b sc cs","computing",/ ece? ?cs /,"cyber","cse aiml","iot and"];
+var BR_ALLIED=[/ ece? /,"electronics",/ eee /,/ ee /,"electrical",/ ei /,"instrumentation","communication","mathematics",/ maths? /,"physics"," vlsi","engineering physics",/ ep /,"statistics"];
+var BR_OTHER=[/ mech/,"mechanical",/ civil /,/ chem/,"chemical",/ bio/,"metallurgy",/ mme /,"aerospace",/ aero/,"production","textile","mining","architecture",/ arch /,"marine","agricultural","petroleum","ceramic"];
+var BR_NAME=[[/ dsai |ds and ai|data science and (ai|artificial)|ai and ds|aids /,"Data Science & AI"],[/ aiml |ai and ml|artificial intelligence and machine|cse ai/,"AI & ML"],[/data science| ds /,"Data Science"],[/artificial intelligence| ai /,"AI"],
+  [/ mnc |mathematics and computing|math and computing/,"Mathematics & Computing"],[/ cse? |computer|comp sci| comps? /,"Computer Science"],[/ it |information technology/,"Information Technology"],[/ bca /,"BCA"],[/ mca /,"MCA"],
+  [/ ece? |electronics and comm|electronics/,"Electronics"],[/ eee | ee |electrical/,"Electrical"],[/ mech|mechanical/,"Mechanical"],[/ civil /,"Civil"],[/ chem|chemical/,"Chemical"]];
+var ROMAN={i:1,ii:2,iii:3,iv:4,v:5,vi:6,vii:7,viii:8};
+var ORD={first:1,second:2,third:3,fourth:4,fifth:5,sixth:6,seventh:7,eighth:8};
+function semOf(t,d){
+  var m=t.match(/ (?:sem|semester|sm) ?([1-8]|i{1,3}|iv|vi{0,3}|v) /)||t.match(/ ([1-8])(?:st|nd|rd|th)? ?(?:sem|semester) /)||t.match(/ (first|second|third|fourth|fifth|sixth|seventh|eighth) (?:sem|semester) /);
+  if(!m) m=t.match(/ s([1-8]) /);
+  if(m){ var v=m[1]; return +v||ROMAN[v]||ORD[v]||null; }
+  var odd=+String(d||today()).slice(5,7)>=7; // Jul–Dec is the odd semester in most Indian colleges
+  var y=t.match(/ (?:year|yr) ?([1-4]) /)||t.match(/ ([1-4])(?:st|nd|rd|th)? ?(?:year|yr) /)||t.match(/ (first|second|third|fourth) (?:year|yr) /);
+  if(y){ var n=+y[1]||ORD[y[1]]; return odd?2*n-1:2*n; }
+  if(/ fresher | fy /.test(t)) return odd?1:2; if(/ sy /.test(t)) return odd?3:4; if(/ ty /.test(t)) return odd?5:6; if(/ final year | ly /.test(t)) return odd?7:8;
+  return null;
+}
+/* Read whatever the person typed (one box, or college/branch/semester boxes joined) into a tidy record. */
+function readCollege(raw,d){
+  var t=normTxt(raw), out={raw:String(raw||"").slice(0,120),tier:0,kind:"",branch:"",semester:semOf(t,d)};
+  if(!t.trim()) return out;
+  out.tier=anyOf(t,COL_TOP)&&!/ iit ?m(adras)? bs | bs degree | online degree /.test(t)?3:anyOf(t,COL_MID)||/ iit ?m(adras)? bs | bs degree /.test(t)?2:1;
+  out.kind=anyOf(t,BR_CS)?"cs":anyOf(t,BR_OTHER)?"other":anyOf(t,BR_ALLIED)?"allied":"";
+  for(var i=0;i<BR_NAME.length;i++){ if(BR_NAME[i][0].test(t)){ out.branch=BR_NAME[i][1]; break; } }
+  return out;
+}
+/* The default level, with the reasons in plain words. Nothing here is a judgement of the person; it only picks where the ladder starts. */
+function levelFor(c,extra){
+  c=c||{}; extra=extra||{}; var lv=2, why=[];
+  if(c.tier===3){ lv=3; why.push("your college usually sends students in with a strong start"); }
+  else if(c.tier) why.push("standard start for your college");
+  if(c.kind==="other"){ lv-=1; why.push("a non-CS branch, so the basics come first"); }
+  else if(c.kind==="allied"&&lv>2){ lv=2; why.push("an allied branch, so the core ladder first"); }
+  if(c.semester&&c.semester<=2&&lv>2){ lv=2; why.push("first year, so no skipping yet"); }
+  if(c.semester&&c.semester>=5&&c.kind==="cs"&&lv<3){ lv+=1; why.push("third year or later in a CS branch"); }
+  var cf=+((extra.ratings||{}).cf)||0, lc=+((extra.ratings||{}).lc)||0, sv=+extra.solved||0;
+  if(cf>=1400||lc>=1800||sv>=300){ lv=3; why.push("your ratings / solved count are already strong"); }
+  else if(sv>=120&&lv<2){ lv=2; why.push("you've already solved "+sv+" problems"); }
+  lv=Math.max(1,Math.min(3,lv));
+  return {level:lv,why:why.length?why.join("; ")+".":"No college or branch given, so the standard start."};
+}
+/* Monday check: the floor calibration of the last two weeks moves the level by one step, never more. */
+function levelStep(S,mon){
+  var cal=S.flCal||{}, a=(cal[mon]||{}).lvl, b=(cal[addDays(mon,-7)]||{}).lvl, lv=S.level||2;
+  if(a==null||b==null) return null;
+  if(a>=1&&b>=1&&lv<3) return {to:lv+1,why:"Floor met 90%+ two weeks running, so the problems get harder: "+LV[lv]+" → "+LV[lv+1]+"."};
+  if(a<=-1&&b<=-1&&lv>1) return {to:lv-1,why:"The floor was missed often two weeks running, so the start gets gentler: "+LV[lv]+" → "+LV[lv-1]+"."};
+  return null;
+}
+function ladderOk(x,lv){ if(lv===1) return x.tier<=1; if(lv===3) return (x.tier===1&&!(x.diff==="e"&&x.step>=3))||x.tier===2; return x.tier===1; }
 
 /* ── Storage. The plan and every mark live in this browser only. ───────────────────────────── */
 var KEY="nitya.v2";
@@ -656,9 +754,83 @@ function undoBatch(S,batch){
   return back;
 }
 
+/* ── Resource picker (setup and Settings share it): one recommendation shown, the rest a tap away, and a paid course brought in properly. ── */
+var PAID_PROMPT=function(track,name,url){ return "I study \""+(name||"my paid course")+"\""+(url?" ("+url+")":"")+" for "+track+". I'll paste its curriculum (the course page, syllabus or module list, or screenshots). "+
+  "List EVERY module, lesson, problem set, test and project in the order the course gives them. Don't invent anything that isn't there. Then output ONE fenced ```json block exactly like this:\n"+
+  "```json\n{\"nitya_course\":1,\"name\":\"\",\"units\":[{\"t\":\"lesson or module title\",\"k\":\"lesson\",\"n\":1}]}\n```\n"+
+  "k is one of lesson, problems, test, project. n is how many lessons or problems that line holds (1 if unsure). Keep titles short. Tell me to paste the JSON block back into Nitya."; };
+/* Read either the AI's JSON or a plain pasted list (one unit per line). */
+function parsePaid(text){
+  var t=String(text||""), m=t.match(/```(?:json)?\s*([\s\S]*?)```/), j=null;
+  try{ j=JSON.parse(m?m[1]:t); }catch(e){ j=null; }
+  if(j&&Array.isArray(j.units)) return {name:String(j.name||"").slice(0,60),units:j.units.slice(0,400).map(function(u){ return {t:String(u.t||u.title||"").slice(0,90),k:["lesson","problems","test","project"].indexOf(u.k)>-1?u.k:"lesson",n:Math.max(1,Math.min(500,+u.n||1))}; }).filter(function(u){return u.t})};
+  var lines=t.split(/\n+/).map(function(x){ return x.replace(/^[\s\-*•\d.)\]]+/,"").trim(); }).filter(function(x){ return x.length>2&&x.length<120; }).slice(0,400);
+  if(lines.length<2) throw new Error("Paste the JSON block from your AI, or the course's module list with one item per line.");
+  return {name:"",units:lines.map(function(x){ return {t:x,k:/problem|practice|exercise|assignment|quiz|contest|sheet/i.test(x)?"problems":/test|exam|mock/i.test(x)?"test":/project|capstone/i.test(x)?"project":"lesson",n:1}; })};
+}
+/* Nitya's call on how a paid course and the free picks share a track. Returns the repeating pattern ('p' paid, 'f' free) and why. */
+function mixFor(t,paid,free){
+  if(!paid) return null;
+  var mode=paid.mode||"auto", units=paid.units||[];
+  if(!free.length||mode==="paid") return {pat:["p"],why:mode==="paid"?"You chose your paid course only.":"Only your paid course is picked for this track."};
+  if(mode==="even") return {pat:["p","f"],why:"You chose to split evenly between your paid course and the free pick."};
+  if(!units.length) return {pat:["p","f"],why:"Nitya doesn't know what your course covers yet, so it alternates. Share its curriculum and Nitya will plan it lesson by lesson and decide the split."};
+  var pr=units.filter(function(u){return u.k==="problems"}).reduce(function(a,u){return a+u.n},0), tot=units.reduce(function(a,u){return a+u.n},0)||1, isProb=/problem|ladder/i.test((t.item||"")+" "+(t.name||""));
+  if(isProb&&pr/tot>=.3) return {pat:["p","p","p","f"],why:"Your course already has its own problem sets ("+pr+" of "+tot+" items), so it leads: 3 of every 4 sessions. The free pick stays for extra practice and contest-style problems."};
+  if(isProb) return {pat:["p","p","f"],why:"Your course mostly teaches ("+pr+" practice items of "+tot+"), so 2 of every 3 sessions follow it and the free sheet supplies the practice it lacks."};
+  return {pat:["p","p","f"],why:"Your course is the main path (2 of every 3 sessions); the free pick fills gaps and gives a second explanation."};
+}
+function ResPicker(p){
+  var D=useContext(TC), S=p.S, t=p.t, set=p.set, keys=(t.res||[]).filter(function(k){return RES[k]}), cur=[].concat((S.trackRes||{})[t.id]||[]).filter(function(k){return keys.indexOf(k)>-1}),
+      paid=(S.paid||{})[t.id]||null, rec=keys[0], others=keys.slice(1);
+  var _o=useState(false), open=_o[0], setOpen=_o[1], _a=useState(!!paid), addP=_a[0], setAddP=_a[1], _e=useState(""), err=_e[0], setErr=_e[1], _x=useState(""), txt=_x[0], setTxt=_x[1], _c=useState(""), cp=_c[0], setCp=_c[1];
+  var _n=useState(paid?paid.n:""), pn=_n[0], setPn=_n[1], _u=useState(paid?paid.u||"":""), pu=_u[0], setPu=_u[1];
+  var tg=function(k){ var x=cur.slice(), i=x.indexOf(k); if(i>-1) x.splice(i,1); else x.push(k); var o={}; o[t.id]=x; set({trackRes:Object.assign({},S.trackRes,o)}); };
+  var putPaid=function(v){ var o=Object.assign({},S.paid); if(v) o[t.id]=v; else delete o[t.id]; set({paid:o}); };
+  var row=function(k){ var on=cur.indexOf(k)>-1, r=RES[k];
+    return h("div",{key:k,style:{display:"flex",gap:10,alignItems:"flex-start",padding:"8px 0",borderTop:"1px solid "+D.b}},
+      h("button",{className:"ck","aria-pressed":on,"aria-label":(on?"Remove ":"Use ")+r.n,style:{border:"2px solid "+(on?D.green:D.b),background:on?D.green:"none",color:"#fff"},onClick:function(){tg(k)}},on?"✓":""),
+      h("div",{style:{flex:1,minWidth:0}},h("p",{style:{margin:0,fontSize:12.5,fontWeight:700}},r.n,k===rec?h("span",{className:"pill",style:{marginLeft:6,background:D.green+"22",color:D.green}},"RECOMMENDED"):null),
+        r.d?h("p",{className:"sm",style:{margin:"2px 0 0"}},r.d):null)); };
+  var mix=mixFor(t,paid,cur);
+  return h("div",{className:"card",style:{padding:"12px 14px",marginBottom:10}},
+    h("p",{style:{margin:"0 0 2px",fontSize:13,fontWeight:700}},t.name),
+    t.why?h("p",{className:"sm t3",style:{margin:"0 0 4px"}},t.why):null,
+    rec?row(rec):null,
+    cur.filter(function(k){return k!==rec}).map(row),
+    others.filter(function(k){return cur.indexOf(k)<0}).length?h("button",{className:"tbtn",style:{fontSize:11,margin:"6px 6px 0 0"},"aria-expanded":open,onClick:function(){setOpen(!open)}},open?"Hide other free options":"Other free options ("+others.filter(function(k){return cur.indexOf(k)<0}).length+")"):null,
+    open?others.filter(function(k){return cur.indexOf(k)<0}).map(row):null,
+    !cur.length&&!paid?h("p",{className:"sm",style:{color:D.amber,margin:"6px 0 0"}},"Nothing picked, so "+(RES[rec]||{n:"the recommended one"}).n+" is used."):null,
+    h("button",{className:"tbtn",style:{fontSize:11,marginTop:6},"aria-expanded":addP,onClick:function(){setAddP(!addP)}},paid?"Your paid course: "+paid.n+(addP?" ▴":" ▾"):"I use a paid course or something else"),
+    addP?h("div",{style:{marginTop:8,padding:"10px 12px",background:D.s2,borderRadius:10}},
+      h("p",{className:"sm",style:{margin:"0 0 6px"}},"Any course works: Apna College, Coding Ninjas, Scaler, PW Skills, Udemy, a coaching batch. Share what it covers so Nitya can plan it lesson by lesson and decide how it sits beside the free options."),
+      h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginBottom:6}},
+        h("input",{className:"inp",style:{flex:"1 1 140px"},placeholder:"Course name",value:pn,onChange:function(e){setPn(e.target.value.slice(0,60))}}),
+        h("input",{className:"inp",style:{flex:"2 1 180px"},placeholder:"Link (optional) https://…",value:pu,onChange:function(e){setPu(e.target.value.slice(0,300))}})),
+      h("p",{className:"sm",style:{margin:"4px 0"}},h("b",null,"1. "),"Copy this prompt into your AI, then paste or screenshot your course's curriculum page there."),
+      h("button",{className:"tbtn",style:{fontSize:11},onClick:function(){ copyText(PAID_PROMPT(t.name,pn,pu)).then(function(ok){ setCp(ok?"Copied":"Select and copy the prompt below"); }); }},cp||"Copy the prompt"),
+      cp&&cp!=="Copied"?h("textarea",{className:"inp",readOnly:true,rows:4,style:{marginTop:6,fontSize:11},value:PAID_PROMPT(t.name,pn,pu)}):null,
+      h("p",{className:"sm",style:{margin:"8px 0 4px"}},h("b",null,"2. "),"Paste your AI's JSON here, or paste the module list yourself (one per line)."),
+      h("textarea",{className:"inp",rows:4,style:{fontSize:12},value:txt,placeholder:"```json { \"nitya_course\": 1, … }```  or  Module 1: Arrays…",onChange:function(e){setTxt(e.target.value.slice(0,60000))}}),
+      err?h("p",{className:"sm",style:{color:D.red}},err):null,
+      h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginTop:6}},
+        h("button",{className:"tbtn",style:{background:D.amber,color:D.onAmber,borderColor:D.amber},disabled:!pn&&!txt,onClick:function(){ setErr("");
+          if(pu&&!/^https:\/\//.test(pu)){ setErr("The link should start with https://"); return; }
+          var units=paid&&paid.units||[], nm=pn;
+          if(txt.trim()){ try{ var r=parsePaid(txt); units=r.units; nm=nm||r.name; }catch(x){ setErr(x.message); return; } }
+          putPaid({n:nm||"My paid course",u:pu||"",units:units,mode:paid&&paid.mode||"auto",at:today()}); setTxt(""); }},paid?"Update":"Add the course"),
+        paid?h("button",{className:"tbtn",onClick:function(){ putPaid(null); setPn(""); setPu(""); setAddP(false); }},"Remove it"):null),
+      paid?h("p",{className:"sm",style:{margin:"6px 0 0"}},paid.units&&paid.units.length?paid.units.length+" items read from its curriculum.":"No curriculum shared yet: Nitya treats it as one source until you do."):null):null,
+    mix?h("div",{style:{marginTop:8,padding:"8px 10px",border:"1px solid "+D.blue+"55",borderRadius:10}},
+      h("p",{className:"eb",style:{color:D.blue,margin:"0 0 3px"}},"Nitya's call"),
+      h("p",{className:"sm",style:{margin:"0 0 6px",color:D.t1}},mix.why),
+      h("div",{style:{display:"flex",gap:5,flexWrap:"wrap"}},[["auto","Let Nitya decide"],["paid","Only my paid course"],["even","Split evenly"]].map(function(m){ var on=(paid.mode||"auto")===m[0];
+        return h("button",{key:m[0],className:"chip"+(on?" on":""),"aria-pressed":on,style:{fontSize:11,padding:"5px 9px"},onClick:function(){ putPaid(Object.assign({},paid,{mode:m[0]})); }},m[1]); }))):null);
+}
+
 /* ── The AI interview: for a thorough setup, the user's own AI interviews them (it can read their timetable and syllabus
    PDFs), then hands back one JSON block that fills the whole setup. Everything is checked before it's used. ── */
-var INTERVIEW_PROMPT = "You are setting me up in Nitya, a study planner. Interview me properly, ONE question at a time, short and friendly, offering options where it helps. I may attach my class timetable and my course syllabus (PDFs or photos): read them carefully and use them instead of asking what they already say.\n\nFind out:\n1. My goals (one or more of: sde = land a software job/internship; cp = get good at DSA & competitive programming; ml = learn ML/AI and build with it; exam = clear a specific exam; grades = raise my grades; build = build and ship a project/startup). Which matters most.\n2. The deadline I'm working towards (a real date).\n3. My college, branch and current semester (only if I want to say).\n4. My exact weekly class timetable: for each weekday, every class's start and end time (from the attached timetable if I gave one).\n5. My courses this semester with their syllabus units in order, and exam dates (mid-sem, end-sem, quizzes) if known.\n6. On a NORMAL day, how many hours I can really give (1-4), and which days I work.\n7. Wake and sleep times.\n8. Where I learn from for each goal (courses, sheets, YouTube channels, books: names and links).\n9. Which coding sites I use or want to compete on (Codeforces, LeetCode, CodeChef, AtCoder), roughly how many problems I've solved, and my ratings if any.\n10. Up to three other practices I want to keep alive (body/fitness, inner practice like prayer or meditation, a language, creative practice, reading, earning), with minutes and days.\n11. Small fixed-time daily habits (anchors) like wake-up or closing the day.\n\nDon't ask for my name, email, phone or any ID numbers. When you have enough, show me a short summary to confirm, then output ONE fenced ```json block, exactly in this shape (omit what you don't know):\n```json\n{\n  \"nitya_profile\": 1,\n  \"goals\": [\"sde\", \"ml\"],\n  \"deadline\": \"YYYY-MM-DD\",\n  \"hours\": 2,\n  \"days\": [1,2,3,4,5,6],\n  \"wake\": \"06:30\", \"sleep\": \"23:00\",\n  \"college\": {\"name\": \"\", \"branch\": \"\", \"semester\": 3},\n  \"timetable\": {\"1\": [[\"09:00\",\"10:30\"],[\"11:00\",\"12:30\"]], \"2\": []},\n  \"courses\": [{\"name\": \"\", \"code\": \"\", \"units\": [\"unit 1 title\", \"unit 2 title\"], \"exams\": [{\"name\": \"Mid-sem\", \"date\": \"YYYY-MM-DD\"}]}],\n  \"resources\": [{\"goal\": \"sde\", \"name\": \"\", \"url\": \"https://...\"}],\n  \"platforms\": [\"cf\", \"lc\"],\n  \"solved\": 0,\n  \"ratings\": {\"cf\": 0, \"lc\": 0},\n  \"aspects\": [{\"id\": \"body\", \"min\": 30, \"days\": [1,3,5]}],\n  \"anchors\": [{\"label\": \"Wake at a fixed time\", \"at\": \"06:30\"}]\n}\n```\nDays are 0=Sunday to 6=Saturday. Aspect ids are body, inner, lang, arts, read, earn. Tell me to paste the JSON block back into Nitya.";
+var INTERVIEW_PROMPT = "You are setting me up in Nitya, a study planner built only for computer-science goals (DSA, competitive programming, software jobs, ML, GATE CS / DA and CS college courses). If my goal is outside that (UPSC, NEET, JEE, CA and so on), tell me plainly Nitya isn't built for it. Interview me properly, ONE question at a time, short and friendly, offering options where it helps. I may attach my class timetable and my course syllabus (PDFs or photos): read them carefully and use them instead of asking what they already say.\n\nFind out:\n1. My goals (one or more of: sde = land a software job/internship; cp = get good at DSA & competitive programming; ml = learn ML/AI and build with it; exam = clear a CS exam (GATE CS / DA or CS semester exams); grades = raise grades in CS courses; build = build and ship a project/startup). Which matters most.\n2. The deadline I'm working towards (a real date).\n3. My college, branch and current semester, written however I say them (only if I want to say).\n4. My exact weekly class timetable: for each weekday, every class's start and end time (from the attached timetable if I gave one).\n5. My courses this semester with their syllabus units in order, and exam dates (mid-sem, end-sem, quizzes) if known.\n6. On a NORMAL day, how many hours I can really give (1-4), and which days I work.\n7. Wake and sleep times.\n8. Where I learn from for each goal (courses, sheets, YouTube channels, books: names and links). If I use a PAID course (Apna College, Coding Ninjas, Scaler, PW Skills, Udemy, a coaching batch…), ask me to paste or screenshot its curriculum and list every module and problem set in order, as \"paid\" entries.\n9. Which coding sites I use or want to compete on (Codeforces, LeetCode, CodeChef, AtCoder), roughly how many problems I've solved, and my ratings if any.\n10. Up to three other practices I want to keep alive (body/fitness, inner practice like prayer or meditation, a language, creative practice, reading, earning), with minutes and days.\n11. Small fixed-time daily habits (anchors) like wake-up or closing the day.\n\nDon't ask for my name, email, phone or any ID numbers. When you have enough, show me a short summary to confirm, then output ONE fenced ```json block, exactly in this shape (omit what you don't know):\n```json\n{\n  \"nitya_profile\": 1,\n  \"goals\": [\"sde\", \"ml\"],\n  \"deadline\": \"YYYY-MM-DD\",\n  \"hours\": 2,\n  \"days\": [1,2,3,4,5,6],\n  \"wake\": \"06:30\", \"sleep\": \"23:00\",\n  \"college\": {\"name\": \"\", \"branch\": \"\", \"semester\": 3},\n  \"timetable\": {\"1\": [[\"09:00\",\"10:30\"],[\"11:00\",\"12:30\"]], \"2\": []},\n  \"courses\": [{\"name\": \"\", \"code\": \"\", \"units\": [\"unit 1 title\", \"unit 2 title\"], \"exams\": [{\"name\": \"Mid-sem\", \"date\": \"YYYY-MM-DD\"}]}],\n  \"resources\": [{\"goal\": \"sde\", \"name\": \"\", \"url\": \"https://...\"}],\n  \"paid\": [{\"goal\": \"sde\", \"name\": \"\", \"url\": \"\", \"units\": [{\"t\": \"module title\", \"k\": \"lesson|problems|test|project\", \"n\": 1}]}],\n  \"platforms\": [\"cf\", \"lc\"],\n  \"solved\": 0,\n  \"ratings\": {\"cf\": 0, \"lc\": 0},\n  \"aspects\": [{\"id\": \"body\", \"min\": 30, \"days\": [1,3,5]}],\n  \"anchors\": [{\"label\": \"Wake at a fixed time\", \"at\": \"06:30\"}]\n}\n```\nDays are 0=Sunday to 6=Saturday. Aspect ids are body, inner, lang, arts, read, earn. Tell me to paste the JSON block back into Nitya.";
 function parseProfile(text,base){
   var t=String(text||""), m=t.match(/```(?:json)?\s*([\s\S]*?)```/i), raw=m?m[1]:t.slice(t.indexOf("{"),t.lastIndexOf("}")+1), o;
   try{ o=JSON.parse(raw); }catch(e){ throw new Error("I couldn't read the JSON block. Paste the AI's final message including the ```json part."); }
@@ -670,7 +842,8 @@ function parseProfile(text,base){
   if([1,2,3,4].indexOf(+o.hours)>-1) A.hours=+o.hours; else if(+o.hours>4) A.hours=4;
   if(Array.isArray(o.days)){ var ds=o.days.map(day).filter(function(x){return x!=null}).filter(function(v,i,a){return a.indexOf(v)===i}).sort(); if(ds.length) A.days=ds; }
   if(okT(o.wake)) A.wake=o.wake.padStart(5,"0"); if(okT(o.sleep)) A.sleep=o.sleep.padStart(5,"0");
-  if(o.college&&typeof o.college==="object") A.college={name:String(o.college.name||"").slice(0,80),branch:String(o.college.branch||"").slice(0,60),semester:+o.college.semester||null};
+  if(o.college&&typeof o.college==="object") { var cr=[o.college.name,o.college.branch,o.college.semester?"sem "+o.college.semester:""].filter(Boolean).join(", "), rr=readCollege(cr);
+    A.college={raw:cr.slice(0,120),name:"",branch:rr.branch,semester:+o.college.semester||rr.semester,tier:rr.tier,kind:rr.kind}; }
   if(o.timetable&&typeof o.timetable==="object"){ var tt={}, cd=[];
     Object.keys(o.timetable).forEach(function(k){ var dd=day(k); if(dd==null||!Array.isArray(o.timetable[k])) return;
       var sl=o.timetable[k].filter(function(x){ return Array.isArray(x)&&okT(x[0])&&okT(x[1])&&hm(x[1])>hm(x[0]); }).map(function(x){ return [x[0].padStart(5,"0"),x[1].padStart(5,"0")]; }).slice(0,12);
@@ -680,9 +853,14 @@ function parseProfile(text,base){
       units:(Array.isArray(c.units)?c.units:[]).map(function(u){return String(u).slice(0,90)}).filter(Boolean).slice(0,20)}; }).filter(function(c){return c.units.length});
     A.exams=[]; o.courses.forEach(function(c){ (Array.isArray(c.exams)?c.exams:[]).forEach(function(e){ if(/^\d{4}-\d\d-\d\d$/.test(e&&e.date||"")) A.exams.push({date:e.date,name:String((c.code||c.name||"")+" "+(e.name||"exam")).slice(0,80)}); }); });
     notes.push(A.courses.length+" courses, "+A.courses.reduce(function(a,c){return a+c.units.length},0)+" syllabus units, "+A.exams.length+" exam dates"); }
+  if(Array.isArray(o.paid)){ o.paid.slice(0,6).forEach(function(r){ if(!r||!r.name) return; var g=goalOf(r.goal||A.goal), t=g.tracks[0], pr={units:[]};
+    try{ pr=parsePaid(JSON.stringify({units:r.units||[]})); }catch(e){}
+    A.paid=A.paid||{}; if(!A.paid[t.id]) A.paid[t.id]={n:String(r.name).slice(0,60),u:/^https:\/\//.test(r.url||"")?String(r.url).slice(0,300):"",units:pr.units,mode:"auto",at:today()}; }); }
   if(Array.isArray(o.resources)){ o.resources.forEach(function(r){ if(!r||!/^https:\/\//.test(r.url||"")) return; var g=goalOf(r.goal||A.goal), t=g.tracks[0]; A.customRes=A.customRes||{}; if(!A.customRes[t.id]) A.customRes[t.id]={n:String(r.name||"My resource").slice(0,60),u:String(r.url).slice(0,300)}; }); }
   if(Array.isArray(o.platforms)){ var pl=o.platforms.filter(function(x){return PLAT[x]}); if(pl.length) A.platforms=pl; }
   if(+o.solved>=100) A.lcReady=true;
+  if(+o.solved) A.solved=+o.solved; if(o.ratings&&typeof o.ratings==="object") A.ratings={cf:+o.ratings.cf||0,lc:+o.ratings.lc||0};
+  if(!A.levelSet){ var LL=levelFor(A.college?readCollege(A.college.raw):{},{solved:A.solved,ratings:A.ratings}); A.level=LL.level; A.levelWhy=LL.why; }
   if(o.ratings&&typeof o.ratings==="object"){ A.rat={}; ["cf","lc"].forEach(function(k){ if(+o.ratings[k]>0) A.rat[k]=clamp(+o.ratings[k],0,4000); }); }
   if(Array.isArray(o.aspects)){ A.aspects=o.aspects.filter(function(x){ return x&&ASPECTS.some(function(y){return y.id===x.id}); }).map(function(x){ var b=ASPECTS.filter(function(y){return y.id===x.id})[0];
       var ds=(Array.isArray(x.days)?x.days:b.days).map(day).filter(function(v){return v!=null}); return {id:x.id,on:true,min:clamp(+x.min||b.min,5,120),days:ds.length?ds:b.days}; }); }
@@ -719,6 +897,9 @@ function Onboard(p){
 
   if(step===0) return frame(0,"A plan that survives a bad week.","Nitya asks a few short questions, builds your plan, and keeps rebuilding it from what actually happened. About two minutes.",
     h("div",null,
+      h("div",{style:{padding:"10px 12px",border:"1px solid "+D.blue+"55",borderRadius:10,marginBottom:8}},
+        h("p",{className:"eb",style:{color:D.blue,margin:"0 0 3px"}},"Who Nitya is for"),
+        h("p",{className:"sm",style:{margin:0,color:D.t1}},"Students in CS, IT, AI / data science and allied branches working on DSA, competitive programming, software jobs, ML, CS exams like GATE CS / DA, and their CS courses. It is not built for UPSC, NEET, JEE, CA, banking or other non-CS preparation.")),
       [["🧱","A floor","The smallest honest day. On a bad day you do the floor and the day still counts."],
        ["🔁","It re-plans itself","Missed work moves forward, never piled onto tomorrow. The floor resizes itself every week."],
        ["🤝","Your AI as your coach","One tap hands your plan to the AI you already use; its answer comes back as changes you approve."],
@@ -742,7 +923,7 @@ function Onboard(p){
     var tgG=function(id){ var x=gl.slice(), i=x.indexOf(id); if(i>-1) x.splice(i,1); else x.push(id); put(x,mg.length||i>-1?mg:mg.concat([id])); };
     var setRole=function(id,main,e){ e.stopPropagation(); var m=mg.filter(function(k){return k!==id}); if(main) m.push(id); else if(!m.length) return; put(gl,m); };
     var allOn=gl.length===GOALS.length;
-    return frame(1,"What are you aiming at?","Tap to select or deselect, as many as you like. Mark any number as Main (they get double the time); the rest are Also. Change it any time without losing your marks.",
+    return frame(1,"What are you aiming at?","All of these are DSA / CP / CS goals; Nitya doesn't plan non-CS exams. Tap to select or deselect, as many as you like. Mark any number as Main (they get double the time); the rest are Also.",
       h("div",null,
         h("div",{style:{display:"flex",gap:6,marginBottom:6}},
           h("button",{className:"tbtn",style:{fontSize:11},onClick:function(){ put(allOn?[]:GOALS.map(function(g){return g.id}),mg); }},allOn?"Deselect all":"Select all"),
@@ -783,11 +964,7 @@ function Onboard(p){
           h("input",{type:"time",className:"inp",style:{width:120},value:C.from,"aria-label":"Classes start",onChange:function(e){set({classes:Object.assign({},C,{from:e.target.value})})}}),
           h("span",{className:"sm"},"to"),
           h("input",{type:"time",className:"inp",style:{width:120},value:C.to,"aria-label":"Classes end",onChange:function(e){set({classes:Object.assign({},C,{to:e.target.value})})}})),
-        h("p",{className:"eb",style:{color:D.t2}},"College, branch, semester (optional, stays on this device)"),
-        h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}},
-          h("input",{className:"inp",style:{flex:"2 1 160px"},placeholder:"College",value:(A.college||{}).name||"",onChange:function(e){set({college:Object.assign({},A.college,{name:e.target.value.slice(0,80)})})}}),
-          h("input",{className:"inp",style:{flex:"1 1 110px"},placeholder:"Branch",value:(A.college||{}).branch||"",onChange:function(e){set({college:Object.assign({},A.college,{branch:e.target.value.slice(0,60)})})}}),
-          h("input",{className:"inp",type:"number",min:1,max:12,style:{flex:"0 1 90px"},placeholder:"Sem",value:(A.college||{}).semester||"",onChange:function(e){set({college:Object.assign({},A.college,{semester:+e.target.value||null})})}})),
+        h(CollegeBox,{A:A,set:set}),
         h("p",{className:"sm t3",style:{margin:"-8px 0 14px"}},"Have your timetable or syllabus as a PDF? The thorough setup (on the first screen) lets your AI read them and fill in every class and unit."),
         h("p",{className:"eb",style:{color:D.t2}},"Wake and sleep"),
         h("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
@@ -803,25 +980,13 @@ function Onboard(p){
         hs.length>1?h("p",{className:"sm",style:{color:D.t1}},"Class days: "+hs[0]+" h · days without classes: "+hs[hs.length-1]+" h."):null),
       nextBtn(hs.length?"Next →":"Pick at least one",hs.length>0)); }
   if(step===5){
-    return frame(5,"Where do you learn from?","Pick as many sources per track as you use: the plan rotates between them, and every task links straight to its source. Defaults are free and good.",
+    return frame(5,"Where do you learn from?","Each track starts with one free recommendation. Tap a name's tick to keep or drop it; more options are one tap away. Studying from a paid course? Add it, and Nitya plans around it.",
       h("div",null,
         h("div",{className:"card",style:{padding:"12px 14px",marginBottom:10}},h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},"Coding sites you use or want to compete on"),
           h("p",{className:"sm t3",style:{margin:"0 0 6px"}},"Nitya books rated contests on these into your free evenings. Pick any number, or none."),
           h("div",{style:{display:"flex",flexWrap:"wrap"}},Object.keys(PLAT).filter(function(k){return k!=="hr"}).map(function(k){ var pl=A.platforms||[], on=pl.indexOf(k)>-1;
             return h("button",{key:k,className:"chip"+(on?" on":""),"aria-pressed":on,style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var x=pl.slice(), i=x.indexOf(k); if(i>-1) x.splice(i,1); else x.push(k); set({platforms:x}); }},PLAT[k][1]+" "+PLAT[k][0]); }))),
-        mergedGoal(A).tracks.map(function(t){ var cur=(A.trackRes||{})[t.id], cu=(A.customRes||{})[t.id]||{};
-        return h("div",{key:t.id,className:"card",style:{padding:"12px 14px",marginBottom:10}},
-          h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},t.name),
-          h("div",{style:{display:"flex",flexWrap:"wrap"}},t.res.filter(function(k){return RES[k]}).map(function(k){ var arr=[].concat(cur||[]), on=arr.indexOf(k)>-1;
-            return h("button",{key:k,className:"chip"+(on?" on":""),"aria-pressed":on,style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var x=arr.slice(), i=x.indexOf(k); if(i>-1) x.splice(i,1); else x.push(k);
-              var o={}; o[t.id]=x; set({trackRes:Object.assign({},A.trackRes,o)}); }},RES[k].n); })),
-          !(Array.isArray(cur)?cur.length:cur)&&!cu.u?h("p",{className:"sm t3",style:{margin:"4px 0"}},"None picked, so "+(RES[t.res[0]]||{n:"the default"}).n+" is used."):null,
-          h("details",null,h("summary",{className:"sm",style:{cursor:"pointer"}},cu.u?"Your own: "+(cu.n||cu.u):"Use my own link instead"),
-            h("div",{style:{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}},
-              h("input",{className:"inp",style:{flex:"1 1 140px"},placeholder:"Name (e.g. my course)",defaultValue:cu.n||"",id:"rn-"+t.id}),
-              h("input",{className:"inp",style:{flex:"2 1 200px"},placeholder:"https://…",defaultValue:cu.u||"",id:"ru-"+t.id}),
-              h("button",{className:"tbtn",onClick:function(){ var u=(document.getElementById("ru-"+t.id)||{}).value||"", n=(document.getElementById("rn-"+t.id)||{}).value||"";
-                if(u&&!/^https:\/\//.test(u)) return; var cr=Object.assign({},A.customRes); if(u) cr[t.id]={n:n||"My resource",u:u}; else delete cr[t.id]; set({customRes:cr}); }},"Use")))); })),
+        mergedGoal(A).tracks.map(function(t){ return h(ResPicker,{key:t.id,S:A,t:t,set:set}); })),
       nextBtn()); }
 
   if(step===6){ var on=function(id){ return (A.aspects||[]).some(function(x){return x.id===id&&x.on}); };
@@ -909,6 +1074,21 @@ function ShareRow(p){
     AI_SITES.map(function(x){ return h("a",{key:x[0],href:aiLink(x,p.text),target:"_blank",rel:"noopener noreferrer",className:"tbtn",style:{textDecoration:"none"},onClick:function(){ copyText(p.text); }},x[0]+" ↗"); }));
 }
 
+/* College, branch, semester in one box, typed any way; read back so the person can see what Nitya understood, and the starting level it chose. */
+function CollegeBox(p){
+  var D=useContext(TC), A=p.A, c=A.college||{}, raw=c.raw!=null?c.raw:[c.name,c.branch,c.semester?"sem "+c.semester:""].filter(Boolean).join(", ");
+  var rc=readCollege(raw), auto=levelFor(rc,{solved:A.solved,ratings:A.ratings}), lv=A.levelSet?A.level:auto.level;
+  var put=function(v){ var r=readCollege(v), L=levelFor(r,{solved:A.solved,ratings:A.ratings}); p.set({college:{raw:v.slice(0,120),name:"",branch:r.branch,semester:r.semester,tier:r.tier,kind:r.kind},level:A.levelSet?A.level:L.level,levelWhy:L.why}); };
+  return h("div",{style:{marginBottom:14}},
+    h("p",{className:"eb",style:{color:D.t2}},"College, branch, semester (optional, stays on this device)"),
+    h("input",{className:"inp",placeholder:"Type it any way: IIIT Dharwad DSAI sem 1 · NIT Trichy CSE 2nd year · VIT IT",value:raw,onChange:function(e){put(e.target.value)},"aria-label":"College, branch and semester"}),
+    raw.trim()?h("p",{className:"sm",style:{margin:"6px 0 0",color:D.t1}},"Read as: "+[rc.branch||(rc.kind==="cs"?"a CS branch":rc.kind==="allied"?"an allied branch":rc.kind==="other"?"a non-CS branch":"branch not recognised"),rc.semester?"semester "+rc.semester:"semester not given"].join(" · ")+(rc.kind==="other"?". Nitya is built for DSA / CP / CS skills; it will start you from the basics.":"")):null,
+    h("p",{className:"eb",style:{color:D.t2,marginTop:12}},"Starting level"),
+    h("div",{style:{display:"flex",gap:5,flexWrap:"wrap"}},[1,2,3].map(function(k){ var on=lv===k;
+      return h("button",{key:k,className:"chip"+(on?" on":""),"aria-pressed":on,onClick:function(){ p.set(k===auto.level?{level:k,levelSet:false}:{level:k,levelSet:true}); }},LV[k]+(k===auto.level?" (suggested)":"")); })),
+    h("p",{className:"sm t3",style:{margin:"4px 0 0"}},LV_WHAT[lv]+" Suggested because: "+auto.why+" Every Monday your ticks can move it one step either way; you can always change it in Settings."));
+}
+
 /* ── Today ──────────────────────────────────────────────────────────────────────────────── */
 function tickFn(S,save,d){
   return function(id,withHelp,pk){
@@ -977,8 +1157,9 @@ function Today(p){
   return h("div",{className:"col"},
     h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap",marginBottom:2}},
       h("h2",{className:"serif",style:{margin:0,fontSize:21,fontWeight:700}},fmtLong(d)),
-      h("span",{className:"mono",style:{fontSize:10.5,color:D.t3,fontWeight:700}},(left>0?left+" DAYS LEFT":left===0?"DEADLINE TODAY":"PAST THE DATE")+" · "+ph.name.toUpperCase())),
+      h("span",{className:"mono",style:{fontSize:10.5,color:D.t3,fontWeight:700}},(left>0?left+" DAYS LEFT":left===0?"DEADLINE TODAY":"PAST THE DATE"))),
     h("p",{className:"sm",style:{margin:"0 0 12px"}},ph.goal),
+    h(Backfill,{S:S,P:P,d:d,save:p.save}),
     h(Fold,{id:"coach",title:"Your coach",tour:"coach"},h(Coach,{S:S,P:P,d:d,open:p.open,go:p.go})),
     (S.changes||[]).some(function(c){return c.at>=addDays(d,-7)})?h(Fold,{id:"changes",title:"What changed in your plan"},h(Changes,{S:S,d:d,save:p.save})):null,
     !pl.isWork?h("div",{className:"card"},h(Eb,null,"Rest day"),h("p",{style:{margin:"0 0 4px",fontSize:15,fontWeight:700}},"You said you don't work on "+DOW[dow(d)]+"s."),h("p",{className:"sm"},"Nothing is due and nothing piles up. The plan already counted this day out.")):
@@ -1025,6 +1206,27 @@ function Today(p){
       return h("div",{key:x,style:{display:"flex",gap:10,padding:"8px 0",borderTop:"1px solid "+D.b}},
         h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,color:D.t3,width:62,flexShrink:0}},fmtLong(x).toUpperCase()),
         h("span",{className:"sm",style:{flex:1}},c?c+" units (floor "+floorFor(P,S,x)+")":"rest day",a.length?" · "+a.map(function(q){return q.ic}).join(" "):"",ev.length?" · 📅 "+ev.map(function(e){return e.name}).join(", "):"")); }))));
+}
+
+/* Mission Control's lesson: work done but not ticked shouldn't count as a missed day. Fill in the last seven days in one place. */
+function Backfill(p){
+  var D=useContext(TC), S=p.S, P=p.P, d=p.d, _o=useState(false), open=_o[0], setOpen=_o[1];
+  var days=[]; for(var i=1;i<=7;i++){ var x=addDays(d,-i); if(x<S.start||!isWork(S,x)) continue; var f=floorFor(P,S,x), u=unitsOn(S,x); if(u<f) days.push({d:x,miss:f-u}); }
+  var miss=days.reduce(function(a,x){return a+x.miss},0);
+  if(!days.length&&!open) return null;
+  return h(F,null,
+    h("div",{className:"card",style:{background:D.amber+"14",borderColor:D.amber+"66",padding:"12px 16px"}},
+      h("p",{style:{margin:0,fontSize:13,fontWeight:700}},"Did some of it but didn't tick? ",h("button",{onClick:function(){setOpen(true)},style:{background:"none",border:0,padding:0,color:D.amber,fontWeight:700,fontSize:13,cursor:"pointer"}},"Fill in the last 7 days"),h("span",{style:{color:D.t3}}," · "+miss+" floor unit"+(miss===1?"":"s")+" unticked"))),
+    open?h("div",{className:"ov",onClick:function(e){ if(e.target===e.currentTarget) setOpen(false); }},h("div",{className:"sheet",role:"dialog","aria-label":"Fill in the last 7 days"},h("div",{style:{padding:"16px 18px"}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:6}},h("h3",{className:"serif",style:{margin:0,fontSize:18}},"The last 7 days"),h("button",{className:"tbtn",onClick:function(){setOpen(false)}},"Done")),
+      h("p",{className:"sm",style:{margin:"0 0 8px"}},"Tick only what you really did on that day. It counts for that day, so your floor and streak stay honest."),
+      (function(){ var all=[]; for(var i=1;i<=7;i++){ var x=addDays(d,-i); if(x>=S.start&&isWork(S,x)) all.push(x); }
+        if(!all.length) return h("p",{className:"sm t3"},"No working days to fill in yet.");
+        return all.map(function(x){ var pl=dayPlan(P,S,x), dn=(S.done||{})[x]||[], tk=tickFn(S,p.save,x), f=floorFor(P,S,x), u=unitsOn(S,x);
+          var items=pl.floor.concat(pl.rest).concat(pl.aspects), shown=items.filter(function(it){return dn.indexOf(it.id)>-1}).concat(items.filter(function(it){return dn.indexOf(it.id)<0}).slice(0,4));
+          return h("div",{key:x,style:{borderTop:"1px solid "+D.b,padding:"8px 0"}},
+            h("p",{className:"mono",style:{margin:"0 0 4px",fontSize:11,fontWeight:700,color:u>=f?D.green:D.t3}},fmtLong(x).toUpperCase()+" · FLOOR "+Math.min(u,f)+"/"+f),
+            shown.map(function(it){ return h(Item,{key:it.id,it:it,done:dn.indexOf(it.id)>-1,help:!!(S.help||{})[it.id],onTick:tk}); })); }); })()))):null);
 }
 
 /* ── Practice: the A2Z ladder in its own order, what each platform is for, and your ratings. ── */
@@ -1351,14 +1553,14 @@ function Settings(p){
       h("div",{style:{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",marginTop:8}},
         h("span",{className:"sm"},"Wake"),h("input",{type:"time",className:"inp",style:{width:115},value:S.wake||"06:30",onChange:function(e){upd({wake:e.target.value})}}),
         h("span",{className:"sm"},"Sleep"),h("input",{type:"time",className:"inp",style:{width:115},value:S.sleep||"23:00",onChange:function(e){upd({sleep:e.target.value})}})))),
+    h(Fold,{id:"set-level",title:"College, branch and level"},h("div",{className:"card"},
+      h(CollegeBox,{A:S,set:upd}),
+      (S.levelLog||[]).length?h("div",{style:{marginTop:10}},h("p",{className:"eb",style:{color:D.t2}},"How your level has moved"),
+        (S.levelLog||[]).slice(-5).reverse().map(function(x,i){ return h("p",{key:i,className:"sm",style:{margin:"2px 0"}},fmt(x.at)+" · "+x.why); })):null)),
     h(Fold,{id:"set-floor",title:"The floor"},h("div",{className:"card"},
       h("p",{className:"sm",style:{marginBottom:10}},"Base floor: "+P.floorN+" unit(s), against "+P.perDay+" on a normal day. Every Monday it adjusts itself for the week (light / normal / stretch) from your last two weeks; you can undo that on Today."),
       h("div",{style:{display:"flex",gap:8}},h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.max(1,P.floorN-1)})}},"Lower the base"),h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.min(P.perDay,P.floorN+1)})}},"Raise the base")))),
-    h(Fold,{id:"set-res",title:"Your resources"},h("div",{className:"card"},P.tracks.map(function(t){ var cu=(S.customRes||{})[t.id];
-      return h("div",{key:t.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},h("p",{style:{margin:"0 0 5px",fontSize:12.5,fontWeight:700}},t.name),
-        h("div",{style:{display:"flex",flexWrap:"wrap"}},((mergedGoal(S).tracks.filter(function(x){return x.id===t.id})[0]||{}).res||[]).filter(function(k){return RES[k]}).map(function(k){ var on=[].concat((S.trackRes||{})[t.id]||[]).indexOf(k)>-1;
-          return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11,padding:"5px 9px"},onClick:function(){ var cur=[].concat((S.trackRes||{})[t.id]||[]), i=cur.indexOf(k); if(i>-1){ if(cur.length>1) cur.splice(i,1); } else cur.push(k); var tr=Object.assign({},S.trackRes); tr[t.id]=cur; upd({trackRes:tr}); }},RES[k].n); }),
-          cu?h("span",{className:"chip on",style:{fontSize:11,padding:"5px 9px"}},"Yours: "+cu.n):null)); }))),
+    h(Fold,{id:"set-res",title:"Your resources"},h("div",null,mergedGoal(S).tracks.map(function(t){ return h(ResPicker,{key:t.id,S:S,t:t,set:upd}); }))),
     h(Fold,{id:"set-asp",title:"Aspects you keep alive"},h("div",{className:"card"},ASPECTS.map(function(x){ var a=aspOn(x.id), days=a&&a.days||x.days, min=a&&a.min||x.min;
       return h("div",{key:x.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},
         h("div",{className:"row",style:{alignItems:"center"}},h("button",{className:"ck","aria-pressed":!!a,"aria-label":x.name,style:{border:"2px solid "+(a?D.green:D.b),background:a?D.green:"none",color:"#fff"},onClick:function(){ setAsp(x.id,a?null:{on:true}); }},a?"✓":""),
@@ -1461,6 +1663,10 @@ function App(){
   // weekly jobs that run when the app opens: the floor's Monday check, the anonymous weekly row (with consent), the outbox
   useEffect(function(){ if(!S||!P) return; var mon=monOf(d), n=S, ch=false;
     if(!(S.flCal||{})[mon]){ var c=calibrate(P,S,d); var fc=Object.assign({},S.flCal); fc[mon]=c; n=Object.assign({},n,{flCal:fc}); ch=true; }
+    if(n.lvAt!==mon){ var st=levelStep(n,mon); n=Object.assign({},n,{lvAt:mon}); ch=true;
+      if(st){ var snap=Object.assign({},n); delete snap.changes; var bt="lv-"+mon;
+        n=Object.assign({},n,{level:st.to,levelLog:(n.levelLog||[]).concat([{at:d,from:n.level||2,to:st.to,why:st.why}]).slice(-12),
+          changes:(n.changes||[]).concat([{batch:bt,at:d,source:"weekly check",note:st.why,items:[{id:bt,what:"Level: "+LV[n.level||2]+" → "+LV[st.to]+". "+LV_WHAT[st.to]}],undo:JSON.stringify(snap)}]).slice(-30)}); } }
     if(S.consent&&S.consent.usage&&S.autoSent!==mon&&gap(S.start,d)>=3){ sendRow(reportRow("auto",P,n)); n=Object.assign({},n,{autoSent:mon}); ch=true; }
     if(ch) save(n); flush(); },[S&&S.start,d,P&&P.total]);
   useEffect(function(){ var f=function(){ flush(); }; window.addEventListener("online",f); return function(){ window.removeEventListener("online",f); }; },[]);
@@ -1487,6 +1693,8 @@ function App(){
   var view=tab==="prac"?h(Practice,{S:S,save:save}):tab==="road"?h(Roadmap,{S:S,P:P,d:d,sec:sec,save:save}):tab==="desk"?h(Desk,{S:S,P:P,open:setModal,save:save}):
     tab==="rep"?h(Report,{S:S,P:P,d:d,save:save}):tab==="set"?h(Settings,{S:S,P:P,save:save,go:go,tour:function(){setTour(0)}}):tab==="guide"?h(Guide,{tour:function(){setTour(0)}}):tab==="import"?h(AIInterview,{base:S,onBack:function(){go("set")},onDone:function(x){ save(Object.assign({},S,x)); go("today"); }}):
     h(Today,{S:S,P:P,d:d,save:save,open:setModal,go:go});
+  var obN=outbox().length, syncOk=saved==="saved"&&!obN, syncTitle=saved!=="saved"?"Not saving: storage blocked":obN?"Saved here · "+obN+" anonymous report waiting to send":"Saved on this device";
+  var phNow=P.phases.filter(function(x){ return d>=x.from&&d<=x.to; })[0]||P.phases[P.phases.length-1];
   var crumb=(NAVS.filter(function(n){return n[0]===tab})[0]||NAVS[0])[2]+(tab==="road"&&sec!=="main"?" › "+((P.aspects.filter(function(a){return a.id===sec})[0]||{}).name||""):"");
   return root(h(F,null,
     h("div",{className:"wrap"+(docked?" docked":"")},
@@ -1494,17 +1702,25 @@ function App(){
       h("div",{className:"main"},
         h("header",{className:"hdr"},h("div",{className:"hin"},
           h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,paddingBottom:8}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:9,minWidth:0}},
+              h(Logo,{amber:D.amber,mute:D.t3}),
+              h("div",{style:{minWidth:0}},h("h1",{className:"serif",style:{margin:0,fontSize:20,fontWeight:700,lineHeight:1.15,color:D.t1}},"Nitya"),
+                h("p",{className:"sm t3",style:{margin:0,fontSize:11.5,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},P.g.label+" · "+Math.max(0,gap(d,S.deadline))+" days to "+fmt(S.deadline)))),
+            h("div",{style:{display:"flex",gap:6,alignItems:"center",flexShrink:0}},
+              h("button",{className:"ibtn","aria-label":"Switch light or dark",title:"Light / dark",onClick:flipTheme},theme==="dark"?"☀️":"🌙"),
+              h("button",{className:"ibtn","aria-label":syncTitle,title:syncTitle,onClick:function(){go("set")},style:{color:syncOk?D.green:D.amber}},syncOk?"✓":"⚠"),
+              h("button",{className:"ibtn","aria-label":"Settings",title:"Settings",onClick:function(){go("set")}},"⚙"))),
+          h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:8,borderTop:"1px solid "+D.b,padding:"6px 0"}},
             h("div",{style:{display:"flex",alignItems:"center",gap:8,minWidth:0}},
               !docked?h("button",{className:"ibtn s","aria-label":"Open navigation",onClick:function(){ side?setDrawer(true):goSide(true); }},"☰"):null,
-              !docked?h("span",{style:{display:"inline-flex",alignItems:"center",gap:7,color:D.t1}},h(Logo,{amber:D.amber,mute:D.t3}),h("span",{className:"serif",style:{fontSize:16,fontWeight:700}},"Nitya")):null,
-              h("span",{className:"mono",style:{fontSize:11,fontWeight:700,color:D.t2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},(docked?"":"· ")+crumb)),
-            h("div",{style:{display:"flex",gap:6,alignItems:"center"}},
-              h("span",{className:"mono",title:saved==="saved"?"Saved on this device":"Couldn't save: this browser is blocking storage",style:{fontSize:10,fontWeight:700,color:saved==="saved"?D.green:D.red}},saved==="saved"?"● SAVED":"● NOT SAVED"),
-              h("button",{className:"ibtn s","aria-label":"Switch light or dark",onClick:flipTheme},theme==="dark"?"☀":"☾"))),
-          nm?h("div",{className:"scroll",style:{paddingBottom:8}},h("button",{onClick:function(){go("road")},style:{flexShrink:0,background:D.s2,border:"1px solid "+D.green+"66",borderRadius:9,padding:"4px 10px",display:"flex",alignItems:"center",gap:6}},
-            h("span",{className:"mono",style:{fontSize:12.5,fontWeight:700,color:D.green}},"T–"+gap(d,nm.at)),
-            h("span",{style:{fontSize:10,color:D.t3,fontWeight:700}},"next milestone · "+nm.have[0].n+"/"+nm.have[0].need+" "+nm.have[0].unit+(nm.have.length>1?" +"+(nm.have.length-1)+" more":"")))):null)),
-        h("main",{className:"body"},saved!=="saved"?h("div",{className:"card",style:{borderColor:D.red}},h("p",{className:"sm",style:{color:D.red}},"This browser isn't letting Nitya save (private window, or storage blocked). Your ticks will be lost when you close it. Open Nitya in a normal window, and make a backup code in Settings.")):null,
+              h("span",{className:"mono",style:{fontSize:11,fontWeight:700,color:D.t2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},crumb)),
+            h("button",{className:"ibtn s","aria-label":"Full screen",title:"Full screen",onClick:full},"⤢")))),
+        h("main",{className:"body"},
+          h("div",{className:"col6",style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:10,flexWrap:"wrap",marginBottom:12}},
+            h("button",{onClick:function(){go("road")},className:"mono",style:{background:"none",border:0,padding:0,fontSize:12,fontWeight:700,color:D.t3,letterSpacing:".04em",textAlign:"left"}},
+              [phNow?phNow.name.toUpperCase():"", LV[S.level||2].toUpperCase()+" LEVEL", nm?"T–"+gap(d,nm.at)+" · "+nm.have[0].n+"/"+nm.have[0].need+" "+nm.have[0].unit.toUpperCase():""].filter(Boolean).join(" · ")),
+            h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,color:syncOk?D.green:D.amber}},syncTitle)),
+          saved!=="saved"?h("div",{className:"card",style:{borderColor:D.red}},h("p",{className:"sm",style:{color:D.red}},"This browser isn't letting Nitya save (private window, or storage blocked). Your ticks will be lost when you close it. Open Nitya in a normal window, and make a backup code in Settings.")):null,
           h(Safe,{name:"This page"},view)))),
     side&&drawer&&!docked?h("div",{className:"sidedr"},h(SideNav,navProps),h("button",{className:"scrim","aria-label":"Close navigation",onClick:function(){setDrawer(false)}})):null,
     modal?h(Handoff,{S:S,P:P,kind:modal,save:save,onClose:function(){setModal(null)}}):null,
