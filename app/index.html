@@ -116,6 +116,7 @@ var ErrBound=(function(){
   function E(props){ React.Component.call(this,props); this.state={e:null}; }
   E.prototype=Object.create(React.Component.prototype); E.prototype.constructor=E;
   E.getDerivedStateFromError=function(e){ return {e:e}; };
+  E.prototype.componentDidCatch=function(e,info){ try{ console.error("[nitya] "+(this.props.name||"part")+": "+(e&&e.stack||e)); }catch(x){} };
   E.prototype.render=function(){ return this.state.e
     ? h("div",{className:"card"},h("p",{className:"sm"},(this.props.name||"This part")+" could not be drawn. Everything else still works. ("+String(this.state.e&&this.state.e.message||this.state.e).slice(0,120)+")"))
     : this.props.children; };
@@ -276,7 +277,7 @@ var PLATFORM_ROLES = [
   ["⭐","CodeChef Starters","Optional","Wednesdays 8:00–10:00 pm IST, only if the week allows."],
   ["💡","Informatics Observatory","Tool · hints","Three hints in order for CSES problems, then a blank-file re-solve. Optional, student-made."]
 ];
-var RATING_FACTS = "What recruiters actually read (2025–26 evidence): on-campus shortlists run on CGPA cutoffs and the company's own online test; ratings are a preparation target, not a filter. Treat a rating as a thermometer, not the goal.";
+var RATING_FACTS = "What recruiters read is not settled. Accounts from 2025–26 suggest many on-campus shortlists lean on CGPA cutoffs and the company's own test, but it varies by college and year, campus drives may bring few companies, and many offers come off-campus (applications, referrals, contest results). Don't bet on one route; treat a rating as a thermometer for your preparation, not the goal.";
 var DOW_SHORT = ["S","M","T","W","T","F","S"];
 
 var COMP_DATA = [{"id": "icpc-india-2026-regionals", "name": "ICPC Asia West India regionals 2026-27 (Chennai, Kanpur, Mathura, Amritapuri onsite)", "kind": "contest", "track": "cp", "open": null, "deadline": "2026-11-18", "event": "2026-12-10", "date_status": "confirmed", "eligibility": "3-member same-institute teams that qualified through the 3 Oct 2026 India online prelim; faculty coach registers", "why": "The current ICPC India regionals. Even if you're not there, their problem sets are the exact level of a first serious attempt.", "source": "https://www.indiaicpc.in/"}, {"id": "icpc-india-2027-registration-prelim", "name": "ICPC India 2027-28 cycle: team registration and online preliminary", "kind": "contest", "track": "cp", "open": "2027-06-15", "deadline": "2027-09-25", "event": "2027-10-02", "date_status": "estimated", "eligibility": "3 students from the same institute plus a faculty coach; each contestant creates an icpc.global account; a team may register for at most 2 Indian regionals", "why": "The team contest that opens doors: one common online prelim decides regional seats institute by institute.", "source": "https://aryanc403.com/blog/india-icpc-2026/"}, {"id": "icpc-india-2027-regionals", "name": "ICPC India regionals 2027-28 (onsite)", "kind": "contest", "track": "cp", "open": null, "deadline": null, "event": "2027-12-10", "date_status": "estimated", "eligibility": "Teams selected from the India prelim (top-N overall, then institute-wise slots)", "why": "Onsite regionals for teams that clear the prelim; a regional rank is a strong résumé line.", "source": "https://www.indiaicpc.in/"}, {"id": "gsoc-2027", "name": "Google Summer of Code 2027", "kind": "open-source", "track": "opensource", "open": "2027-03-15", "deadline": "2027-03-30", "event": "2027-05-24", "date_status": "estimated", "eligibility": "18+, open-source beginners or students, India allowed; online and remote", "why": "Paid open-source work over the summer with a mentor. Pick an org early and land a few PRs before applying.", "source": "https://developers.google.com/open-source/gsoc/timeline"}, {"id": "amazon-ml-summer-school-2028", "name": "Amazon ML Summer School (2028)", "kind": "program", "track": "ml", "open": "2028-06-01", "deadline": "2028-06-14", "event": "2028-06-28", "date_status": "estimated", "eligibility": "B.Tech/M.Tech/PhD students at Indian institutes in specific graduation years (2026 edition: 2027 and 2028 graduates only); no ML background required", "why": "Free ML lectures from Amazon scientists for eligible pre-final-year students; check the batch eligibility each year.", "source": "https://www.lets-code.co.in/blogs/amazon-ml-summer-school-2026/"}, {"id": "google-step-india-2028", "name": "Google STEP Intern India (summer 2028)", "kind": "internship", "track": "dsa", "open": "2027-08-15", "deadline": "2027-11-30", "event": "2028-05-15", "date_status": "estimated", "eligibility": "Bachelor's students in CS or related fields who are in their second year by that summer (the 2025 India listing was not gender-restricted); 10-12 weeks between May and August", "why": "Google's internship for first- and second-year students in India (when it runs). Apply early in the season.", "source": "https://themuse.com/jobs/google/software-student-training-in-engineering-program-step-intern-2025-english"}, {"id": "sih-2027", "name": "Smart India Hackathon 2027 (software edition)", "kind": "hackathon", "track": "general", "open": "2027-08-01", "deadline": "2027-09-30", "event": "2027-12-08", "date_status": "estimated", "eligibility": "Teams of exactly 6 from the same institute, with at least 1 female member; nominated through the college's internal hackathon", "why": "The government's national hackathon; worth it with a team that builds the real thing.", "source": "https://blogs.reskilll.com/smart-india-hackathon-2026-launched-timeline-registration-how-to-participate/"}, {"id": "lfx-mentorship-spring-2027", "name": "LFX Mentorship Spring 2027 (Term 1, e.g. CNCF projects)", "kind": "open-source", "track": "opensource", "open": "2027-01-25", "deadline": "2027-02-09", "event": "2027-03-01", "date_status": "estimated", "eligibility": "Anyone 18+ who is not an existing maintainer; remote; paid stipend", "why": "Paid, mentored open-source work in Linux Foundation projects; a strong alternative to GSoC.", "source": "https://contribute.cncf.io/blog/2026/01/07/cncf-lfx-2026-term-1-announcement"}, {"id": "lfx-mentorship-summer-2027", "name": "LFX Mentorship Summer 2027 (Term 2)", "kind": "open-source", "track": "opensource", "open": "2027-04-15", "deadline": "2027-05-15", "event": "2027-06-01", "date_status": "estimated", "eligibility": "Anyone 18+, remote, stipend", "why": "Paid summer open-source mentorship; a good fallback if GSoC doesn't work out.", "source": "https://docs.linuxfoundation.org/lfx/mentorship/mentorship-program-timelines"}, {"id": "meta-hacker-cup-2027", "name": "Meta Hacker Cup 2027", "kind": "contest", "track": "cp", "open": "2027-09-25", "deadline": null, "event": "2027-10-08", "date_status": "estimated", "eligibility": "Open worldwide, individual, 18+", "why": "An online individual contest with strong problems; good practice even without advancing.", "source": "https://mirror.codeforces.com/blog/entry/146883"}, {"id": "hacktoberfest-2027", "name": "Hacktoberfest 2027", "kind": "open-source", "track": "opensource", "open": "2027-09-25", "deadline": null, "event": "2027-10-01", "date_status": "estimated", "eligibility": "Anyone 13+, free MyMLH account", "why": "A gentle first month of open-source contributions every October.", "source": "https://dev.to/0shuvo0/hacktoberfest-2026-what-changed-1g3g"}, {"id": "worldquant-iqc-2027", "name": "WorldQuant BRAIN International Quant Championship (IQC) 2027", "kind": "contest", "track": "general", "open": "2027-03-16", "deadline": null, "event": "2027-03-16", "date_status": "estimated", "eligibility": "18+, teams of 1-4 from the same university; free BRAIN account", "why": "A quant research competition with an India stage; builds a visible quant result.", "source": "https://www.worldquant.com/iqc/"}, {"id": "jpmc-code-for-good-india-2028", "name": "JPMorganChase Code for Good, India edition", "kind": "hackathon", "track": "general", "open": null, "deadline": null, "event": null, "date_status": "estimated", "eligibility": "Students graduating roughly 1-2 years after the event (pre-final year); India has its own listing and criteria; rounds are a HackerRank test, a HireVue video interview, then a 24-hour hackathon", "why": "A team hackathon for non-profits run by JPMorganChase; can lead to internship interviews.", "source": "https://thita.ai/blog/interview/jp-morgan-code-for-good-hackathon-preparation-guide"}, {"id": "iicpc-codefest-2027", "name": "IICPC CodeFest 2027 (individual offline CP contest)", "kind": "contest", "track": "cp", "open": "2026-12-01", "deadline": "2027-01-15", "event": "2027-01-30", "date_status": "estimated", "eligibility": "UG/PG students in India (and school students); individual; offline, screen-proctored prelim at host centres", "why": "An individual offline CP contest in India sponsored by quant and tech firms.", "source": "https://mirror.codeforces.com/blog/entry/149511"}, {"id": "iicpc-quantfest-2027", "name": "IICPC Global QuantFest 2027", "kind": "contest", "track": "cp", "open": "2027-07-01", "deadline": "2027-08-10", "event": "2027-08-22", "date_status": "estimated", "eligibility": "Students in recognised Indian UG/PG programmes; individual; the form asks for CGPA, resume and CF/CodeChef IDs", "why": "A quant-and-CP contest in India; top performers get fast-track interviews with trading firms.", "source": "https://internshala.com/competitions/about-iicpc-global-quantfest-2026/"}, {"id": "imc-prosperity-2027", "name": "IMC Prosperity 5 (2027) algorithmic trading challenge", "kind": "contest", "track": "general", "open": "2027-03-15", "deadline": null, "event": "2027-04-13", "date_status": "estimated", "eligibility": "University students 18+; prize eligibility depends on region", "why": "IMC's algorithmic-trading challenge; fun and educational, online.", "source": "https://quantvault.org/quant-trading-competitions-2026.html"}, {"id": "codeforces-rounds", "name": "Codeforces rated rounds (Div. 4 / Div. 3 / Div. 2 / Educational)", "kind": "contest", "track": "cp", "open": null, "deadline": null, "event": "2026-11-15", "date_status": "estimated", "eligibility": "Anyone with a Codeforces account", "why": "Several rated rounds a week, usually 8:05 pm IST. Your CP rating only moves here.", "source": "https://codeforces.com/contests"}, {"id": "leetcode-weekly", "name": "LeetCode Weekly Contest", "kind": "contest", "track": "dsa", "open": null, "deadline": null, "event": "2026-11-15", "date_status": "estimated", "eligibility": "Anyone with a LeetCode account", "why": "Every Sunday 8:00–9:30 am IST. Your LeetCode rating only moves in contests.", "source": "https://leetcode.com/contest/"}, {"id": "leetcode-biweekly", "name": "LeetCode Biweekly Contest", "kind": "contest", "track": "dsa", "open": null, "deadline": null, "event": null, "date_status": "estimated", "eligibility": "Anyone with a LeetCode account", "why": "Alternate Saturdays 8:00–9:30 pm IST; optional extra rating practice.", "source": "https://leetcode.com/contest/"}, {"id": "codechef-starters", "name": "CodeChef Starters (weekly rated)", "kind": "contest", "track": "cp", "open": null, "deadline": null, "event": "2026-11-18", "date_status": "estimated", "eligibility": "Anyone with a CodeChef account", "why": "Wednesdays 8:00–10:00 pm IST; optional if the week allows.", "source": "https://www.codechef.com/contests"}, {"id": "kaggle-playground", "name": "Kaggle Playground Series (monthly tabular competitions)", "kind": "contest", "track": "ml", "open": null, "deadline": null, "event": "2026-12-01", "date_status": "estimated", "eligibility": "Anyone with a Kaggle account", "why": "A beginner-friendly ML competition about every month; fast feedback and public notebooks.", "source": "https://www.kaggle.com/competitions?listOption=active"}, {"id": "imagine-cup-2027", "name": "Microsoft Imagine Cup 2027 (student startup category)", "kind": "hackathon", "track": "startup", "open": null, "deadline": "2027-02-28", "event": "2027-03-16", "date_status": "confirmed", "eligibility": "18+, student founders or early-stage startups at the Idea or Product stage; the solution must use Azure", "why": "Microsoft's student startup competition; worth it once your project has real users.", "source": "https://imaginecup.microsoft.com/"}, {"id": "flipkart-grid-9", "name": "Flipkart GRiD 9.0 (2027): Software Development, AI Engineering and Data Science tracks", "kind": "hackathon", "track": "dsa", "open": "2027-06-19", "deadline": "2027-07-07", "event": "2027-07-20", "date_status": "estimated", "eligibility": "UG/PG engineering students in India; GRiD 8.0 (2026) allowed graduation years 2027-2030, so a 2030 graduate was already eligible in Year 1; individual registration", "why": "Flipkart's national student challenge (software, AI tracks); can lead to interviews.", "source": "https://www.alvaar.in/2026/07/flipkart-grid-8.0.html"}, {"id": "flipkart-grid-10", "name": "Flipkart GRiD 10.0 (2028)", "kind": "hackathon", "track": "dsa", "open": "2028-06-19", "deadline": "2028-07-07", "event": null, "date_status": "estimated", "eligibility": "As in GRiD 9.0; likely graduation years 2028-2031", "why": "Flipkart's national student challenge, next edition.", "source": "https://www.alvaar.in/2026/07/flipkart-grid-8.0.html"}, {"id": "ias-srfp-2028", "name": "Science Academies (IAS-INSA-NASI) Summer Research Fellowship 2028", "kind": "fellowship", "track": "research", "open": "2027-09-15", "deadline": "2027-11-30", "event": "2028-05-15", "date_status": "estimated", "eligibility": "B.E./B.Tech students in Year II or III only; at least 65% average in core subjects from Class X onward; needs a recommendation from a current teacher", "why": "A summer research fellowship with Indian scientists; needs a faculty recommender.", "source": "https://www.biotecnika.org/2026/09/summer-research-fellowship-2027/"}, {"id": "amazon-ml-challenge-2028", "name": "Amazon ML Challenge (2028)", "kind": "hackathon", "track": "ml", "open": "2028-09-07", "deadline": "2028-09-22", "event": "2028-09-25", "date_status": "estimated", "eligibility": "Full-time engineering students in India in the final two graduation years (2026 edition: 2027/2028 graduates); teams of 2-4, cross-college allowed", "why": "Amazon's ML competition for eligible students; top teams get interviews.", "source": "https://unstop.com/hackathons/crp-amazon-ml-challenge-2026-amazon-1743604/amp"}, {"id": "hackon-amazon-2028", "name": "HackOn with Amazon (2028)", "kind": "hackathon", "track": "dsa", "open": "2028-05-01", "deadline": "2028-05-28", "event": "2028-05-30", "date_status": "estimated", "eligibility": "Engineering students in India in the final two graduation years (HackOn 6.0 in 2026: mostly 2027/2028 graduates); no gender restriction", "why": "Amazon's hackathon for eligible students; check the batch rules each year.", "source": "https://veedaily19.substack.com/p/hackon-with-amazon-60-complete-guide"}, {"id": "google-solution-challenge-2027", "name": "Google Solution Challenge 2027 (GDG on Campus, Build with AI)", "kind": "hackathon", "track": "ml", "open": "2027-03-06", "deadline": "2027-04-24", "event": "2027-06-25", "date_status": "estimated", "eligibility": "University students who are GDG on Campus members (joining a chapter on gdg.community.dev is free and is separate from core-team recruitment); teams of 1-4", "why": "Build a solution to a real problem with Google tech through your campus developer group.", "source": "https://internshala.com/competitions/solution-challenge-2026/"}, {"id": "eureka-iitb-2027", "name": "Eureka! 2027 (E-Cell IIT Bombay startup competition)", "kind": "program", "track": "startup", "open": "2027-06-01", "deadline": "2027-08-23", "event": null, "date_status": "estimated", "eligibility": "Early-stage founders at the idea or MVP stage; no student-only rule stated", "why": "India's largest student startup competition (IIT Bombay); for projects with traction.", "source": "https://www.indianstartuptimes.com/news/iit-bombays-eureka-2026-the-biggest-opportunity-for-all-startup-founders/"}, {"id": "yc-startup-school", "name": "YC Startup School (free founder curriculum and co-founder matching)", "kind": "program", "track": "startup", "open": null, "deadline": null, "event": null, "date_status": "estimated", "eligibility": "Anyone; free sign-up", "why": "Free founder course from Y Combinator; useful whenever you're building something.", "source": "https://www.startupschool.org/about"}, {"id": "gsoc-2028", "name": "Google Summer of Code 2028", "kind": "open-source", "track": "opensource", "open": "2028-03-15", "deadline": "2028-03-31", "event": "2028-05-24", "date_status": "estimated", "eligibility": "18+, open-source beginners or students; remote", "why": "Paid open-source work over the summer. A second attempt is common and often stronger.", "source": "https://developers.google.com/open-source/gsoc/timeline"}, {"id": "mlh-global-hack-week", "name": "MLH Global Hack Week (online, recurring) / MLH Fellowship eligibility", "kind": "hackathon", "track": "general", "open": null, "deadline": null, "event": "2027-01-08", "date_status": "estimated", "eligibility": "Global Hack Week: anyone with a free MyMLH account. MLH Fellowship: currently only citizens or permanent residents of the US, Canada or Mexico, so Indian students cannot apply", "why": "Short online MLH hackathon weeks; beginner-friendly.", "source": "https://fellowship.mlh.com/programs/production-engineering-sre"}];
@@ -286,8 +287,23 @@ var PX = {"a2zSteps":[[1,"Beginner Problems"],[2,"Sorting"],[3,"Arrays"],[4,"Has
 /* ── The plan, derived from the answers. Pure: same answers + same date → same plan. ───────── */
 var ITEM_MIN = 40;
 var goalOf = function(id){ return GOALS.filter(function(g){return g.id===id})[0]||GOALS[0]; };
+/* Several goals at once: the first is primary (its phases and milestones); tracks merge, shared ones once, weights
+   averaged and renormalised. Courses from an imported syllabus become their own track with each unit named. */
+function mergedGoal(S){
+  var ids=(S.goals&&S.goals.length?S.goals:[S.goal]).filter(function(x,i,a){return goalOf(x).id===x&&a.indexOf(x)===i}), gs=ids.map(goalOf), g0=gs[0]||GOALS[0];
+  if(gs.length<2&&!(S.courses&&S.courses.length)) return g0;
+  var tr={}, sh={}, order=[];
+  gs.forEach(function(g){ g.tracks.forEach(function(t){ if(!tr[t.id]){ tr[t.id]=Object.assign({},t,{res:t.res.slice()}); order.push(t.id); sh[t.id]=0; }
+    else t.res.forEach(function(r){ if(tr[t.id].res.indexOf(r)<0) tr[t.id].res.push(r); }); sh[t.id]+=(g.share[t.id]||0)/gs.length; }); });
+  if(S.courses&&S.courses.length){ var nu=S.courses.reduce(function(a,c){return a+(c.units||[]).length},0);
+    if(nu){ tr.crs={id:"crs",name:"Course units closed",unit:"units",item:"One course unit: notes redone, its problems by hand",why:"Your own syllabus, unit by unit, so exams never arrive on unopened chapters.",res:["notes","nptel"],units:true};
+      ["syll","same"].forEach(function(k){ if(tr[k]){ delete tr[k]; delete sh[k]; order.splice(order.indexOf(k),1); } }); // named units replace the generic course tracks
+      order.unshift("crs"); var w=Math.min(.35,.12+.01*nu); Object.keys(sh).forEach(function(k){ sh[k]*=(1-w); }); sh.crs=w; } }
+  var tot=Object.keys(sh).reduce(function(a,k){return a+sh[k]},0)||1; Object.keys(sh).forEach(function(k){ sh[k]/=tot; });
+  return Object.assign({},g0,{label:gs.map(function(g){return g.label}).join(" + "),tracks:order.map(function(k){return tr[k]}),share:sh,practice:gs.some(function(g){return g.practice})});
+}
 function derive(S){
-  var g=goalOf(S.goal), start=S.start, end=S.deadline;
+  var g=mergedGoal(S), start=S.start, end=S.deadline;
   var days=Math.max(7,gap(start,end)+1), weeks=Math.max(1,Math.round(days/7)), wd=S.days||[1,2,3,4,5];
   var workDays=0; for(var i=0;i<days;i++){ if(wd.indexOf(dow(addDays(start,i)))>-1) workDays++; } workDays=Math.max(1,workDays);
   var perDay=Math.max(1,Math.floor((S.hours||2)*60/ITEM_MIN));
@@ -297,7 +313,7 @@ function derive(S){
     var rk=(S.trackRes||{})[t.id]||t.res[0], cu=(S.customRes||{})[t.id];
     var r=cu&&cu.u?{n:cu.n||"My resource",u:cu.u}:RES[rk]||null;
     return {id:t.id,name:t.name,unit:t.unit,why:t.why,item:t.item,ladder:t.ladder&&(rk==="a2z"||!rk),res:r,resKey:rk,
-            target:Math.max(3,Math.round(total*(g.share[t.id]||0)))};
+            target:t.id==="crs"?Math.max(3,(S.courses||[]).reduce(function(a,c){return a+(c.units||[]).length},0)*2):Math.max(3,Math.round(total*(g.share[t.id]||0)))};
   });
   var phases=g.phases.map(function(ph,i){
     return {n:i,name:ph[0],goal:ph[1],from:addDays(start,Math.round(days*i/g.phases.length)),to:addDays(start,Math.round(days*(i+1)/g.phases.length)-1)};
@@ -329,8 +345,10 @@ function ladder(){
 function allDone(S){ var hit={}; Object.keys(S.done||{}).forEach(function(d){ (S.done[d]||[]).forEach(function(x){ hit[x]=d; }); }); return hit; }
 function queue(P,S){
   var out=[];
-  P.tracks.forEach(function(t){ for(var k=1;k<=t.target;k++) out.push({id:t.id+":"+k,tr:t.id,name:t.item,track:t.name,unit:t.unit,k:k,of:t.target,res:t.res}); });
-  out.sort(function(a,b){ return (a.k/a.of)-(b.k/b.of)||a.tr.localeCompare(b.tr); });
+  var units=[]; (S.courses||[]).forEach(function(c){ (c.units||[]).forEach(function(u,i){ units.push((c.code||c.name)+" · "+u); }); });
+  P.tracks.forEach(function(t){ for(var k=1;k<=t.target;k++) out.push({id:t.id+":"+k,tr:t.id,name:t.id==="crs"&&units.length?"Close "+units[(k-1)%units.length]+(k>units.length?" (second pass: problems only)":""):t.item,track:t.name,unit:t.unit,k:k,of:t.target,res:t.res}); });
+  var pace=function(x){ return x.tr==="crs"?((x.k-1)/x.of)*.35:(x.k/x.of); }; // your own syllabus units come early: exams don't wait
+  out.sort(function(a,b){ return pace(a)-pace(b)||a.tr.localeCompare(b.tr); });
   var hit=allDone(S);
   return {all:out,open:out.filter(function(x){return !hit[x.id]}),hit:hit};
 }
@@ -351,8 +369,9 @@ function lvlOf(S,d){ var c=(S.flCal||{})[monOf(d)]; return c?c.lvl||0:0; }
 function isWork(S,d){ return d>=S.start&&(S.days||[]).indexOf(dow(d))>-1; }
 function floorFor(P,S,d){ if(!isWork(S,d)) return 0; return clamp(P.floorN+lvlOf(S,d),1,Math.max(1,capFor(P,S,d))); }
 function capFor(P,S,d){ return isWork(S,d)?Math.max(1,P.perDay+(S.capAdj||0)):0; }
-function unitsOn(S,d){ return ((S.done||{})[d]||[]).filter(function(x){ return x.indexOf(":")>0&&x.slice(0,2)!=="a:"&&x.slice(0,4)!=="asp:"; }).length; }
-function floorMet(P,S,d){ var f=floorFor(P,S,d); return f>0&&unitsOn(S,d)>=f; }
+function unitsOn(S,d){ return ((S.done||{})[d]||[]).filter(function(x){ return x.indexOf(":")>0&&!/^(a|asp|ct|up|t):/.test(x)&&x.slice(0,2)!=="t-"; }).length; }
+function contestOn(S,d){ return ((S.done||{})[d]||[]).some(function(x){return x.slice(0,3)==="ct:"}); }
+function floorMet(P,S,d){ var f=floorFor(P,S,d); return f>0&&(unitsOn(S,d)>=f||contestOn(S,d)); }
 function calibrate(P,S,d){
   var mon=monOf(d), prev=((S.flCal||{})[addDays(mon,-7)]||{}).lvl||0, good=0, n=0;
   for(var i=1;i<=14;i++){ var x=addDays(mon,-i); if(x<S.start||!isWork(S,x)) continue; n++; if(floorMet(P,S,x)) good++; }
@@ -367,6 +386,8 @@ function calibrate(P,S,d){
 /* Today, laid out on a clock: classes are blocked, anchors pinned, then the floor, then the rest, then aspects. */
 function dayPlan(P,S,d){
   var q=queue(P,S), cap=capFor(P,S,d), fN=floorFor(P,S,d);
+  var asg=(typeof CT!=="undefined"&&CT.asg)||{byDay:{}}, cts=asg.byDay[d]||[], ups=asg.byDay[addDays(d,-1)]||[];
+  if(cts.length&&cap) cap=Math.max(fN,cap-cts.reduce(function(a,c){return a+Math.ceil(c.dur/ITEM_MIN)},0)); // the contest is the day's main work
   var doneToday=((S.done||{})[d]||[]);
   // items ticked today stay visible today
   var todayDone=q.all.filter(function(x){ return q.hit[x.id]===d; });
@@ -377,14 +398,19 @@ function dayPlan(P,S,d){
   var anchors=(S.anchors||[]).map(function(a){ return {id:"a:"+a.id,name:a.label,at:a.at}; }).sort(function(a,b){return hm(a.at)-hm(b.at)});
   // a simple clock: free windows between wake+30 and sleep, minus class hours on class days
   var wake=hm(S.wake||"06:30")+30, sleep=hm(S.sleep||"23:00")-30, cls=S.classes||{days:[1,2,3,4,5],from:"09:00",to:"17:00"};
-  var busy=[]; if((cls.days||[]).indexOf(dow(d))>-1&&cls.from&&cls.to) busy.push([hm(cls.from),hm(cls.to)+30]);
+  var busy=[], slots=(S.timetable||{})[String(dow(d))];
+  if(slots&&slots.length) slots.forEach(function(x){ busy.push([hm(x[0]),hm(x[1])+10]); });
+  else if((cls.days||[]).indexOf(dow(d))>-1&&cls.from&&cls.to) busy.push([hm(cls.from),hm(cls.to)+30]);
   busy.push([hm("13:00"),hm("13:45")]); busy.push([hm("19:30"),hm("20:15")]); // meals
+  cts.forEach(function(c){ busy.push([c.a-15,c.z+10]); });
   busy.sort(function(a,b){return a[0]-b[0]});
   var t=wake, place=function(min){ for(var guard=0;guard<40;guard++){ var clash=busy.filter(function(b){ return t<b[1]&&t+min>b[0]; })[0];
       if(!clash) break; t=clash[1]; } if(t+min>sleep) return null; var a=t; t+=min+10; return a; };
   var timed=function(arr,min){ return arr.map(function(x){ var a=place(x.min||min); return Object.assign({},x,{a:a,z:a==null?null:a+(x.min||min)}); }); };
   floor=timed(floor,ITEM_MIN); rest=timed(rest,ITEM_MIN); asp=timed(asp,30);
-  return {floor:floor,rest:rest,aspects:asp,anchors:anchors,cap:cap,floorN:fN,isWork:isWork(S,d),openCount:q.open.length,doneCount:q.all.length-q.open.length,q:q,doneToday:doneToday};
+  var contests=cts.map(function(c){ return {id:"ct:"+c.id,name:c.name,url:c.url,a:c.a,z:c.z,min:c.dur,ic:PLAT[c.p][1],sub:PLAT[c.p][0]+" · rated · "+c.why,contest:c}; });
+  var upsolve=timed(ups.map(function(c){ return {id:"up:"+c.id,name:"Upsolve: one problem from "+c.name+" you didn't solve, from a blank file",url:c.url,min:ITEM_MIN,sub:"the day after a contest"}; }),ITEM_MIN);
+  return {floor:floor,rest:rest,aspects:asp,anchors:anchors,contests:contests,upsolve:upsolve,cap:cap,floorN:fN,isWork:isWork(S,d),openCount:q.open.length,doneCount:q.all.length-q.open.length,q:q,doneToday:doneToday};
 }
 function weekReport(P,S,d){
   var mon=monOf(d), rows=[], plan=0, done=0, asp=0, aspDone=0;
@@ -399,9 +425,80 @@ function weekReport(P,S,d){
 function streak(P,S,d){ var n=0; for(var i=0;i<500;i++){ var x=addDays(d,-i); if(x<S.start) break; if(!isWork(S,x)) continue;
   if(floorMet(P,S,x)) n++; else if(i>0) break; } return n; }
 function trackCount(P,S,t){ var q=queue(P,S), n=0; q.all.forEach(function(x){ if(x.tr===t.id&&q.hit[x.id]) n++; });
-  if(t.ladder){ var solo=Object.keys(S.prob||{}).filter(function(k){return S.prob[k]==="s"}).length; n=Math.max(n,solo); } return n; }
+  if(t.ladder){ var solo=Object.keys(S.prob||{}).filter(function(k){return S.prob[k]==="s"}).length; n=Math.max(n,solo); }
+  if(t.id==="con"){ Object.keys(S.done||{}).forEach(function(k){ n+=(S.done[k]||[]).filter(function(x){return x.slice(0,3)==="ct:"}).length; }); }
+  return n; }
 function stoneStat(P,S,st,d){ var have=st.need.map(function(x){ var t=P.tracks.filter(function(y){return y.id===x.id})[0]; return {id:x.id,n:t?trackCount(P,S,t):0,need:x.n,unit:x.unit,name:x.name}; });
   var met=have.every(function(x){return x.n>=x.need}); return {have:have,met:met,past:st.at<d}; }
+
+/* ── Contests: live calendar + the assigner ─────────────────────────────────────────────────
+   A free job collects upcoming contests every 6 hours into data/contests.json (Codeforces, LeetCode, CodeChef,
+   AtCoder, HackerRank). The assigner books the right ones into your week, on the platforms you use:
+   - a rating only moves in rated contests, so rated rounds come first, on your main arena first;
+   - LeetCode contests start once you've solved ~100 problems (before that they mostly measure reading speed);
+   - Codeforces divisions follow your rating (Div 4/3/Educational/Div 2 below 1400; no Div 1);
+   - only in free time: not in class, after wake+1h, ending before sleep, never two on one day;
+   - how many a week follows your real pace: 1 by default, 2 with 3h+ days or a CP goal, 1 if last week was under
+     60%, none in an exam week, +1 on a stretch-floor week (max 3);
+   - every contest brings a 40-minute upsolve block the next day (one problem you didn't solve, from a blank file).
+   It recomputes every time you open the app, so the plan follows your progress. Skip or add any round yourself.  */
+var PLAT={cf:["Codeforces","⚔"],lc:["LeetCode","🏆"],cc:["CodeChef","⭐"],ac:["AtCoder","🗾"],hr:["HackerRank","🟩"]};
+var CT={list:null,at:null,err:""};
+var ctURL=function(){ return /github\.io$/.test(location.hostname)?"/nitya/data/contests.json":"https://padmanabh-r-das.github.io/nitya/data/contests.json"; };
+function loadContests(){ return fetch(ctURL()+"?t="+Math.floor(Date.now()/36e5),{credentials:"omit"}).then(function(r){ if(!r.ok) throw new Error(r.status); return r.json(); })
+  .then(function(j){ CT.list=(j.contests||[]).filter(function(c){return c&&c.p&&c.start&&PLAT[c.p]}); CT.at=j.fetchedAt; CT.err=""; ls.set("nitya.ct",JSON.stringify({l:CT.list,at:CT.at})); return CT; })
+  .catch(function(){ try{ var o=JSON.parse(ls.get("nitya.ct","null")); if(o){ CT.list=o.l; CT.at=o.at; } }catch(e){} CT.err=CT.list?"":"Live contest list unavailable here."; return CT; }); }
+var istDay=function(ms){ var d=new Date(ms); return iso(d); }, istMin=function(ms){ var d=new Date(ms); return d.getHours()*60+d.getMinutes(); };
+function contestPrefs(S){ var p=S.platforms&&S.platforms.length?S.platforms:(S.goal==="cp"?["cf","lc","cc","ac"]:["cf","lc"]); return p; }
+function contestEligible(P,S,c){
+  var solo=Object.keys(S.prob||{}).filter(function(k){return S.prob[k]==="s"}).length, cf=+((S.rat||{}).cf||0);
+  if(contestPrefs(S).indexOf(c.p)<0) return [false,"not one of your platforms"];
+  if(!c.rated) return [false,"unrated"];
+  if(c.p==="cf"&&(c.div===1||c.div==="other")) return [false,"not your division yet"];
+  if(c.p==="cf"&&c.div===4&&cf>=1400) return [false,"Div 4 is unrated above 1400"];
+  if(c.p==="lc"&&solo<100&&!S.lcReady) return [false,"LeetCode contests start after ~100 problems ("+solo+" now)"];
+  if(c.p==="cc"&&c.div!=="starters") return [false,"only Starters"];
+  if(c.p==="ac"&&c.div!=="abc") return [false,"only Beginner Contests"];
+  if(c.p==="hr") return [false,"mostly hiring contests"];
+  return [true,""];
+}
+function weekQuota(P,S,mon){
+  var q=(S.hours||2)>=3||S.goal==="cp"?2:1, why=q===2?"2 a week (your hours / goal)":"1 a week";
+  var last=weekReport(P,S,addDays(mon,-1));
+  if(last.plan>0&&last.pct<60){ q=Math.min(q,1); why="1 this week: last week was "+last.pct+"%"; }
+  if(lvlOf(S,mon)>0){ q=Math.min(3,q+1); why=q+" this week: your floor is stretching"; }
+  var ex=(S.exams||[]).some(function(e){ return e.date>=mon&&e.date<=addDays(mon,6); });
+  if(ex){ q=0; why="none this week: exams"; }
+  return [q,why];
+}
+function assignContests(P,S,d){
+  if(!CT.list) return {list:[],byDay:{},weeks:{}};
+  var skip=S.ctSkip||{}, force=S.ctAdd||{}, cls=S.classes||{}, out=[], used={}, weeks={};
+  var wake=hm(S.wake||"06:30")+60, sleep=hm(S.sleep||"23:00");
+  CT.list.filter(function(c){ return Date.parse(c.start)+c.dur*6e4>Date.now()-6*3600e3; }).forEach(function(c){
+    var ms=Date.parse(c.start), day=istDay(ms), a=istMin(ms), z=a+c.dur, mon=monOf(day);
+    if(!weeks[mon]) weeks[mon]={q:weekQuota(P,S,mon),n:0};
+    var el=contestEligible(P,S,c), ok=el[0], why=el[1];
+    if(ok&&(a<wake||z>sleep)){ ok=false; why="outside your waking hours"; }
+    var sl=(S.timetable||{})[String(dow(day))];
+    if(ok&&(sl&&sl.length?sl.some(function(x){ return a<hm(x[1])+10&&z>hm(x[0]); }):(cls.days||[]).indexOf(dow(day))>-1&&a<hm(cls.to||"17:00")+30&&z>hm(cls.from||"09:00"))){ ok=false; why="clashes with class"; }
+    if(ok&&day<S.start){ ok=false; why="before your plan"; }
+    out.push(Object.assign({},c,{day:day,a:a,z:z,mon:mon,ok:ok,why:why}));
+  });
+  // rank: forced, then main arena, then rated by platform order
+  var pref=contestPrefs(S);
+  out.sort(function(x,y){ return (force[y.id]?1:0)-(force[x.id]?1:0)||pref.indexOf(x.p)-pref.indexOf(y.p)||(x.start<y.start?-1:1); });
+  out.forEach(function(c){ var w=weeks[c.mon];
+    if(skip[c.id]){ c.pick=false; c.why="you skipped it"; return; }
+    if(force[c.id]){ c.pick=true; c.why="you added it"; used[c.day]=1; w.n++; return; }
+    if(!c.ok){ c.pick=false; return; }
+    if(used[c.day]){ c.pick=false; c.why="another contest that day"; return; }
+    if(w.n>=w.q[0]){ c.pick=false; c.why="week is full ("+w.q[1]+")"; return; }
+    c.pick=true; c.why=w.q[1]; used[c.day]=1; w.n++; });
+  out.sort(function(x,y){return x.start<y.start?-1:1});
+  var byDay={}; out.filter(function(c){return c.pick}).forEach(function(c){ (byDay[c.day]=byDay[c.day]||[]).push(c); });
+  return {list:out,byDay:byDay,weeks:weeks};
+}
 
 /* ── Storage. The plan and every mark live in this browser only. ───────────────────────────── */
 var KEY="nitya.v2";
@@ -425,7 +522,7 @@ function readBackup(code){
    3. Free text (feedback only) is scrubbed on the device and shown to you before it goes.
    4. Transport: a script in the founder's Google account that appends a row to his Sheet. Google does not
       give script owners the sender's IP address. No cookies, no trackers, no third-party analytics.        */
-var FOUNDER_URL = ""; // set when the founder's endpoint is deployed; until then reports wait in the outbox on this device
+var FOUNDER_URL = "https://script.google.com/macros/s/AKfycbzuMBJStR5vluoD4I3jcNleAA7SO4jKL7EzmTpBBQxoiUQciU57llCrlF2FU2Y-t6Sl/exec"; // the founder inbox: a script in his Google account appending rows to his Sheet
 var band=function(n,cuts){ for(var i=0;i<cuts.length;i++) if(n<cuts[i]) return (i?cuts[i-1]:0)+"-"+(cuts[i]-1); return cuts[cuts.length-1]+"+"; };
 function scrub(t){
   return String(t||"").slice(0,1200)
@@ -450,7 +547,9 @@ function reportRow(kind,P,S,extra){
     cfBand:S.rat&&S.rat.cf?band(+S.rat.cf,[800,1000,1200,1400,1600,1900]):"", lcBand:S.rat&&S.rat.lc?band(+S.rat.lc,[1400,1600,1800,2000,2200]):"",
     resources:Object.keys(S.trackRes||{}).map(function(k){return k+":"+S.trackRes[k]}).join(","), custom:Object.keys(S.customRes||{}).length,
     aiApplied:used.ai||0, research:used.research||0, backups:used.backup||0, restores:used.restore||0, tourDone:S.tourDone?1:0,
-    daysActive:Object.keys(S.done||{}).length, tz:tz.split("/")[0]||"", screen:(window.innerWidth<700?"phone":"wide"), lang:(navigator.language||"").slice(0,2) };
+    daysActive:Object.keys(S.done||{}).length, goals:(S.goals||[S.goal]).join(","), platforms:(S.platforms||[]).join(","),
+    contests:((typeof CT!=="undefined"&&CT.asg&&CT.asg.list)||[]).filter(function(c){return c.pick}).length,
+    contestsDone:Object.keys(S.done||{}).reduce(function(a,k){ return a+(S.done[k]||[]).filter(function(x){return x.slice(0,3)==="ct:"}).length; },0), imported:S.imported?1:0, tz:tz.split("/")[0]||"", screen:(window.innerWidth<700?"phone":"wide"), lang:(navigator.language||"").slice(0,2) };
   if(extra&&extra.text!=null) row.text=scrub(extra.text);
   if(extra&&extra.rating!=null) row.rating=clamp(+extra.rating||0,0,5);
   return row;
@@ -550,6 +649,39 @@ function undoBatch(S,batch){
   return back;
 }
 
+/* ── The AI interview: for a thorough setup, the user's own AI interviews them (it can read their timetable and syllabus
+   PDFs), then hands back one JSON block that fills the whole setup. Everything is checked before it's used. ── */
+var INTERVIEW_PROMPT = "You are setting me up in Nitya, a study planner. Interview me properly, ONE question at a time, short and friendly, offering options where it helps. I may attach my class timetable and my course syllabus (PDFs or photos): read them carefully and use them instead of asking what they already say.\n\nFind out:\n1. My goals (one or more of: sde = land a software job/internship; cp = get good at DSA & competitive programming; ml = learn ML/AI and build with it; exam = clear a specific exam; grades = raise my grades; build = build and ship a project/startup). Which matters most.\n2. The deadline I'm working towards (a real date).\n3. My college, branch and current semester (only if I want to say).\n4. My exact weekly class timetable: for each weekday, every class's start and end time (from the attached timetable if I gave one).\n5. My courses this semester with their syllabus units in order, and exam dates (mid-sem, end-sem, quizzes) if known.\n6. On a NORMAL day, how many hours I can really give (1-4), and which days I work.\n7. Wake and sleep times.\n8. Where I learn from for each goal (courses, sheets, YouTube channels, books: names and links).\n9. Which coding sites I use or want to compete on (Codeforces, LeetCode, CodeChef, AtCoder), roughly how many problems I've solved, and my ratings if any.\n10. Up to three other practices I want to keep alive (body/fitness, inner practice like prayer or meditation, a language, creative practice, reading, earning), with minutes and days.\n11. Small fixed-time daily habits (anchors) like wake-up or closing the day.\n\nDon't ask for my name, email, phone or any ID numbers. When you have enough, show me a short summary to confirm, then output ONE fenced ```json block, exactly in this shape (omit what you don't know):\n```json\n{\n  \"nitya_profile\": 1,\n  \"goals\": [\"sde\", \"ml\"],\n  \"deadline\": \"YYYY-MM-DD\",\n  \"hours\": 2,\n  \"days\": [1,2,3,4,5,6],\n  \"wake\": \"06:30\", \"sleep\": \"23:00\",\n  \"college\": {\"name\": \"\", \"branch\": \"\", \"semester\": 3},\n  \"timetable\": {\"1\": [[\"09:00\",\"10:30\"],[\"11:00\",\"12:30\"]], \"2\": []},\n  \"courses\": [{\"name\": \"\", \"code\": \"\", \"units\": [\"unit 1 title\", \"unit 2 title\"], \"exams\": [{\"name\": \"Mid-sem\", \"date\": \"YYYY-MM-DD\"}]}],\n  \"resources\": [{\"goal\": \"sde\", \"name\": \"\", \"url\": \"https://...\"}],\n  \"platforms\": [\"cf\", \"lc\"],\n  \"solved\": 0,\n  \"ratings\": {\"cf\": 0, \"lc\": 0},\n  \"aspects\": [{\"id\": \"body\", \"min\": 30, \"days\": [1,3,5]}],\n  \"anchors\": [{\"label\": \"Wake at a fixed time\", \"at\": \"06:30\"}]\n}\n```\nDays are 0=Sunday to 6=Saturday. Aspect ids are body, inner, lang, arts, read, earn. Tell me to paste the JSON block back into Nitya.";
+function parseProfile(text,base){
+  var t=String(text||""), m=t.match(/```(?:json)?\s*([\s\S]*?)```/i), raw=m?m[1]:t.slice(t.indexOf("{"),t.lastIndexOf("}")+1), o;
+  try{ o=JSON.parse(raw); }catch(e){ throw new Error("I couldn't read the JSON block. Paste the AI's final message including the ```json part."); }
+  if(!o||o.nitya_profile!==1) throw new Error("That isn't the setup block (it should contain \"nitya_profile\": 1).");
+  var A=Object.assign({},base), d=today(), okT=function(x){ return /^\d{1,2}:\d\d$/.test(x||""); }, day=function(n){ n=+n; return n>=0&&n<=6?n:null; }, notes=[];
+  var gl=(Array.isArray(o.goals)?o.goals:[]).filter(function(x){ return GOALS.some(function(g){return g.id===x}); }).slice(0,3);
+  if(gl.length){ var nd=defaultsFor(gl[0]); A.goal=gl[0]; A.goals=gl; A.trackRes={}; gl.forEach(function(x){ Object.assign(A.trackRes,defaultsFor(x).trackRes); }); A.customRes={}; }
+  if(/^\d{4}-\d\d-\d\d$/.test(o.deadline||"")&&gap(d,o.deadline)>=14&&gap(d,o.deadline)<=1500) A.deadline=o.deadline;
+  if([1,2,3,4].indexOf(+o.hours)>-1) A.hours=+o.hours; else if(+o.hours>4) A.hours=4;
+  if(Array.isArray(o.days)){ var ds=o.days.map(day).filter(function(x){return x!=null}).filter(function(v,i,a){return a.indexOf(v)===i}).sort(); if(ds.length) A.days=ds; }
+  if(okT(o.wake)) A.wake=o.wake.padStart(5,"0"); if(okT(o.sleep)) A.sleep=o.sleep.padStart(5,"0");
+  if(o.college&&typeof o.college==="object") A.college={name:String(o.college.name||"").slice(0,80),branch:String(o.college.branch||"").slice(0,60),semester:+o.college.semester||null};
+  if(o.timetable&&typeof o.timetable==="object"){ var tt={}, cd=[];
+    Object.keys(o.timetable).forEach(function(k){ var dd=day(k); if(dd==null||!Array.isArray(o.timetable[k])) return;
+      var sl=o.timetable[k].filter(function(x){ return Array.isArray(x)&&okT(x[0])&&okT(x[1])&&hm(x[1])>hm(x[0]); }).map(function(x){ return [x[0].padStart(5,"0"),x[1].padStart(5,"0")]; }).slice(0,12);
+      if(sl.length){ tt[String(dd)]=sl; cd.push(dd); } });
+    if(cd.length){ A.timetable=tt; var all=[].concat.apply([],Object.values(tt)); A.classes={days:cd.sort(),from:all.map(function(x){return x[0]}).sort()[0],to:all.map(function(x){return x[1]}).sort().slice(-1)[0]}; notes.push("Timetable: "+cd.length+" class days"); } }
+  if(Array.isArray(o.courses)){ A.courses=o.courses.slice(0,12).map(function(c){ return {name:String(c.name||"Course").slice(0,80),code:String(c.code||"").slice(0,20),
+      units:(Array.isArray(c.units)?c.units:[]).map(function(u){return String(u).slice(0,90)}).filter(Boolean).slice(0,20)}; }).filter(function(c){return c.units.length});
+    A.exams=[]; o.courses.forEach(function(c){ (Array.isArray(c.exams)?c.exams:[]).forEach(function(e){ if(/^\d{4}-\d\d-\d\d$/.test(e&&e.date||"")) A.exams.push({date:e.date,name:String((c.code||c.name||"")+" "+(e.name||"exam")).slice(0,80)}); }); });
+    notes.push(A.courses.length+" courses, "+A.courses.reduce(function(a,c){return a+c.units.length},0)+" syllabus units, "+A.exams.length+" exam dates"); }
+  if(Array.isArray(o.resources)){ o.resources.forEach(function(r){ if(!r||!/^https:\/\//.test(r.url||"")) return; var g=goalOf(r.goal||A.goal), t=g.tracks[0]; A.customRes=A.customRes||{}; if(!A.customRes[t.id]) A.customRes[t.id]={n:String(r.name||"My resource").slice(0,60),u:String(r.url).slice(0,300)}; }); }
+  if(Array.isArray(o.platforms)){ var pl=o.platforms.filter(function(x){return PLAT[x]}); if(pl.length) A.platforms=pl; }
+  if(+o.solved>=100) A.lcReady=true;
+  if(o.ratings&&typeof o.ratings==="object"){ A.rat={}; ["cf","lc"].forEach(function(k){ if(+o.ratings[k]>0) A.rat[k]=clamp(+o.ratings[k],0,4000); }); }
+  if(Array.isArray(o.aspects)){ A.aspects=o.aspects.filter(function(x){ return x&&ASPECTS.some(function(y){return y.id===x.id}); }).slice(0,3).map(function(x){ var b=ASPECTS.filter(function(y){return y.id===x.id})[0];
+      var ds=(Array.isArray(x.days)?x.days:b.days).map(day).filter(function(v){return v!=null}); return {id:x.id,on:true,min:clamp(+x.min||b.min,5,120),days:ds.length?ds:b.days}; }); }
+  if(Array.isArray(o.anchors)){ var an=o.anchors.filter(function(x){return x&&x.label&&okT(x.at)}).slice(0,6).map(function(x,i){ return {id:"x"+i,label:String(x.label).slice(0,60),at:x.at.padStart(5,"0")}; }); if(an.length) A.anchors=an; }
+  A.imported=d; return {A:A,notes:notes};
+}
 /* ── Onboarding: one decision per screen, sensible defaults already chosen, skip anywhere. ─── */
 var HOURS=[[1,"About an hour","One real block. Slow, but it compounds."],[2,"Two hours","The common honest answer for a student with classes."],[3,"Three hours","You have real free time and mean to use it."],[4,"Four or more","Only if last week actually looked like that."]];
 function defaultsFor(goal){
@@ -587,16 +719,22 @@ function Onboard(p){
         return h("div",{key:x[1],className:"row",style:{padding:"10px 0",borderTop:"1px solid "+D.b}},
           h("span",{style:{fontSize:20,width:28,textAlign:"center"}},x[0]),
           h("div",null,h("p",{style:{margin:0,fontSize:13.5,fontWeight:700}},x[1]),h("p",{className:"sm"},x[2]))); }),
-      h("button",{className:"big",style:{width:"100%",background:D.amber,color:D.onAmber,marginTop:14},onClick:next},"Make my plan →"),
+      h("button",{className:"big",style:{width:"100%",background:D.amber,color:D.onAmber,marginTop:14},onClick:next},"Quick setup, about 2 minutes →"),
+      h("button",{className:"big",style:{width:"100%",background:D.s2,color:D.t1,border:"1px solid "+D.b,marginTop:8},onClick:function(){setStep(20)}},"Thorough setup: let my own AI interview me (uses my timetable & syllabus) →"),
       h("details",{style:{marginTop:12}},h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"I have a backup code"),
         h("textarea",{className:"inp",rows:3,value:rcode,placeholder:"NITYA1.…",onChange:function(e){setRcode(e.target.value);setRerr("")},style:{marginTop:8}}),
         h("button",{className:"tbtn",style:{marginTop:8},onClick:function(){ try{ var o=readBackup(rcode); o.used=Object.assign({},o.used||{}); o.used.restore=(o.used.restore||0)+1; p.onDone(o); }catch(e){ setRerr(e.message); } }},"Restore my plan"),
         rerr?h("p",{className:"sm",style:{color:D.red,marginTop:6}},rerr):null)),
     null);
 
-  if(step===1) return frame(1,"What are you aiming at?","Pick the closest. You can change it later without losing your marks.",
-    h("div",null,GOALS.map(function(g){ return h("button",{key:g.id,className:"opt"+(A.goal===g.id?" on":""),onClick:function(){ setA(Object.assign(defaultsFor(g.id),{deadline:A.deadline,days:A.days,classes:A.classes,wake:A.wake,sleep:A.sleep,hours:A.hours,aspects:A.aspects,anchors:A.anchors})); setTimeout(next,120); }},g.label,h("small",null,g.blurb)); })),
-    skipBtn);
+  if(step===20) return h(AIInterview,{base:A,onBack:function(){setStep(0)},onDone:function(x){ setA(x); setStep(8); }});
+  if(step===1){ var gl=A.goals||[];
+    var tgG=function(id){ var x=gl.slice(), i=x.indexOf(id); if(i>-1){ if(x.length>1) x.splice(i,1); } else if(x.length<3) x.push(id);
+      var tr={}; x.slice().reverse().forEach(function(k){ Object.assign(tr,defaultsFor(k).trackRes); }); set({goal:x[0],goals:x,trackRes:tr,customRes:{}}); };
+    return frame(1,"What are you aiming at?","Pick up to three. The first one you pick leads the plan; the others share the time. You can change this later without losing your marks.",
+      h("div",null,GOALS.map(function(g){ var i=gl.indexOf(g.id); return h("button",{key:g.id,className:"opt"+(i>-1?" on":""),"aria-pressed":i>-1,onClick:function(){tgG(g.id)}},
+        i>-1?h("span",{className:"mono",style:{fontSize:10,color:D.amber,marginRight:6}},i===0?"MAIN":"ALSO"):null,g.label,h("small",null,g.blurb)); })),
+      nextBtn(gl.length>1?"Next: "+gl.length+" goals →":gl.length?"Next →":"Pick at least one",gl.length>0)); }
 
   if(step===2){ var pre=[[90,"3 months"],[180,"6 months"],[270,"9 months"],[365,"A year"],[730,"Two years"]];
     return frame(2,"By when?","A real date you're working towards. A plan without an end date is just a list.",
@@ -619,6 +757,12 @@ function Onboard(p){
           h("input",{type:"time",className:"inp",style:{width:120},value:C.from,"aria-label":"Classes start",onChange:function(e){set({classes:Object.assign({},C,{from:e.target.value})})}}),
           h("span",{className:"sm"},"to"),
           h("input",{type:"time",className:"inp",style:{width:120},value:C.to,"aria-label":"Classes end",onChange:function(e){set({classes:Object.assign({},C,{to:e.target.value})})}})),
+        h("p",{className:"eb",style:{color:D.t2}},"College, branch, semester (optional, stays on this device)"),
+        h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginBottom:14}},
+          h("input",{className:"inp",style:{flex:"2 1 160px"},placeholder:"College",value:(A.college||{}).name||"",onChange:function(e){set({college:Object.assign({},A.college,{name:e.target.value.slice(0,80)})})}}),
+          h("input",{className:"inp",style:{flex:"1 1 110px"},placeholder:"Branch",value:(A.college||{}).branch||"",onChange:function(e){set({college:Object.assign({},A.college,{branch:e.target.value.slice(0,60)})})}}),
+          h("input",{className:"inp",type:"number",min:1,max:12,style:{flex:"0 1 90px"},placeholder:"Sem",value:(A.college||{}).semester||"",onChange:function(e){set({college:Object.assign({},A.college,{semester:+e.target.value||null})})}})),
+        h("p",{className:"sm t3",style:{margin:"-8px 0 14px"}},"Have your timetable or syllabus as a PDF? The thorough setup (on the first screen) lets your AI read them and fill in every class and unit."),
         h("p",{className:"eb",style:{color:D.t2}},"Wake and sleep"),
         h("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
           h("input",{type:"time",className:"inp",style:{width:120},value:A.wake,"aria-label":"Wake time",onChange:function(e){set({wake:e.target.value})}}),
@@ -629,9 +773,14 @@ function Onboard(p){
   if(step===4) return frame(4,"On a normal day, how long can you really give this?","Not your best day. The day you have most often.",
     h("div",null,HOURS.map(function(x){ return h("button",{key:x[0],className:"opt"+(A.hours===x[0]?" on":""),onClick:function(){ set({hours:x[0]}); setTimeout(next,120); }},x[1],h("small",null,x[2])); })), null);
 
-  if(step===5){ var g=goalOf(A.goal);
+  if(step===5){
     return frame(5,"Where do you learn from?","Each part of your plan links straight to its source, so the day starts with one tap. Defaults are free and good; change any.",
-      h("div",null,g.tracks.map(function(t){ var cur=(A.trackRes||{})[t.id], cu=(A.customRes||{})[t.id]||{};
+      h("div",null,
+        h("div",{className:"card",style:{padding:"12px 14px",marginBottom:10}},h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},"Coding sites you use or want to compete on"),
+          h("p",{className:"sm t3",style:{margin:"0 0 6px"}},"Nitya books rated contests on these into your free evenings. Pick any number, or none."),
+          h("div",{style:{display:"flex",flexWrap:"wrap"}},Object.keys(PLAT).filter(function(k){return k!=="hr"}).map(function(k){ var pl=A.platforms||[], on=pl.indexOf(k)>-1;
+            return h("button",{key:k,className:"chip"+(on?" on":""),"aria-pressed":on,style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var x=pl.slice(), i=x.indexOf(k); if(i>-1) x.splice(i,1); else x.push(k); set({platforms:x}); }},PLAT[k][1]+" "+PLAT[k][0]); }))),
+        mergedGoal(A).tracks.map(function(t){ var cur=(A.trackRes||{})[t.id], cu=(A.customRes||{})[t.id]||{};
         return h("div",{key:t.id,className:"card",style:{padding:"12px 14px",marginBottom:10}},
           h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},t.name),
           h("div",{style:{display:"flex",flexWrap:"wrap"}},t.res.map(function(k){ var on=cur===k&&!cu.u; return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var cr=Object.assign({},A.customRes); delete cr[t.id]; set({trackRes:Object.assign({},A.trackRes,(function(){var o={};o[t.id]=k;return o})()),customRes:cr}); }},RES[k].n); })),
@@ -692,6 +841,39 @@ function Onboard(p){
     h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"12px 22px"},onClick:function(){
       p.onDone(Object.assign({},S0,{v:2,anon:"u-"+uid(8),created:today(),done:{},help:{},prob:{},flCal:{},capAdj:0,changes:[],rev:{},events:[],tasks:[],notes:[],used:{},
         consent:{usage:!!consent,at:today()},tourDone:false})); }},"Start, this becomes today →"));
+}
+function AIInterview(p){
+  var D=useContext(TC), r=useState(""), txt=r[0], setTxt=r[1], e=useState(""), err=e[0], setErr=e[1], ok=useState(null), res=ok[0], setRes=ok[1], c=useState(""), cp=c[0], setCp=c[1];
+  var check=function(t){ setErr(""); try{ setRes(parseProfile(t,p.base)); }catch(x){ setRes(null); setErr(x.message); } };
+  return h("div",{className:"col"},
+    h(Eb,null,"Thorough setup"),
+    h("h2",{className:"serif",style:{margin:"0 0 6px",fontSize:23,fontWeight:700}},"Let your own AI interview you"),
+    h("p",{className:"sm",style:{marginBottom:12,fontSize:12.5}},"Any AI works: ChatGPT, Gemini, Claude, Copilot. It asks one question at a time, reads your timetable and syllabus if you attach them, and ends with a block you paste back here. It takes about 10 minutes and gets every class and every syllabus unit into your plan."),
+    h("div",{className:"card"},
+      h("p",{className:"eb",style:{color:D.t2}},"1 · Send this to your AI"),
+      h("pre",{className:"code",style:{maxHeight:160}},INTERVIEW_PROMPT),
+      h(ShareRow,{text:INTERVIEW_PROMPT,onMsg:setCp}),
+      cp?h("p",{className:"sm",style:{color:D.green,marginTop:6}},cp):null,
+      h("p",{className:"sm t3",style:{marginTop:8}},"2 · In that chat, attach your class timetable and course syllabus (PDF or photo) if you have them, and answer its questions.")),
+    h("div",{className:"card"},
+      h("p",{className:"eb",style:{color:D.t2}},"3 · Paste its final block here"),
+      h("textarea",{className:"inp",rows:6,value:txt,placeholder:"```json { \"nitya_profile\": 1, … } ```",onChange:function(e){ setTxt(e.target.value); if(e.target.value.length>30) check(e.target.value); }}),
+      err?h("p",{className:"sm",style:{color:D.red,marginTop:6}},err):null,
+      res?h("div",{style:{marginTop:10}},
+        h("p",{style:{margin:"0 0 4px",fontSize:13,fontWeight:700,color:D.green}},"Read it. Here's what I got:"),
+        h("p",{className:"sm",style:{color:D.t1}},"Goals: "+mergedGoal(res.A).label+". Deadline "+fmtLong(res.A.deadline)+". "+res.A.hours+" h on a normal day."),
+        res.notes.map(function(n,i){ return h("p",{key:i,className:"sm",style:{color:D.t1}},"• "+n); }),
+        h("button",{className:"big",style:{width:"100%",marginTop:10,background:D.amber,color:D.onAmber},onClick:function(){ p.onDone(res.A); }},"Use this → privacy, then my plan")):null),
+    h("button",{className:"tbtn",style:{background:"none",border:0,color:D.t3},onClick:p.onBack},"← Back"));
+}
+/* One row of buttons that works for every AI: share to an AI app (phones), copy, or open a site (prefilled where supported). */
+function ShareRow(p){
+  var D=useContext(TC), canShare=!!(navigator.share&&/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent||""));
+  var copy=function(){ copyText(p.text).then(function(ok){ p.onMsg&&p.onMsg(ok?"Copied. Paste it into your AI.":"Couldn't copy automatically: press and hold the text above to copy it."); }); };
+  return h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",marginTop:8}},
+    canShare?h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"9px 14px"},onClick:function(){ navigator.share({text:p.text}).then(function(){ p.onMsg&&p.onMsg("Sent. Pick your AI app (Gemini, ChatGPT, Claude…) in the share sheet."); },function(){}); }},"Send to my AI app"):null,
+    h("button",{className:canShare?"tbtn":"big",style:canShare?null:{background:D.amber,color:D.onAmber,padding:"9px 14px"},onClick:copy},"Copy"),
+    AI_SITES.map(function(x){ return h("a",{key:x[0],href:aiLink(x,p.text),target:"_blank",rel:"noopener noreferrer",className:"tbtn",style:{textDecoration:"none"},onClick:function(){ copyText(p.text); }},x[0]+" ↗"); }));
 }
 
 /* ── Today ──────────────────────────────────────────────────────────────────────────────── */
@@ -756,7 +938,8 @@ function Today(p){
   var D=useContext(TC), S=p.S, P=p.P, d=p.d, pl=useMemo(function(){ return dayPlan(P,S,d); },[S,P,d]);
   var done=(S.done||{})[d]||[], help=S.help||{}, tick=tickFn(S,p.save,d);
   var ph=phaseAt(P,d), left=gap(d,P.end), fDone=pl.floor.length>0&&unitsOn(S,d)>=pl.floorN;
-  var tasks=(S.tasks||[]).filter(function(t){ return t.date===d&&!(S.rev||{})[t.id]; }), evs=(S.events||[]).filter(function(e){ return e.date>=d&&gap(d,e.date)<=7&&!(S.rev||{})[e.id]; });
+  var tasks=(S.tasks||[]).filter(function(t){ return t.date===d&&!(S.rev||{})[t.id]; }), evs=(S.events||[]).filter(function(e){ return e.date>=d&&gap(d,e.date)<=7&&!(S.rev||{})[e.id]; })
+    .concat((S.exams||[]).filter(function(e){ return e.date>=d&&gap(d,e.date)<=14; }).map(function(e,i){ return {id:"ex"+i+e.date,date:e.date,name:"📝 "+e.name,why:"Contests pause in exam weeks; the plan leans to this course's units."}; }));
   var wk=weekReport(P,S,d);
   return h("div",{className:"col"},
     h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap",marginBottom:2}},
@@ -771,14 +954,23 @@ function Today(p){
       h(Eb,{color:fDone?D.green:D.amber},fDone?"Floor met: today counts":"The floor: "+pl.floorN+" unit"+(pl.floorN>1?"s":"")),
       h("p",{className:"sm",style:{marginBottom:4}},fDone?"Anything more is a good day, not a debt.":"Do these and today counts, whatever else happens."),
       pl.floor.map(function(it){ return h(Item,{key:it.id,it:it,done:done.indexOf(it.id)>-1,help:!!help[it.id],onTick:tick}); }))),
+    pl.contests.length?h(Fold,{id:"contest",title:"Contest today"},h("div",{className:"card",style:{borderColor:D.purple}},
+      pl.contests.map(function(it){ var dn=done.indexOf(it.id)>-1; return h("div",{key:it.id},
+        h("p",{className:"mono",style:{margin:"0 0 4px",fontSize:11,fontWeight:700,color:D.purple}},clock(it.a)+" – "+clock(it.z)+" · "+it.min+" MIN"),
+        h("a",{href:it.url,target:"_blank",rel:"noopener noreferrer",style:{fontSize:15,fontWeight:700,color:D.t1}},it.ic+" "+it.name+" ↗"),
+        h("p",{className:"sm",style:{margin:"4px 0 10px"}},"Rated: this is where your rating actually moves. It replaces most of today's other work; tomorrow brings a 40-minute upsolve."),
+        h("div",{style:{display:"flex",gap:8,flexWrap:"wrap"}},
+          h("button",{className:"big",style:{flex:"1 1 140px",background:dn?D.green:D.purple,color:"#fff"},onClick:function(){tick(it.id)}},dn?"✓ Sat it":"I sat it"),
+          !dn?h("button",{className:"tbtn",style:{flex:"0 1 auto"},onClick:function(){ var sk=Object.assign({},S.ctSkip||{}); sk[it.contest.id]=1; p.save(Object.assign({},S,{ctSkip:sk})); }},"Skip this one"):null)); }))):null,
     pl.anchors.length?h(Fold,{id:"anchors",title:"Today's anchors"},h("div",{className:"card",style:{padding:"8px 18px"}},
       pl.anchors.map(function(a){ var on=done.indexOf(a.id)>-1; return h("div",{key:a.id,className:"row",style:{padding:"9px 0",borderTop:"1px solid "+D.b,alignItems:"center",opacity:on?.6:1}},
         h("button",{className:"ck","aria-label":a.name,style:{border:"2px solid "+(on?D.green:D.b),background:on?D.green:"none",color:"#fff"},onClick:function(){tick(a.id)}},on?"✓":""),
         h("span",{style:{flex:1,fontSize:13,fontWeight:600}},a.name),h("span",{className:"mono",style:{fontSize:11,color:D.t3}},clock(hm(a.at)))); }))):null,
     pl.aspects.length?h(Fold,{id:"aspects",title:"Also today"},h("div",{className:"card",style:{padding:"6px 18px"}},
       pl.aspects.map(function(it){ return h(Item,{key:it.id,it:it,done:done.indexOf(it.id)>-1,onTick:tick}); }))):null,
-    pl.rest.length||tasks.length?h(Fold,{id:"rest",title:"The rest of today"},h("div",{className:"card",style:{padding:"6px 18px 12px"}},
+    pl.rest.length||tasks.length||pl.upsolve.length?h(Fold,{id:"rest",title:"The rest of today"},h("div",{className:"card",style:{padding:"6px 18px 12px"}},
       tasks.map(function(t){ return h(Item,{key:t.id,it:{id:t.id,name:t.text,min:t.min,sub:"added by your AI"},done:done.indexOf(t.id)>-1,onTick:tick}); }),
+      pl.upsolve.map(function(it){ return h(Item,{key:it.id,it:it,done:done.indexOf(it.id)>-1,onTick:tick}); }),
       pl.rest.map(function(it){ return h(Item,{key:it.id,it:it,done:done.indexOf(it.id)>-1,help:!!help[it.id],onTick:tick}); }),
       h("p",{className:"sm t3",style:{marginTop:8}},"Not finished? It stays at the front of the queue. Tomorrow never gets a double load."))):null,
     evs.length?h(Fold,{id:"soon",title:"Coming up"},h("div",{className:"card",style:{padding:"6px 18px"}},evs.map(function(e){
@@ -796,6 +988,7 @@ function Today(p){
       h("p",{className:"sm t3",style:{marginTop:8}},"Green = floor met · amber = some work · red = nothing on a work day."))),
     h(Fold,{id:"next7",title:"Next 7 days",shut0:true},h("div",{className:"card",style:{padding:"6px 18px"}},Array.from({length:7},function(_,i){ var x=addDays(d,i+1), c=capFor(P,S,x), a=P.aspects.filter(function(q){return q.days.indexOf(dow(x))>-1});
       var ev=(S.events||[]).filter(function(e){return e.date===x&&!(S.rev||{})[e.id]});
+      var cx=((CT.asg||{byDay:{}}).byDay[x]||[]); ev=ev.concat(cx.map(function(c){return {name:PLAT[c.p][1]+" "+c.name+" "+clock(c.a)}}));
       return h("div",{key:x,style:{display:"flex",gap:10,padding:"8px 0",borderTop:"1px solid "+D.b}},
         h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,color:D.t3,width:62,flexShrink:0}},fmtLong(x).toUpperCase()),
         h("span",{className:"sm",style:{flex:1}},c?c+" units (floor "+floorFor(P,S,x)+")":"rest day",a.length?" · "+a.map(function(q){return q.ic}).join(" "):"",ev.length?" · 📅 "+ev.map(function(e){return e.name}).join(", "):"")); }))));
@@ -829,6 +1022,7 @@ function Practice(p){
       h("p",{className:"sm t3",style:{marginBottom:8}},RATING_FACTS),
       PLATFORM_ROLES.map(function(r){ return h("div",{key:r[1],className:"row",style:{padding:"8px 0",borderTop:"1px solid "+D.b}},h("span",{style:{fontSize:16,width:22}},r[0]),
         h("div",{style:{flex:1,minWidth:0}},h("p",{style:{margin:0,fontSize:12.5,fontWeight:700}},r[1]," ",h("span",{className:"mono",style:{fontSize:10,color:D.t3}},r[2])),h(Brief,{t:r[3],size:11.5,c:D.t2}))); }))),
+    h(Fold,{id:"contests",title:"Contests booked for you"},h(ContestPanel,{S:S,save:p.save})),
     h(Fold,{id:"ratings",title:"Your ratings"},h("div",{className:"card"},
       h("p",{className:"sm",style:{marginBottom:10}},"Type your rating after a contest. Nitya only uses it for your milestones; it is never read from your account."),
       [["cf","Codeforces","https://codeforces.com/contests"],["lc","LeetCode","https://leetcode.com/contest/"]].map(function(x){
@@ -852,6 +1046,27 @@ function Practice(p){
               h("div",{style:{display:"flex",gap:6,marginTop:2}},df?h("span",{className:"mono",style:{fontSize:9.5,fontWeight:700,color:D[df[1]]}},df[0]):null,h("span",{className:"mono",style:{fontSize:9.5,color:D.t3}},x.plat),x.tier===2?h(Pill,{label:"BEYOND",bg:D.s3,fg:D.purple}):null)),
             h("button",{title:"Solved alone","aria-label":"Solved alone","aria-pressed":m==="s",className:"ck",style:{width:26,height:26,border:"1.5px solid "+(m==="s"?D.green:D.b),background:m==="s"?D.green:"none",color:"#fff"},onClick:function(){mark(x.key,"s")}},m==="s"?"✓":""),
             h("button",{title:"Solved with help","aria-label":"Solved with help","aria-pressed":m==="h",className:"ck",style:{width:26,height:26,fontWeight:700,border:"1.5px solid "+(m==="h"?D.amber:D.b),background:m==="h"?D.amber:"none",color:m==="h"?D.onAmber:D.t3},onClick:function(){mark(x.key,"h")}},"?")); })); }));
+}
+
+function ContestPanel(p){
+  var D=useContext(TC), S=p.S, asg=CT.asg||{list:[],weeks:{}}, f=useFilter("ct"), fv=f[0], setF=f[1];
+  var pf=contestPrefs(S), setPf=function(k){ var x=pf.slice(), i=x.indexOf(k); if(i>-1) x.splice(i,1); else x.push(k); if(x.length) p.save(Object.assign({},S,{platforms:x})); };
+  var flip=function(c){ var sk=Object.assign({},S.ctSkip||{}), ad=Object.assign({},S.ctAdd||{});
+    if(c.pick){ sk[c.id]=1; delete ad[c.id]; } else { delete sk[c.id]; ad[c.id]=1; } p.save(Object.assign({},S,{ctSkip:sk,ctAdd:ad})); };
+  var list=asg.list.filter(function(c){ return pf.indexOf(c.p)>-1&&keepBy(fv,!c.pick); });
+  var counts={open:asg.list.filter(function(c){return c.pick}).length,done:asg.list.filter(function(c){return !c.pick&&pf.indexOf(c.p)>-1}).length,all:asg.list.filter(function(c){return pf.indexOf(c.p)>-1}).length};
+  if(!CT.list) return h("div",{className:"card"},h("p",{className:"sm t3",style:{margin:0}},CT.err||"Loading the live contest calendar…"));
+  var mon=monOf(today()), w=(asg.weeks||{})[mon];
+  return h("div",{className:"card"},
+    h("p",{className:"sm",style:{marginBottom:8}},"Nitya books rated rounds into your free evenings, on the sites you use, and adds an upsolve the next day. "+(w?"This week: "+w.q[1]+".":"")+" Updated "+(CT.at?fmt(CT.at.slice(0,10))+" "+new Date(CT.at).toLocaleTimeString([],{hour:"numeric",minute:"2-digit"}):"recently")+"."),
+    h("div",{style:{display:"flex",flexWrap:"wrap",marginBottom:4}},Object.keys(PLAT).map(function(k){ var on=pf.indexOf(k)>-1; return h("button",{key:k,className:"chip"+(on?" on":""),"aria-pressed":on,style:{fontSize:11.5,padding:"5px 10px"},onClick:function(){setPf(k)}},PLAT[k][1]+" "+PLAT[k][0]); })),
+    h("div",{style:{display:"flex",justifyContent:"flex-end",margin:"4px 0"}},h(Seg,{v:fv,set:setF,counts:counts})),
+    list.slice(0,25).map(function(c){ return h("div",{key:c.id,className:"row",style:{padding:"8px 0",borderTop:"1px solid "+D.b,alignItems:"center",opacity:c.pick?1:.65}},
+      h("span",{className:"mono",style:{fontSize:10,fontWeight:700,width:74,flexShrink:0,color:c.pick?D.purple:D.t3}},fmt(c.day).toUpperCase()+" "+clock(c.a)),
+      h("div",{style:{flex:1,minWidth:0}},h("a",{href:c.url,target:"_blank",rel:"noopener noreferrer",style:{fontSize:12.5,fontWeight:600}},PLAT[c.p][1]+" "+c.name+" ↗"),h("p",{className:"sm t3",style:{fontSize:11}},(c.pick?"Booked · ":"Not booked · ")+c.why)),
+      h("button",{className:"tbtn",style:{fontSize:10.5,padding:"4px 8px"},onClick:function(){flip(c)}},c.pick?"Skip":"Book")); }),
+    !list.length?h("p",{className:"sm t3"},fv==="open"?"Nothing booked yet in the next five weeks.":"Nothing here."):null,
+    h("p",{className:"sm t3",style:{marginTop:8}},"Booked = in your plan. Filters: Open shows booked, Done shows the ones left out and why."));
 }
 
 /* ── Roadmap: the whole plan on one screen, built to be readable by someone who isn't you. ── */
@@ -979,11 +1194,9 @@ function Handoff(p){
       h("textarea",{className:"inp",rows:2,value:ask,placeholder:"e.g. exams start in 10 days; I keep missing evenings",onChange:function(e){setAsk(e.target.value)},style:{marginBottom:10}})):null,
     h("p",{className:"eb",style:{color:D.t2}},"1 · Copy this to your AI"),
     h("pre",{className:"code"},prompt),
-    h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",margin:"8px 0 4px"}},
-      h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"9px 14px"},onClick:copy},"Copy"),
-      AI_SITES.map(function(x){ return h("a",{key:x[0],href:aiLink(x,prompt),target:"_blank",rel:"noopener noreferrer",className:"tbtn",style:{textDecoration:"none"},onClick:function(){ copyText(prompt); }},x[0]+" ↗"); })),
+    h(ShareRow,{text:prompt,onMsg:setCopied}),
     copied?h("p",{className:"sm",style:{color:D.green}},copied):null,
-    h("p",{className:"sm t3",style:{margin:"2px 0 0",fontSize:11}},"Tapping an AI also copies the text; if the box there is empty, just paste."),
+    h("p",{className:"sm t3",style:{margin:"4px 0 0",fontSize:11}},"Gemini or any app on your phone: use \"Send to my AI app\". On a laptop: Copy, open your AI, paste. Tapping an AI button also copies the text."),
     kind==="research"?h("p",{className:"sm t3",style:{marginTop:4}},"Use an AI with web search switched on, so it reads real pages instead of remembering."):null,
     IN_CLAUDE?h("button",{className:"tbtn",style:{marginTop:8},disabled:busy,onClick:hereAI},busy?"Asking Claude…":"Or ask Claude right here"):null,
     h("p",{className:"eb",style:{color:D.t2,marginTop:14}},"2 · Paste its whole answer"),
@@ -1079,7 +1292,12 @@ function Settings(p){
     h(Fold,{id:"set-plan",title:"Your plan"},h("div",{className:"card"},
       h("p",{style:{margin:"0 0 10px",fontSize:14,fontWeight:700}},g.label),
       h("label",{className:"sm",style:{display:"block",marginBottom:4}},"Goal"),
-      h("select",{className:"inp",value:S.goal,onChange:function(e){ var nd=defaultsFor(e.target.value); upd({goal:e.target.value,trackRes:nd.trackRes,customRes:{}}); }},GOALS.map(function(x){return h("option",{key:x.id,value:x.id},x.label)})),
+      h("div",{style:{display:"flex",flexWrap:"wrap"}},GOALS.map(function(x){ var gl=S.goals&&S.goals.length?S.goals:[S.goal], i=gl.indexOf(x.id);
+        return h("button",{key:x.id,className:"chip"+(i>-1?" on":""),"aria-pressed":i>-1,style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var y=gl.slice(); if(i>-1){ if(y.length>1) y.splice(i,1); } else if(y.length<3) y.push(x.id);
+          var tr={}; y.slice().reverse().forEach(function(k){ Object.assign(tr,defaultsFor(k).trackRes); }); upd({goal:y[0],goals:y,trackRes:Object.assign(tr,S.trackRes||{})}); }},(i===0?"★ ":"")+x.label); })),
+      h("p",{className:"sm t3",style:{margin:"2px 0 0"}},"Up to three; ★ leads the plan."),
+      S.courses&&S.courses.length?h("p",{className:"sm",style:{marginTop:8}},"Imported: "+S.courses.length+" courses · "+S.courses.reduce(function(a,c){return a+c.units.length},0)+" syllabus units"+(S.exams&&S.exams.length?" · "+S.exams.length+" exam dates":"")+(S.timetable?" · your exact timetable":"")+"."):null,
+      h("button",{className:"tbtn",style:{marginTop:8},onClick:function(){p.go("import")}},"Re-run the AI interview (timetable, syllabus, everything)"),
       h("label",{className:"sm",style:{display:"block",margin:"10px 0 4px"}},"Deadline"),
       h("input",{type:"date",className:"inp",value:S.deadline,min:addDays(today(),7),onChange:function(e){ if(e.target.value) upd({deadline:e.target.value}); }}),
       h("label",{className:"sm",style:{display:"block",margin:"10px 0 4px"}},"Hours on a normal day"),
@@ -1100,7 +1318,7 @@ function Settings(p){
       h("div",{style:{display:"flex",gap:8}},h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.max(1,P.floorN-1)})}},"Lower the base"),h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.min(P.perDay,P.floorN+1)})}},"Raise the base")))),
     h(Fold,{id:"set-res",title:"Your resources"},h("div",{className:"card"},P.tracks.map(function(t){ var cu=(S.customRes||{})[t.id];
       return h("div",{key:t.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},h("p",{style:{margin:"0 0 5px",fontSize:12.5,fontWeight:700}},t.name),
-        h("div",{style:{display:"flex",flexWrap:"wrap"}},goalOf(S.goal).tracks.filter(function(x){return x.id===t.id})[0].res.map(function(k){ var on=!cu&&(S.trackRes||{})[t.id]===k;
+        h("div",{style:{display:"flex",flexWrap:"wrap"}},((mergedGoal(S).tracks.filter(function(x){return x.id===t.id})[0]||{}).res||[]).filter(function(k){return RES[k]}).map(function(k){ var on=!cu&&(S.trackRes||{})[t.id]===k;
           return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11,padding:"5px 9px"},onClick:function(){ var cr=Object.assign({},S.customRes); delete cr[t.id]; var tr=Object.assign({},S.trackRes); tr[t.id]=k; upd({trackRes:tr,customRes:cr}); }},RES[k].n); }),
           cu?h("span",{className:"chip on",style:{fontSize:11,padding:"5px 9px"}},"Yours: "+cu.n):null)); }))),
     h(Fold,{id:"set-asp",title:"Aspects you keep alive"},h("div",{className:"card"},ASPECTS.map(function(x){ var a=aspOn(x.id), days=a&&a.days||x.days, min=a&&a.min||x.min;
@@ -1199,6 +1417,9 @@ function App(){
     var m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute("content",D.bg); },[theme]);
   var save=useCallback(function(n){ setS(n); setSaved(saveS(n)?"saved":"error"); },[]);
   var P=useMemo(function(){ return S?derive(S):null; },[S]);
+  var ctv=useState(0), ctVer=ctv[0], setCtVer=ctv[1];
+  useEffect(function(){ loadContests().then(function(){ setCtVer(function(x){return x+1}); }); },[]);
+  CT.asg=useMemo(function(){ return S&&P?assignContests(P,S,d):null; },[S,P,d,ctVer]);
   // weekly jobs that run when the app opens: the floor's Monday check, the anonymous weekly row (with consent), the outbox
   useEffect(function(){ if(!S||!P) return; var mon=monOf(d), n=S, ch=false;
     if(!(S.flCal||{})[mon]){ var c=calibrate(P,S,d); var fc=Object.assign({},S.flCal); fc[mon]=c; n=Object.assign({},n,{flCal:fc}); ch=true; }
@@ -1226,7 +1447,7 @@ function App(){
   var nm=P.stones.map(function(s){return Object.assign({},s,stoneStat(P,S,s,d))}).filter(function(s){return !s.met&&s.at>=d})[0];
   var navProps={P:P,tab:tab,sec:sec,go:go,hide:function(){goSide(false)},full:full,theme:flipTheme};
   var view=tab==="prac"?h(Practice,{S:S,save:save}):tab==="road"?h(Roadmap,{S:S,P:P,d:d,sec:sec,save:save}):tab==="desk"?h(Desk,{S:S,P:P,open:setModal,save:save}):
-    tab==="rep"?h(Report,{S:S,P:P,d:d,save:save}):tab==="set"?h(Settings,{S:S,P:P,save:save,go:go,tour:function(){setTour(0)}}):tab==="guide"?h(Guide,{tour:function(){setTour(0)}}):
+    tab==="rep"?h(Report,{S:S,P:P,d:d,save:save}):tab==="set"?h(Settings,{S:S,P:P,save:save,go:go,tour:function(){setTour(0)}}):tab==="guide"?h(Guide,{tour:function(){setTour(0)}}):tab==="import"?h(AIInterview,{base:S,onBack:function(){go("set")},onDone:function(x){ save(Object.assign({},S,x)); go("today"); }}):
     h(Today,{S:S,P:P,d:d,save:save,open:setModal,go:go});
   var crumb=(NAVS.filter(function(n){return n[0]===tab})[0]||NAVS[0])[2]+(tab==="road"&&sec!=="main"?" › "+((P.aspects.filter(function(a){return a.id===sec})[0]||{}).name||""):"");
   return root(h(F,null,
