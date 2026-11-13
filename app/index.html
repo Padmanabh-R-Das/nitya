@@ -1,11 +1,1228 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nitya — opening your planner</title>
-<meta http-equiv="refresh" content="0;url=https://claude.ai/artifact/Gw3tpjZTsKTAzx8B7gsXvb">
-<style>body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;background:#080D12;color:#E9EDF1;font-family:Inter,Arial,sans-serif;text-align:center;padding:24px}
-a{color:#E9A33A;font-weight:700}</style></head><body>
-<div><svg width="72" height="54" viewBox="0 0 54 40"><rect x="0" y="16" width="9" height="24" rx="2" fill="#E9A33A"/><rect x="14" y="8" width="9" height="32" rx="2" fill="#E9A33A"/><rect x="28" y="24" width="9" height="16" rx="2" fill="#56636F"/><rect x="42" y="0" width="9" height="40" rx="2" fill="#E9A33A"/></svg>
-<h1 style="margin:14px 0 6px;font-size:28px">Opening Nitya…</h1>
-<p style="color:#8A98A6">If nothing happens, <a href="https://claude.ai/artifact/Gw3tpjZTsKTAzx8B7gsXvb">tap here to open the app</a>.</p></div>
-<script>location.replace("https://claude.ai/artifact/Gw3tpjZTsKTAzx8B7gsXvb");</script>
-</body></html>
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Nitya — your plan</title>
+<meta name="description" content="Nitya: a study planner that survives a bad week. Your plan stays on your device.">
+<meta name="theme-color" content="#f6f4ee">
+<meta name="referrer" content="no-referrer">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,600;9..144,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{--pg:#f6f4ee;color-scheme:light;box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--pg:#0a0e17;color-scheme:dark}}
+:root[data-theme="dark"]{--pg:#0a0e17;color-scheme:dark}:root[data-theme="light"]{--pg:#f6f4ee;color-scheme:light}
+html{background:var(--pg)}body{margin:0;background:var(--pg);font:14px Inter,-apple-system,'Segoe UI',sans-serif}
+img{max-width:100%}[hidden]{display:none!important}
+#boot{display:flex;align-items:center;justify-content:center;min-height:100vh;color:#8a8471;font:600 13px 'JetBrains Mono',monospace}
+</style>
+</head>
+<body>
+<div id="root"><div id="boot">Opening your plan…</div></div>
+<noscript><p style="padding:24px;font:15px sans-serif">Nitya needs JavaScript turned on.</p></noscript>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script>window.React&&window.ReactDOM||document.write('<script src="https://cdn.jsdelivr.net/npm/react@18.3.1/umd/react.production.min.js"><\/script><script src="https://cdn.jsdelivr.net/npm/react-dom@18.3.1/umd/react-dom.production.min.js"><\/script>')</script>
+<script>
+"use strict";
+var h = React.createElement, F = React.Fragment;
+var useState = React.useState, useEffect = React.useEffect, useMemo = React.useMemo, useRef = React.useRef,
+    useCallback = React.useCallback, useContext = React.useContext;
+var APP_VERSION = "2.0.0";
+
+/* ── Design system: the same surfaces, type and amber accent as Mission Control ─────────────── */
+var TH = {
+  dark:  { bg:"#0a0e17", s1:"#111826", s2:"#171f30", s3:"#1e2839", b:"#283753", t1:"#eef2fb", t2:"#93a3c2", t3:"#647089",
+           amber:"#f0a83c", blue:"#5b9dd9", green:"#3ec98d", red:"#f0685c", purple:"#a689f0", inv:"invert(1)", onAmber:"#1a1206" },
+  light: { bg:"#f6f4ee", s1:"#ffffff", s2:"#efece2", s3:"#e5e1d3", b:"#d8d3c0", t1:"#1c1a13", t2:"#565143", t3:"#8a8471",
+           amber:"#b5720a", blue:"#1f5c8f", green:"#1a7a52", red:"#b8382b", purple:"#6b4fa6", inv:"none", onAmber:"#ffffff" }
+};
+var TC = React.createContext(TH.light);
+var CSS = `
+.mc{min-height:100vh;background:var(--bg);color:var(--t1);font-family:'Inter',-apple-system,'Segoe UI',sans-serif}
+.mc *{box-sizing:border-box}.mc button{cursor:pointer;font-family:inherit}.mc a{color:var(--blue)}
+.mc button:focus-visible,.mc input:focus-visible,.mc select:focus-visible,.mc textarea:focus-visible,.mc a:focus-visible{outline:2px solid var(--amber);outline-offset:2px}
+.serif{font-family:'Fraunces',Georgia,serif}.mono{font-family:'JetBrains Mono','SF Mono',ui-monospace,Menlo,monospace}
+.wrap{display:block}.wrap.docked{display:flex;align-items:flex-start}.main{flex:1;min-width:0}
+.hdr{background:var(--s1);border-bottom:1px solid var(--b);position:sticky;top:0;z-index:20;padding-top:env(safe-area-inset-top,0px)}
+.hin{max-width:960px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right,0px)) 0 max(16px,env(safe-area-inset-left,0px))}
+.ibtn{background:var(--s2);border:1px solid var(--b);border-radius:8px;width:32px;height:32px;font-size:14px;color:var(--t2);display:inline-flex;align-items:center;justify-content:center;flex-shrink:0}
+.ibtn.s{width:28px;height:28px;font-size:13px}
+.scroll{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.body{max-width:960px;margin:0 auto;padding:18px max(16px,env(safe-area-inset-right,0px)) 80px max(16px,env(safe-area-inset-left,0px))}
+.col{max-width:560px;margin:0 auto}.col6{max-width:640px;margin:0 auto}.wrap.docked .col6{max-width:800px}.wrap.docked .col{max-width:620px}
+.card{background:var(--s1);border:1px solid var(--b);border-radius:16px;padding:16px 18px;margin-bottom:14px}
+.eb{margin:0 0 6px;font-size:11px;font-weight:700;color:var(--amber);text-transform:uppercase;letter-spacing:.12em;font-family:'JetBrains Mono',monospace}
+.sm{font-size:12px;color:var(--t2);line-height:1.6;margin:0}.t3{color:var(--t3)}
+.pill{font-size:10px;font-weight:700;padding:2px 8px;border-radius:5px;white-space:nowrap;display:inline-block;letter-spacing:.04em;font-family:'JetBrains Mono',monospace}
+.tbtn{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:7px 12px;font-size:12px;font-weight:700;color:var(--t2)}
+.big{border:0;border-radius:10px;padding:12px 14px;font-size:13px;font-weight:700}
+.inp{background:var(--s2);border:1px solid var(--b);border-radius:8px;padding:8px 10px;font-size:13px;color:var(--t1);font-family:inherit;width:100%}
+.mc input[type=date]::-webkit-calendar-picker-indicator,.mc input[type=time]::-webkit-calendar-picker-indicator{filter:var(--inv)}
+.ck{flex-shrink:0;width:22px;height:22px;border-radius:6px;background:none;display:flex;align-items:center;justify-content:center;padding:0;font-size:12px}
+.ov{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:70;display:flex;align-items:flex-end;justify-content:center}
+.sheet{background:var(--s1);border:1px solid var(--b);border-radius:18px 18px 0 0;width:100%;max-width:560px;max-height:90vh;overflow-y:auto;padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(min-width:640px){.ov{align-items:center}.sheet{border-radius:18px}}
+.opt{display:block;width:100%;text-align:left;background:var(--s2);border:1px solid var(--b);border-radius:12px;padding:12px 14px;margin-bottom:8px;color:var(--t1);font-size:13.5px;font-weight:600;line-height:1.4}
+.opt.on{border-color:var(--amber);background:var(--s1);box-shadow:0 0 0 1px var(--amber)}
+.opt small{display:block;font-weight:500;font-size:11.5px;color:var(--t3);margin-top:3px;line-height:1.5}
+.chip{display:inline-flex;align-items:center;gap:6px;background:var(--s2);border:1px solid var(--b);border-radius:999px;padding:7px 12px;font-size:12.5px;font-weight:600;color:var(--t2);margin:0 6px 8px 0}
+.chip.on{background:var(--amber);border-color:var(--amber);color:var(--oa)}
+.dayb{width:40px;height:36px;border-radius:9px;border:1px solid var(--b);background:var(--s2);font-size:11px;font-weight:700;color:var(--t3);font-family:'JetBrains Mono',monospace}
+.dayb.on{background:var(--amber);border-color:var(--amber);color:var(--oa)}
+.bar{height:8px;border-radius:4px;background:var(--s3);overflow:hidden}.bar i{display:block;height:100%;border-radius:4px}
+.row{display:flex;gap:10px;align-items:flex-start}
+.ms{border-left:2px solid var(--b);padding:0 0 14px 16px;position:relative}.ms:last-child{padding-bottom:0}
+.ms b.dot{position:absolute;left:-5px;top:3px;width:8px;height:8px;border-radius:50%;background:var(--b)}
+.side{width:236px;flex-shrink:0;position:sticky;top:0;height:100vh;overflow-y:auto;background:var(--s1);border-right:1px solid var(--b);padding:calc(12px + env(safe-area-inset-top,0px)) 10px 40px max(10px,env(safe-area-inset-left,0px))}
+.sidedr{position:fixed;inset:0;z-index:60;display:flex}.sidedr .side{position:relative;height:100%;box-shadow:0 0 40px rgba(0,0,0,.35)}.sidedr .scrim{flex:1;background:rgba(0,0,0,.45);border:0}
+.si{display:flex;align-items:center;gap:8px;width:100%;text-align:left;background:none;border:0;border-radius:8px;padding:7px 10px;font-size:12.5px;font-weight:600;color:var(--t2);line-height:1.3}
+.si:hover{background:var(--s2)}.si.on{background:var(--s2);color:var(--amber)}.si.l2{padding-left:24px;font-size:12px}
+.slab{font:700 9.5px 'JetBrains Mono',monospace;color:var(--t3);letter-spacing:.1em;text-transform:uppercase;padding:12px 10px 4px;margin:0}
+.tour{position:fixed;z-index:80;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);width:min(440px,calc(100vw - 32px));background:var(--s1);border:1.5px solid var(--amber);border-radius:16px;padding:16px 18px;box-shadow:0 12px 40px rgba(0,0,0,.25)}
+.hl{outline:3px solid var(--amber)!important;outline-offset:3px;border-radius:12px}
+pre.code{white-space:pre-wrap;word-break:break-word;background:var(--s2);border:1px solid var(--b);border-radius:10px;padding:10px 12px;font:11.5px/1.5 'JetBrains Mono',monospace;color:var(--t2);max-height:220px;overflow:auto;margin:0}
+@media (prefers-reduced-motion:reduce){.mc *{transition:none!important;animation:none!important}}`;
+
+/* ── Dates (local time; a plan day starts at 4 am so a late night still counts for the day it was) ── */
+var iso = function(d){ return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0"); };
+var today = function(){ var d=new Date(); d.setHours(d.getHours()-4); return iso(d); };
+var dt = function(s){ var p=String(s).split("-"); return new Date(+p[0],+p[1]-1,+p[2]); };
+var addDays = function(s,n){ var d=dt(s); d.setDate(d.getDate()+n); return iso(d); };
+var gap = function(a,b){ return Math.round((dt(b)-dt(a))/864e5); };
+var dow = function(s){ return dt(s).getDay(); };
+var fmt = function(s){ return dt(s).toLocaleDateString(undefined,{day:"numeric",month:"short"}); };
+var fmtLong = function(s){ return dt(s).toLocaleDateString(undefined,{weekday:"short",day:"numeric",month:"short"}); };
+var monOf = function(s){ return addDays(s, -((dow(s)+6)%7)); };
+var hm = function(t){ var p=String(t||"0:0").split(":"); return (+p[0])*60+(+p[1]||0); };
+var clock = function(m){ m=Math.round(m); var hh=Math.floor(m/60)%24, mm=m%60, ap=hh<12?"am":"pm", h12=hh%12||12; return h12+(mm?":"+String(mm).padStart(2,"0"):"")+" "+ap; };
+var DOW = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+var uid = function(n){ var a="abcdefghjkmnpqrstuvwxyz23456789", o=""; var r=new Uint32Array(n||8); (window.crypto||{}).getRandomValues ? crypto.getRandomValues(r) : r.forEach(function(_,i){ r[i]=Math.random()*1e9; }); for(var i=0;i<r.length;i++) o+=a[r[i]%a.length]; return o; };
+var clamp = function(x,a,b){ return Math.max(a,Math.min(b,x)); };
+
+/* ── Small shared pieces ─────────────────────────────────────────────────────────────────── */
+var Pill=function(p){ return h("span",{className:"pill",style:{background:p.bg,color:p.fg}},p.label); };
+var Eb=function(p){ return h("p",{className:"eb",style:p.color?{color:p.color}:null},p.children); };
+function Modal(p){ return h("div",{className:"ov",onClick:p.onClose},
+  h("div",{className:"sheet",role:"dialog","aria-modal":"true","aria-label":p.label||"Dialog",onClick:function(e){e.stopPropagation()}},
+    h("div",{style:{padding:"18px 20px 24px"}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:10,gap:10}},
+        h("p",{className:"serif",style:{margin:0,fontSize:17,fontWeight:700}},p.title||""),
+        h("button",{className:"ibtn s","aria-label":"Close",onClick:p.onClose},"✕")),
+      p.children))); }
+function Bar(p){ var D=useContext(TC); return h("div",{className:"bar"},h("i",{style:{width:clamp(p.pct,0,100)+"%",background:p.color||D.amber}})); }
+var ErrBound=(function(){
+  function E(props){ React.Component.call(this,props); this.state={e:null}; }
+  E.prototype=Object.create(React.Component.prototype); E.prototype.constructor=E;
+  E.getDerivedStateFromError=function(e){ return {e:e}; };
+  E.prototype.render=function(){ return this.state.e
+    ? h("div",{className:"card"},h("p",{className:"sm"},(this.props.name||"This part")+" could not be drawn. Everything else still works. ("+String(this.state.e&&this.state.e.message||this.state.e).slice(0,120)+")"))
+    : this.props.children; };
+  return E;
+})();
+function Safe(p){ return h(ErrBound,{name:p.name},p.children); }
+var ls = {
+  get:function(k,d){ try{ var v=localStorage.getItem(k); return v==null?d:v; }catch(e){ return d; } },
+  set:function(k,v){ try{ localStorage.setItem(k,v); return true; }catch(e){ return false; } },
+  del:function(k){ try{ localStorage.removeItem(k); }catch(e){} }
+};
+/* Minimise: anything that repeats day after day can fold away; the choice is remembered on this device. */
+function Fold(p){
+  var D=useContext(TC), key="nitya.fold."+p.id;
+  var st=useState(function(){ var v=ls.get(key,null); return v==null?!!p.shut0:v==="1"; }), shut=st[0], setShut=st[1];
+  var flip=function(){ var v=!shut; setShut(v); ls.set(key,v?"1":"0"); };
+  return h("div",{"data-tour":p.tour||null},
+    h("button",{onClick:flip,"aria-expanded":!shut,"aria-label":(shut?"Expand ":"Minimise ")+p.title,
+      style:{display:"flex",alignItems:"center",gap:6,width:"100%",background:"none",border:"none",padding:shut?"8px 4px":"0 4px 5px",cursor:"pointer",color:D.t3,textAlign:"left"}},
+      h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700}},shut?"▸":"▾"),
+      h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,letterSpacing:".04em",textTransform:"uppercase"}},p.title),
+      shut?h("span",{className:"mono",style:{fontSize:10,color:D.t3}},"· minimised"):null),
+    shut?null:p.children);
+}
+/* One-line headline; the rest opens on tap. */
+function Brief(p){
+  var D=useContext(TC), o=useState(false), open=o[0], setOpen=o[1], txt=String(p.t||"");
+  var m=txt.match(/^(.{40,200}?[.!?])(\s|$)/)||txt.match(/^(.{40,180}?[:;])(\s|$)/), cut=txt.length<=190?txt:(txt.slice(0,150).replace(/\s+\S*$/,"")+"…");
+  var head=m?m[1]:cut, rest=(m?txt.slice(head.length):txt.length<=190?"":txt.slice(cut.length-1)).trim();
+  return h("div",{style:{fontSize:p.size||12.5,lineHeight:1.55,color:p.c||D.t1}},
+    h("span",null,head),
+    rest&&!open?h("button",{onClick:function(){setOpen(true)},style:{background:"none",border:0,padding:"0 0 0 6px",color:D.amber,fontSize:11,fontWeight:700}},"more ▾"):null,
+    rest&&open?h(F,null," ",h("span",{style:{color:D.t2}},rest),h("button",{onClick:function(){setOpen(false)},style:{background:"none",border:0,padding:"0 0 0 6px",color:D.t3,fontSize:11,fontWeight:700}},"less ▴")):null);
+}
+function useFilter(id){ var k="nitya.flt."+id, st=useState(function(){ return ls.get(k,"open"); }); return [st[0],function(v){ st[1](v); ls.set(k,v); }]; }
+function Seg(p){
+  var D=useContext(TC);
+  return h("div",{style:{display:"inline-flex",border:"1px solid "+D.b,borderRadius:8,overflow:"hidden",flexShrink:0}},
+    [["open","Open"],["done","Done"],["all","All"]].map(function(x){ var on=p.v===x[0];
+      return h("button",{key:x[0],onClick:function(){p.set(x[0])},"aria-pressed":on,
+        style:{background:on?D.amber:D.s2,color:on?D.onAmber:D.t3,border:0,padding:"4px 9px",fontSize:10.5,fontWeight:700,fontFamily:"'JetBrains Mono',monospace"}},
+        x[1],p.counts&&p.counts[x[0]]!=null?" "+p.counts[x[0]]:""); }));
+}
+var keepBy=function(v,done){ return v==="all"||(v==="done"?done:!done); };
+var copyText=function(t){ try{ return navigator.clipboard.writeText(t).then(function(){return true},function(){return false}); }catch(e){ return Promise.resolve(false); } };
+
+/* ── Resources a plan can point at. Free first; every link opens the real source. ───────────── */
+var RES = {
+  a2z:{n:"Striver's A2Z DSA sheet",u:"https://takeuforward.org/strivers-a2z-dsa-course/strivers-a2z-dsa-course-sheet-2",cat:"dsa",note:"Built into Nitya's Practice tab, in order."},
+  nc150:{n:"NeetCode 150",u:"https://neetcode.io/practice",cat:"dsa",note:"150 interview problems by pattern, with videos."},
+  lc:{n:"LeetCode",u:"https://leetcode.com/problemset/",cat:"dsa",note:"Problems, plus the weekly contest that sets your LeetCode rating."},
+  gfg:{n:"GeeksforGeeks practice",u:"https://www.geeksforgeeks.org/explore",cat:"dsa"},
+  cf:{n:"Codeforces",u:"https://codeforces.com/problemset",cat:"cp",note:"The arena for a competitive-programming rating."},
+  cses:{n:"CSES Problem Set",u:"https://cses.fi/problemset/",cat:"cp",note:"The standard CP checklist: 6 core sections, 159 problems."},
+  usaco:{n:"USACO Guide",u:"https://usaco.guide/",cat:"cp",note:"A complete CP syllabus: Bronze → Silver → Gold → Platinum."},
+  obs:{n:"Informatics Observatory (a student-made hint tool)",u:"https://rik-informatics-observatory.spiffywolf512.chatgpt.site/#learn",cat:"cp",note:"Maps CSES problems to handbook pages and three hints in order. A third-party page: use its hints, ignore its school-olympiad planner."},
+  cph:{n:"Competitive Programmer's Handbook (free PDF)",u:"https://cses.fi/book/book.pdf",cat:"cp"},
+  mlng:{n:"Andrew Ng · Machine Learning Specialization (audit free)",u:"https://www.coursera.org/specializations/machine-learning-introduction",cat:"ml"},
+  fastai:{n:"fast.ai · Practical Deep Learning",u:"https://course.fast.ai/",cat:"ml"},
+  kaggle:{n:"Kaggle Learn + competitions",u:"https://www.kaggle.com/learn",cat:"ml"},
+  gmlcc:{n:"Google · Machine Learning Crash Course",u:"https://developers.google.com/machine-learning/crash-course",cat:"ml"},
+  odin:{n:"The Odin Project",u:"https://www.theodinproject.com/",cat:"web"},
+  fso:{n:"Full Stack Open",u:"https://fullstackopen.com/en/",cat:"web"},
+  fcc:{n:"freeCodeCamp",u:"https://www.freecodecamp.org/learn",cat:"web"},
+  cs50:{n:"CS50 (Harvard, free)",u:"https://cs50.harvard.edu/x/",cat:"core"},
+  nptel:{n:"NPTEL courses",u:"https://nptel.ac.in/courses",cat:"core"},
+  ocw:{n:"MIT OpenCourseWare",u:"https://ocw.mit.edu/",cat:"core"},
+  khan:{n:"Khan Academy (maths)",u:"https://www.khanacademy.org/math",cat:"math"},
+  b3:{n:"3Blue1Brown (visual maths)",u:"https://www.youtube.com/@3blue1brown",cat:"math"},
+  notes:{n:"My class notes and slides",u:"",cat:"class"},
+  pyq:{n:"Past papers (PYQs)",u:"",cat:"class"},
+  gh:{n:"GitHub (your repos)",u:"https://github.com/",cat:"build"},
+  yc:{n:"YC Startup School (free)",u:"https://www.startupschool.org/",cat:"build"}
+};
+
+/* ── Goal templates. Each track: ONE number you control, the resources it can point at, and what one unit is. ── */
+var GOALS = [
+{ id:"sde", label:"Land a software job or internship", blurb:"DSA, one real project, and the CS basics an interviewer asks.",
+  tracks:[
+    {id:"dsa", name:"Problems solved alone", unit:"problems", item:"One ladder problem, solved without looking", why:"Solved-with-help is reading. Only solved-alone moves the number.", res:["a2z","nc150","lc","gfg"], ladder:true},
+    {id:"proj",name:"Project milestones shipped", unit:"milestones", item:"One slice of the project, finished and committed", why:"A repo nobody can run is not a project.", res:["gh","odin","fso","fcc"]},
+    {id:"core",name:"CS topics you can explain", unit:"topics", item:"One CS topic, explained out loud without notes", why:"OS, DBMS, networks, OOP. Explain it aloud, don't re-read.", res:["cs50","nptel","ocw"]},
+    {id:"mock",name:"Mock interviews done", unit:"mocks", item:"One mock interview, timed, with someone watching", why:"Knowing and performing only meet under a clock.", res:["lc"]}],
+  share:{dsa:.5,proj:.25,core:.17,mock:.08},
+  phases:[["Foundations","Arrays, sorting, hashing, binary search. One project idea chosen and set up."],["Depth","Recursion, linked lists, trees, graphs. The project does something real end to end."],["Pressure","DP, timed sets, contests. Project deployed and documented. Mocks begin."],["Polish","Weak topics only, resume, interviews at full speed."]],
+  stones:[[.22,"40 solved alone, and a repo that runs from a clean clone","A README a stranger can follow."],[.45,"100 solved alone; the project does its one core job","A link you can send."],[.7,"180 solved alone incl. trees and graphs; deployed; 2 mocks","A live URL and two pieces of feedback."],[.92,"250 solved alone, 6 mocks, resume reviewed by one human","A one-page resume with numbers on it."]],
+  practice:true },
+{ id:"cp", label:"Get good at DSA and competitive programming", blurb:"The ladder, contests, and re-solving what you only half-solved.",
+  tracks:[
+    {id:"dsa", name:"Ladder problems solved alone", unit:"problems", item:"One ladder problem, solved without looking", why:"The ladder is ordered for a reason. Skipping leaves holes.", res:["a2z","nc150","lc"], ladder:true},
+    {id:"cpb", name:"CP problems solved alone", unit:"problems", item:"One CSES / USACO problem, solved alone", why:"The CP syllabus, in order: Bronze, Silver, Gold.", res:["usaco","cses","obs","cph"]},
+    {id:"con", name:"Rated contests entered", unit:"contests", item:"One rated contest, sat through to the end", why:"A rating only moves in rated contests. Attendance comes before skill.", res:["cf","lc"]},
+    {id:"res", name:"Problems re-solved from scratch", unit:"re-solves", item:"One old problem, redone from a blank file", why:"If you can't redo it a week later, you didn't learn it.", res:["lc","cses"]}],
+  share:{dsa:.45,cpb:.25,con:.12,res:.18},
+  phases:[["Fundamentals","Sorting, arrays, hashing, binary search. Clean implementations."],["Structures","Linked lists, stacks, trees, heaps, from memory."],["Algorithms","Graphs, DP, greedy. See the pattern before coding."],["Speed","Contests and re-solves. Fewer new topics, faster hands."]],
+  stones:[[.25,"60 ladder problems alone, 2 rated contests","A submission history with no gaps."],[.5,"130 alone through trees, 5 contests","A rating graph that exists."],[.75,"200 alone incl. graphs and basic DP, 10 contests","Topic-wise solve counts."],[.93,"260 alone, 20 re-solves, a month of unbroken contests","Four weeks, no missed contest."]],
+  practice:true },
+{ id:"ml", label:"Learn ML / AI and build with it", blurb:"Maths you can use, one course done properly, and models you trained yourself.",
+  tracks:[
+    {id:"mlc", name:"Course lessons finished with exercises", unit:"lessons", item:"One lesson, with its exercise done by hand", why:"A watched lecture is not a finished lesson.", res:["mlng","fastai","gmlcc","kaggle"]},
+    {id:"math",name:"Maths topics you can use", unit:"topics", item:"One maths topic: worked problems, no peeking", why:"Linear algebra, probability, calculus: the parts models actually use.", res:["khan","b3","ocw"]},
+    {id:"bld", name:"Models trained and written up", unit:"models", item:"One experiment run and written up in a notebook", why:"Your own model on your own data teaches what courses can't.", res:["kaggle","gh"]},
+    {id:"dsa", name:"Problems solved alone", unit:"problems", item:"One ladder problem, solved without looking", why:"ML roles still interview on DSA.", res:["a2z","lc"], ladder:true}],
+  share:{mlc:.4,math:.2,bld:.25,dsa:.15},
+  phases:[["Ground","Python, NumPy, the maths refresher, the first course's first third."],["Core","Supervised learning, evaluation, the first Kaggle notebook of your own."],["Deep","Neural networks, a project on your own data."],["Show","One polished project, written up, deployed or published."]],
+  stones:[[.25,"Course one third done, 10 maths topics","A notebook per lesson."],[.5,"Course done, first Kaggle submission","A public notebook."],[.75,"A model on your own data, written up","A write-up someone else can follow."],[.93,"One polished project shared","A link people can try."]],
+  practice:false },
+{ id:"exam", label:"Clear an exam", blurb:"Semester exams, GATE, or any dated paper. Coverage, then past papers, then timed revision.",
+  tracks:[
+    {id:"syll",name:"Syllabus units closed", unit:"units", item:"One unit, with its problems done", why:"Closed means you solved its problems, not watched a lecture.", res:["notes","nptel","khan"]},
+    {id:"pyq", name:"Past papers attempted full-length", unit:"papers", item:"One past paper, full length, on the clock", why:"A paper attempted in pieces teaches nothing about time.", res:["pyq"]},
+    {id:"rev", name:"Weak topics re-cleared", unit:"topics", item:"One weak topic, re-cleared from the error log", why:"Revision without a weak list is re-reading what you knew.", res:["notes"]}],
+  share:{syll:.55,pyq:.3,rev:.15},
+  phases:[["Coverage","Every unit touched once."],["Problems","Each unit's problem set by hand."],["Papers","Full past papers on the real clock."],["Revision","Only what you got wrong."]],
+  stones:[[.3,"Half the syllabus closed","Half the unit list ticked."],[.55,"Every unit touched once","A map of what is weak."],[.78,"3 full past papers on time","Three scores on paper."],[.94,"Every wrong answer re-cleared","An error log, closed."]],
+  practice:false },
+{ id:"grades", label:"Raise my grades", blurb:"Course by course. What moves a grade happens the same week as the class.",
+  tracks:[
+    {id:"same",name:"Classes closed the same week", unit:"classes", item:"One class closed: notes redone, examples by hand", why:"A class revisited inside 7 days costs a third of the time.", res:["notes"]},
+    {id:"prob",name:"Problem sets done by hand", unit:"sets", item:"One problem set, by hand, solutions closed", why:"Reading a worked solution feels like learning. It isn't.", res:["notes","nptel"]},
+    {id:"ask", name:"Doubts actually asked", unit:"doubts", item:"One doubt asked out loud, to a person", why:"A doubt carried to the exam is a mark already lost.", res:["notes"]}],
+  share:{same:.5,prob:.38,ask:.12},
+  phases:[["Catch up","Close the backlog, oldest course first."],["Keep pace","Nothing older than a week stays open."],["Deepen","Past questions and the harder problems."],["Exam shape","Timed practice and the error log."]],
+  stones:[[.25,"Backlog cleared","An empty backlog list."],[.52,"Four straight weeks with every class closed","A four-week streak."],[.78,"Every problem set by hand","Handwritten sets."],[.94,"One timed paper per course, errors logged","An error log per course."]],
+  practice:false },
+{ id:"build", label:"Build and ship something", blurb:"A product, side project or startup. The milestone is always something other people use.",
+  tracks:[
+    {id:"ship",name:"Releases in someone else's hands", unit:"releases", item:"One release, used by someone who isn't you", why:"Shipped means someone else used it.", res:["gh","yc"]},
+    {id:"user",name:"People who used it and said something", unit:"people", item:"One person watched using it; one sentence written down", why:"Usage without a sentence back is a vanity number.", res:["yc"]},
+    {id:"iter",name:"Changes made because of feedback", unit:"changes", item:"One change made because a real person hit it", why:"Feedback you didn't act on was entertainment.", res:["gh"]}],
+  share:{ship:.45,user:.3,iter:.25},
+  phases:[["Narrow it","Who it's for and what breaks for them today, in one sentence."],["The spine","The single path that delivers the value."],["In hands","Five real people using it, watched."],["Iterate","Change only what the five actually hit."]],
+  stones:[[.2,"One sentence a stranger understands","A problem statement under 25 words."],[.48,"The core path works on someone else's machine","A deployed link."],[.72,"5 people used it, each said one sentence","Five quotes."],[.92,"3 changes shipped from those sentences","A changelog tied to feedback."]],
+  practice:false }
+];
+
+/* ── Aspects of life beyond the goal (like Mission Control's sections). Each is a small recurring practice
+   with its own floor, a three-stage arc, and optional resources. The user picks at most a few. ────────── */
+var ASPECTS = [
+  {id:"body", ic:"💪", name:"Body", line:"Gym, sport, a walk — the brain pays for the body.", min:30, days:[1,3,5,6], item:"Move for 30 minutes", arc:["Show up: three sessions a week, any kind","A program you follow, tracked weekly","A sport or strength goal with a number"]},
+  {id:"inner", ic:"🪔", name:"Inner practice", line:"Prayer, meditation, journaling — whatever is yours.", min:15, days:[0,1,2,3,4,5,6], item:"Your daily practice", arc:["A fixed time, every day, even short","A practice that holds through exams","Depth: a text, a teacher, a community"]},
+  {id:"lang", ic:"🗣", name:"A language", line:"English fluency, a new language, or your mother tongue's script.", min:20, days:[2,4,6], item:"Language session, 20 minutes", arc:["Daily contact, small doses","Read and write without a dictionary","Speak or write publicly in it"]},
+  {id:"arts", ic:"🎨", name:"Creative practice", line:"Music, drawing, writing.", min:20, days:[0,3,6], item:"Creative practice, 20 minutes", arc:["Basics with a teacher or course","A piece finished each month","Something shared or performed"]},
+  {id:"read", ic:"📚", name:"Reading", line:"Ten pages a day compounds quietly.", min:20, days:[0,1,2,3,4,5,6], item:"Read 10 pages", arc:["Ten pages, every day","A book a month, notes kept","A reading list that shapes your work"]},
+  {id:"earn", ic:"🪙", name:"Earning", line:"Freelance, a side project that pays, open-source stipends.", min:45, days:[6,0], item:"Earning work: one step", arc:["One skill someone would pay for","The first paid piece of work","A regular income from skill"]}
+];
+var ANCHOR_PRESETS = [
+  ["wake","Wake at a fixed time","06:30"],["plan","Close the day: mark what happened","22:00"],["sleep","Lights out","23:00"],
+  ["nophone","First hour without the phone","07:00"],["water","Water, first thing","06:40"]
+];
+
+/* ── What each platform is for (the same model as Mission Control). A rating only moves in rated contests. ── */
+var PLATFORM_ROLES = [
+  ["🧩","Striver A2Z / NeetCode / GFG","Bank · interview practice","Solve in order. Builds skill; no rating. Where a problem is on LeetCode, solve it there so your LeetCode count grows too."],
+  ["🏆","LeetCode contests","Arena · interview rating","Weekly and biweekly contests set your LeetCode rating. Practice problems never change it."],
+  ["⚔","Codeforces rounds","Arena · CP rating","Rated rounds (Div 4 → 3 → 2) set the rating CP-minded recruiters read. Upsolve one problem after each."],
+  ["🧮","CSES + USACO Guide","Bank · CP syllabus","The standard CP checklist and its syllabus. Skill, not signal."],
+  ["💡","Informatics Observatory","Tool · hints","Three hints in order for CSES problems, then a blank-file re-solve. Optional."]
+];
+var DOW_SHORT = ["S","M","T","W","T","F","S"];
+
+var COMP_DATA = [];
+
+var PX = {"a2zSteps":[[1,"Beginner Problems"],[2,"Sorting"],[3,"Arrays"],[4,"Hashing"],[5,"Binary Search"],[6,"Recursion"],[7,"Linked-List"],[8,"Bit Manipulation"],[9,"Greedy Algorithms"],[10,"Sliding Window / 2 Pointer"],[11,"Stack / Queues"],[12,"Binary Trees"],[13,"Binary Search Trees"],[14,"Heaps"],[15,"Graphs"],[16,"Dynamic Programming"],[17,"Tries"],[18,"Strings (Advanced Algo)"],[19,"Maths"]],"a2zTopics":{"1":["Patterns","Basic Maths","Basic Arrays","Basic Hashing","Basic Strings","Basic Recursion"],"2":["Algorithms"],"3":["Fundamentals","Logic Building","FAQs(Medium)","FAQs(Hard)"],"4":["FAQs"],"5":["Fundamentals","Logic Building","On answers","FAQs","2D Arrays"],"6":["Implementation Problems","Subsequence Pattern Problems","FAQs (Medium)","Hard","FAQs (Hard)"],"7":["Fundamentals (Single LL)","Fundamentals (Doubly LL)","Logic Building","FAQs (Medium)","FAQs (Hard)","FAQS (DLL)"],"8":["Problems"],"9":["Easy","Scheduling and Interval Problems","Hard"],"10":["Constant Window","Longest and Smallest Window Problems","Counting Subarrays / Substrings Problems"],"11":["Implementation","Monotonic Stack","FAQs"],"12":["Theory/Traversals","Medium Problems","FAQs","Construction Problems","Traversal in Constant Space"],"13":["Theory and Basics","Medium","FAQs"],"14":["Theory and Implementation","FAQs"],"15":["Theory and traversals","Traversal Problems","Cycles","Hard Problems","Shortest Path Algorithms","Minimum Spanning Tree","Hard Problems II","Additional Algorithms"],"16":["1D DP","2D DP","DP on grids","DP on stocks","DP on subsequences","LIS","DP on strings","MCM DP"],"17":["Theory","Problems"],"18":["Medium Problems","Advanced Problems (Less asked)"],"19":["Sieve of Eratosthenes"]},"a2z":[[2,"pattern-1","Pattern 1","",1,0,0],[2,"pattern-2","Pattern 2","",1,0,0],[2,"pattern-3","Pattern 3","",1,0,0],[2,"pattern-4","Pattern 4","",1,0,0],[2,"pattern-5","Pattern 5","",1,0,0],[2,"pattern-6","Pattern 6","",1,0,0],[2,"pattern-7","Pattern 7","",1,0,0],[2,"pattern-8","Pattern 8","",1,0,0],[2,"pattern-9","Pattern 9","",1,0,0],[2,"pattern-10","Pattern 10","",1,0,0],[2,"pattern-11","Pattern 11","",1,0,0],[2,"pattern-12","Pattern 12","",1,0,0],[2,"pattern-13","Pattern 13","",1,0,0],[2,"pattern-14","Pattern 14","",1,0,0],[2,"pattern-15","Pattern 15","",1,0,0],[2,"pattern-16","Pattern 16","",1,0,0],[2,"pattern-17","Pattern 17","",1,0,0],[2,"pattern-18","Pattern 18","",1,0,0],[2,"pattern-19","Pattern 19","",1,0,0],[2,"pattern-20","Pattern 20","",1,0,0],[2,"pattern-21","Pattern 21","",1,0,0],[2,"pattern-22","Pattern 22","",1,0,0],[1,"count-total-digits-in-a-number","Count all Digits of a Number","e",1,1,0],[2,"count-number-of-odd-digits-in-a-number","Count number of odd digits in a number","",1,1,0],[0,"reverse-integer","Reverse a number","m",1,1,0],[0,"palindrome-number","Palindrome Number","e",1,1,0],[2,"return-the-largest-digit-in-a-number","Return the Largest Digit in a Number","",1,1,0],[2,"factorial-of-a-given-number-i","Factorial of a given number","",1,1,0],[0,"armstrong-number","Check if the Number is Armstrong","e",1,1,0],[1,"perfect-numbers3207","Check for Perfect Number","e",1,1,0],[1,"prime-number2314","Check for Prime Number","e",1,1,0],[2,"count-of-prime-numbers-till-n","Count of Prime Numbers till N","",1,1,0],[1,"gcd-of-two-numbers3459","GCD of Two Numbers","",1,1,0],[1,"lcm-of-two-numbers","LCM of two numbers","e",1,1,0],[1,"all-divisors-of-a-number","Divisors of a Number","e",1,1,0],[1,"sum-all-array-elements","Sum of Array Elements","",1,2,0],[2,"count-of-odd-numbers-in-array","Count of odd numbers in Array","",1,2,0],[1,"check-if-an-array-is-sorted0701","Check if the Array is Sorted I","e",1,2,0],[1,"reverse-an-array","Reverse an array","e",1,2,0],[0,"frequency-of-the-most-frequent-element","Highest Occurring Element in an Array","m",1,3,0],[2,"second-highest-occurring-element","Second Highest Occurring Element","",1,3,0],[2,"sum-of-highest-and-lowest-frequency","Sum of Highest and Lowest Frequency","",1,3,0],[1,"reverse-a-string","Reverse a String II","",1,4,0],[1,"check-palindrome--141628","Palindrome Check","",1,4,0],[0,"largest-odd-number-in-string","Largest Odd Number in a String","e",1,4,0],[0,"longest-common-prefix","Longest Common Prefix","e",1,4,0],[0,"isomorphic-strings","Isomorphic Strings","e",1,4,0],[0,"rotate-string","Rotate String","e",1,4,0],[0,"valid-anagram","Valid Anagram","e",1,4,0],[0,"sort-characters-by-frequency","Sort Characters by Frequency","m",1,4,0],[1,"recursively-sum-n-numbers","Sum of First N Numbers","e",1,5,0],[2,"factorial-of-a-given-number-ii","Factorial of a Given Number","",1,5,0],[2,"sum-of-array-elements-ii","Sum of Array Elements II","",1,5,0],[2,"reverse-a-string-i","Reverse a String I","",1,5,0],[0,"valid-palindrome","Check if String is Palindrome or Not","e",1,5,0],[2,"check-if-a-number-is-prime-or-not","Check if a Number is Prime or Not","",1,5,0],[2,"reverse-an-array-ii","Reverse an array 2","",1,5,0],[0,"check-if-array-is-sorted-and-rotated","Check if the Array is Sorted II","e",1,5,0],[1,"sum-of-digits1742","Sum of Digits in a Given Number","e",1,5,0],[0,"fibonacci-number","Fibonacci Number","e",1,5,0],[1,"selection-sort","Selection Sort","e",2,0,0],[1,"bubble-sort","Bubble Sort","e",2,0,0],[1,"insertion-sort","Insertion Sorting","e",2,0,0],[1,"merge-sort","Merge Sorting","m",2,0,1],[1,"quick-sort","Quick Sorting","m",2,0,1],[1,"who-will-win-1587115621","Linear Search","",3,0,0],[2,"largest-element","Largest Element","",3,0,0],[1,"second-largest3735","Second Largest Element","e",3,0,0],[0,"max-consecutive-ones","Maximum Consecutive Ones","e",3,0,0],[0,"rotate-array","Left Rotate Array by One","m",3,0,0],[0,"move-zeroes","Move Zeros to End","e",3,1,0],[0,"remove-duplicates-from-sorted-array","Remove duplicates from sorted array","e",3,1,0],[2,"find-missing-number","Find missing number","",3,1,0],[1,"union-of-two-sorted-arrays-1587115621","Union of two sorted arrays","m",3,1,1],[1,"intersection-of-two-sorted-array-1587115620","Intersection of two sorted arrays","e",3,1,1],[0,"majority-element","Majority Element-I","e",3,2,1],[1,"leaders-in-an-array-1587115620","Leaders in an Array","e",3,2,0],[0,"rearrange-array-elements-by-sign","Rearrange array elements by sign","m",3,2,1],[0,"spiral-matrix","Print the matrix in spiral manner","m",3,2,1],[0,"pascals-triangle","Pascal's Triangle I","e",3,2,1],[1,"pascal-triangle0652","Pascal's Triangle II","m",3,2,1],[2,"pascals-triangle-iii","Pascal's Triangle III","",3,2,1],[0,"rotate-image","Rotate matrix by 90 degrees","m",3,2,1],[0,"set-matrix-zeroes","Set Matrix Zeroes","m",3,2,1],[0,"two-sum","Two Sum","e",3,2,0],[0,"3sum","3 Sum","m",3,2,1],[0,"4sum","4 Sum","m",3,2,1],[0,"sort-colors","Sort an array of 0's 1's and 2's","m",3,2,1],[1,"kadanes-algorithm-1587115620","Kadane's Algorithm","m",3,2,1],[0,"next-permutation","Next Permutation","m",3,2,1],[0,"majority-element-ii","Majority Element-II","m",3,3,1],[1,"find-missing-and-repeating2512","Find the repeating and missing number","e",3,3,1],[1,"inversion-of-array-1587115620","Count Inversions","m",3,3,1],[0,"reverse-pairs","Reverse Pairs","h",3,3,2],[0,"maximum-product-subarray","Maximum Product Subarray in an Array","m",3,3,1],[0,"merge-sorted-array","Merge two sorted arrays without extra space","e",3,3,1],[0,"longest-consecutive-sequence","Longest Consecutive Sequence in an Array","m",4,0,1],[1,"longest-sub-array-with-sum-k0809","Longest subarray with sum K","m",4,0,1],[1,"largest-subarray-with-0-sum","Largest Subarray with Sum 0","m",4,0,1],[0,"subarray-sum-equals-k","Count subarrays with given sum","m",4,0,1],[1,"count-subarray-with-given-xor","Count subarrays with given xor K","m",4,0,1],[0,"binary-search","Search X in sorted array","e",5,0,0],[1,"implement-lower-bound","Lower Bound","e",5,0,0],[1,"implement-upper-bound","Upper Bound","e",5,0,0],[0,"search-insert-position","Search insert position","e",5,1,0],[2,"floor-and-ceil-in-sorted-array","Floor and Ceil in Sorted Array","m",5,1,0],[0,"find-first-and-last-position-of-element-in-sorted-array","First and last occurrence","m",5,1,1],[0,"search-in-rotated-sorted-array","Search in rotated sorted array-I","m",5,1,1],[0,"search-in-rotated-sorted-array-ii","Search in rotated sorted array-II","m",5,1,1],[0,"find-minimum-in-rotated-sorted-array","Find minimum in Rotated Sorted Array","m",5,1,1],[2,"find-out-how-many-times-the-array-is-rotated","Find out how many times the array is rotated","",5,1,0],[0,"single-element-in-a-sorted-array","Single element in sorted array","m",5,1,1],[1,"square-root","Find square root of a number","e",5,2,1],[1,"find-nth-root-of-m5843","Find Nth root of a number","m",5,2,1],[0,"find-the-smallest-divisor-given-a-threshold","Find the smallest divisor","m",5,2,1],[0,"koko-eating-bananas","Koko eating bananas","m",5,2,1],[0,"minimum-number-of-days-to-make-m-bouquets","Minimum days to make M bouquets","m",5,2,1],[0,"capacity-to-ship-packages-within-d-days","Capacity to Ship Packages Within D Days","m",5,2,1],[0,"kth-missing-positive-number","Kth Missing Positive Number","e",5,2,1],[1,"the-painters-partition-problem1535","Painter's Partition","h",5,2,1],[1,"aggressive-cows","Aggressive Cows","m",5,3,1],[2,"book-allocation-problem","Book Allocation Problem","m",5,3,1],[0,"find-peak-element","Find peak element","m",5,3,1],[0,"median-of-two-sorted-arrays","Median of 2 sorted arrays","h",5,3,2],[2,"kth-element-of-2-sorted-arrays","Kth element of 2 sorted arrays","m",5,3,1],[0,"minimize-max-distance-to-gas-station","Minimize Max Distance to Gas Station","h",5,3,1],[0,"split-array-largest-sum","Split array - largest sum","h",5,3,1],[2,"find-row-with-maximum-1's","Find row with maximum 1's","",5,4,0],[0,"search-a-2d-matrix","Search in a 2D Matrix","m",5,4,1],[0,"search-a-2d-matrix-ii","Search in 2D matrix - II","m",5,4,1],[0,"find-a-peak-element-ii","Find Peak Element - II","m",5,4,1],[1,"median-in-a-row-wise-sorted-matrix1527","Matrix Median","m",5,4,1],[0,"powx-n","Pow(x,n)","m",6,0,1],[0,"generate-parentheses","Generate Parentheses","m",6,0,1],[2,"power-set","Power Set","m",6,0,1],[2,"check-if-there-exists-a-subsequence-with-sum-k","Check if there exists a subsequence with sum K","m",6,1,1],[2,"count-all-subsequences-with-sum-k","Count all subsequences with sum K","m",6,1,1],[0,"combination-sum","Combination Sum","m",6,2,1],[0,"combination-sum-ii","Combination Sum II","m",6,2,1],[1,"subset-sums2234","Subsets I","m",6,2,1],[0,"subsets-ii","Subsets II","m",6,2,1],[0,"combination-sum-iii","Combination Sum III","m",6,2,1],[0,"letter-combinations-of-a-phone-number","Letter Combinations of a Phone Number","m",6,3,1],[0,"palindrome-partitioning","Palindrome partitioning","m",6,4,1],[0,"word-search","Word Search","m",6,4,1],[0,"n-queens","N Queen","h",6,4,2],[1,"rat-in-a-maze-problem","Rat in a Maze","m",6,4,2],[1,"m-coloring-problem-1587115620","M Coloring Problem","m",6,4,2],[0,"sudoku-solver","Sudoku Solver","h",6,4,2],[1,"linkedlist-traversal","Traversal in Linked List","",7,0,0],[0,"delete-node-in-a-linked-list","Deletion of the head of LL","m",7,0,1],[1,"deletion-at-the-end-of-a-linked-list","Deletion of the tail of Linked List","e",7,0,1],[2,"deletion-of-the-kth-element-of-ll","Deletion of the Kth element of Linked List","",7,0,1],[2,"delete-the-element-with-value-x","Delete the element with value X","",7,0,0],[2,"insertion-at-the-head-of-ll","Insertion at the head of Linked List","",7,0,0],[1,"linked-list-insertion-1587115620","Insertion at the tail of Linked List","",7,0,1],[2,"insertion-at-the-kth-position-of-ll","Insertion at the Kth position of Linked List","",7,0,1],[2,"insertion-before-the-value-x-in-ll","Insertion before the value X in Linked List","",7,0,1],[1,"create-a-doubly-linked-list-from-a-given-array","Convert Array to Doubly Linked List","e",7,1,1],[2,"delete-tail-of-dll","Delete Tail of Doubly Linked List","",7,1,1],[2,"delete-kth-element-of-dll","Delete Kth Element of Doubly Linked List","",7,1,1],[2,"removing-given-node-in-dll","Removing given node in Doubly Linked List","",7,1,1],[2,"insert-node-before-head-in-dll","Insert node before head in Doubly Linked List","",7,1,0],[2,"insert-node-before-tail-in-dll","Insert node before tail in Doubly Linked List","",7,1,1],[2,"insert-node-before-kth-node-in-dll","Insert node before (kth node) in Doubly Linked List","",7,1,1],[2,"insert-before-given-node-in-dll","Insert before given node in Doubly Linked List","",7,1,1],[0,"add-two-numbers","Add two numbers in Linked List","m",7,2,1],[0,"odd-even-linked-list","Segregate odd and even nodes in Linked List","m",7,2,1],[1,"given-a-linked-list-of-0s-1s-and-2s-sort-it","Sort a Linked List of 0's 1's and 2's","m",7,2,1],[0,"remove-nth-node-from-end-of-list","Remove Nth node from the back of the LL","m",7,2,1],[0,"reverse-linked-list","Reverse a LL","e",7,2,1],[2,"add-one-to-a-number-represented-by-ll","Add one to a number represented by LL","",7,3,1],[0,"middle-of-the-linked-list","Find Middle of Linked List","e",7,3,0],[0,"delete-the-middle-node-of-a-linked-list","Delete the middle node in LL","m",7,3,1],[0,"palindrome-linked-list","Check if LL is palindrome or not","e",7,3,1],[0,"intersection-of-two-linked-lists","Find the intersection point of Y LL","e",7,3,1],[0,"linked-list-cycle","Detect a loop in LL","e",7,3,1],[0,"linked-list-cycle-ii","Find the starting point in LL","m",7,3,1],[2,"length-of-loop-in-ll","Length of loop in LL","m",7,3,1],[0,"reverse-nodes-in-k-group","Reverse LL in group of given size K","h",7,4,2],[0,"rotate-list","Rotate a LL","m",7,4,1],[0,"merge-two-sorted-lists","Merge two Sorted Lists","e",7,4,1],[1,"flattening-a-linked-list","Flattening of LL","m",7,4,1],[0,"sort-list","Sort LL","m",7,4,1],[0,"copy-list-with-random-pointer","Clone a LL with random and next pointer","m",7,4,1],[1,"delete-all-occurrences-of-a-given-key-in-a-doubly-linked-list","Delete all occurrences of a key in DLL","m",7,5,1],[1,"remove-duplicates-from-a-sorted-doubly-linked-list","Remove duplicates from sorted DLL","e",7,5,1],[1,"find-pairs-with-given-sum-in-doubly-linked-list","Find Pairs with Given Sum in Doubly Linked List","e",7,5,1],[0,"minimum-bit-flips-to-convert-number","Minimum Bit Flips to Convert Number","e",8,0,0],[0,"single-number","Single Number - I","e",8,0,0],[2,"single-number---ii","Single Number - II","",8,0,1],[2,"single-number---iii","Single Number - III","",8,0,1],[0,"divide-two-integers","Divide two numbers without multiplication and division","m",8,0,1],[0,"subsets","Power Set Bit Manipulation","m",8,0,1],[1,"find-xor-of-numbers-from-l-to-r","XOR of numbers in a given range","e",8,0,1],[0,"assign-cookies","Assign Cookies","e",9,0,1],[0,"lemonade-change","Lemonade Change","e",9,0,1],[1,"fractional-knapsack-1587115620","Fractional Knapsack","e",9,0,1],[0,"jump-game","Jump Game - I","m",9,0,1],[1,"shortest-job-first","Shortest Job First","m",9,1,1],[1,"job-sequencing-problem-1587115620","Job sequencing Problem","m",9,1,1],[1,"maximum-meetings-in-one-room","N meetings in one room","m",9,1,1],[0,"non-overlapping-intervals","Non-overlapping Intervals","m",9,1,1],[0,"insert-interval","Insert Interval","m",9,1,1],[0,"merge-intervals","Merge Intervals","m",9,1,1],[2,"minimum-number-of-platforms-required-for-a-railway","Minimum number of platforms required for a railway","m",9,1,1],[0,"valid-parenthesis-string","Valid Paranthesis Checker","m",9,2,1],[0,"candy","Candy","h",9,2,1],[0,"jump-game-ii","Jump Game II","m",9,2,1],[0,"maximum-points-you-can-obtain-from-cards","Maximum Points You Can Obtain from Cards","m",10,0,1],[0,"longest-substring-without-repeating-characters","Longest Substring Without Repeating Characters","m",10,1,1],[0,"max-consecutive-ones-iii","Max Consecutive Ones III","m",10,1,1],[0,"fruit-into-baskets","Fruit Into Baskets","m",10,1,1],[0,"longest-substring-with-at-most-k-distinct-characters","Longest Substring With At Most K Distinct Characters","m",10,1,1],[0,"longest-repeating-character-replacement","Longest Repeating Character Replacement","m",10,1,1],[0,"minimum-window-substring","Minimum Window Substring","h",10,1,1],[0,"number-of-substrings-containing-all-three-characters","Number of Substrings Containing All Three Characters","m",10,2,1],[0,"binary-subarrays-with-sum","Binary Subarrays With Sum","m",10,2,1],[0,"count-number-of-nice-subarrays","Count number of Nice subarrays","m",10,2,1],[0,"subarrays-with-k-different-integers","Subarrays with K Different Integers","h",10,2,1],[1,"implement-stack-using-array","Implement Stack using Arrays","e",11,0,1],[1,"implement-queue-using-array","Implement Queue using Arrays","",11,0,1],[0,"implement-stack-using-queues","Implement Stack using Queue","e",11,0,1],[0,"implement-queue-using-stacks","Implement Queue using Stack","e",11,0,1],[2,"implement-stack-using-linkedlist","Implement stack using Linkedlist","e",11,0,1],[2,"implement-queue-using-linkedlist","Implement queue using Linkedlist","",11,0,1],[0,"valid-parentheses","Balanced Paranthesis","e",11,0,1],[0,"next-greater-element-i","Next Greater Element","e",11,1,1],[0,"next-greater-element-ii","Next Greater Element - 2","m",11,1,1],[0,"asteroid-collision","Asteroid Collision","m",11,1,1],[0,"sum-of-subarray-minimums","Sum of Subarray Minimums","m",11,1,1],[0,"sum-of-subarray-ranges","Sum of Subarray Ranges","m",11,1,1],[0,"remove-k-digits","Remove K Digits","m",11,1,1],[0,"min-stack","Implement Min Stack","m",11,2,1],[0,"sliding-window-maximum","Sliding Window Maximum","h",11,2,1],[0,"trapping-rain-water","Trapping Rainwater","h",11,2,1],[0,"largest-rectangle-in-histogram","Largest rectangle in a histogram","h",11,2,2],[0,"maximal-rectangle","Maximum Rectangles","h",11,2,2],[0,"online-stock-span","Stock span problem","m",11,2,1],[0,"find-the-celebrity","Celebrity Problem","m",11,2,1],[0,"lru-cache","LRU Cache","m",11,2,1],[0,"lfu-cache","LFU Cache","h",11,2,2],[0,"binary-tree-inorder-traversal","Inorder Traversal","e",12,0,0],[0,"binary-tree-preorder-traversal","Preorder Traversal","e",12,0,0],[0,"binary-tree-postorder-traversal","Postorder Traversal","e",12,0,0],[0,"binary-tree-level-order-traversal","Level Order Traversal","m",12,0,1],[2,"pre,-post,-inorder-in-one-traversal","Pre, Post, Inorder in one traversal","",12,0,1],[0,"maximum-depth-of-binary-tree","Maximum Depth in BT","e",12,1,0],[0,"same-tree","Check if two trees are identical or not","e",12,1,1],[0,"balanced-binary-tree","Check for balanced binary tree","e",12,1,1],[0,"diameter-of-binary-tree","Diameter of Binary Tree","e",12,1,1],[0,"binary-tree-maximum-path-sum","Maximum path sum","h",12,1,2],[0,"symmetric-tree","Check for symmetrical BTs","e",12,1,1],[1,"children-sum-parent","Children Sum Property in Binary Tree","m",12,1,1],[0,"binary-tree-zigzag-level-order-traversal","Zig Zag or Spiral Traversal","m",12,2,1],[0,"boundary-of-binary-tree","Boundary Traversal","m",12,2,1],[0,"vertical-order-traversal-of-a-binary-tree","Vertical Order Traversal","h",12,2,1],[1,"top-view-of-binary-tree","Top View of BT","m",12,2,1],[1,"bottom-view-of-binary-tree","Bottom view of BT","m",12,2,1],[0,"binary-tree-right-side-view","Right/Left View of BT","m",12,2,1],[1,"root-to-leaf-paths","Print root to leaf path in BT","m",12,2,1],[0,"lowest-common-ancestor-of-a-binary-tree","LCA in BT","m",12,2,1],[0,"maximum-width-of-binary-tree","Maximum Width of BT","m",12,2,1],[0,"all-nodes-distance-k-in-binary-tree","Print all nodes at a distance of K in BT","m",12,2,1],[2,"minimum-time-taken-to-burn-the-bt-from-a-given-node","Minimum time taken to burn the BT from a given Node","",12,2,1],[0,"count-complete-tree-nodes","Count total nodes in a complete BT","m",12,2,1],[0,"flatten-binary-tree-to-linked-list","Flatten Binary Tree to Linked List","m",12,2,1],[2,"requirements-needed-to-construct-a-unique-bt","Requirements needed to construct a unique BT","",12,3,1],[0,"construct-binary-tree-from-preorder-and-inorder-traversal","Construct a BT from Preorder and Inorder","m",12,3,1],[0,"construct-binary-tree-from-inorder-and-postorder-traversal","Construct a BT from Postorder and Inorder","m",12,3,1],[0,"serialize-and-deserialize-binary-tree","Serialize and De-serialize BT","h",12,3,2],[0,"search-in-a-binary-search-tree","Search in BST","e",13,0,0],[2,"floor-and-ceil-in-a-bst","Floor and Ceil in a BST","",13,0,0],[0,"insert-into-a-binary-search-tree","Insert a given node in BST","m",13,1,1],[0,"delete-node-in-a-bst","Delete a node in BST","m",13,1,1],[0,"kth-smallest-element-in-a-bst","Kth Smallest and Largest element in BST","m",13,1,1],[0,"validate-binary-search-tree","Check if a tree is a BST or not","m",13,1,1],[0,"lowest-common-ancestor-of-a-binary-search-tree","LCA in BST","m",13,1,1],[0,"construct-binary-search-tree-from-preorder-traversal","Construct a BST from a preorder traversal","m",13,1,1],[0,"inorder-successor-in-bst","Inorder successor and predecessor in BST","m",13,1,1],[0,"binary-search-tree-iterator","BST iterator","m",13,2,1],[0,"two-sum-iv-input-is-a-bst","Two sum in BST","e",13,2,1],[0,"recover-binary-search-tree","Correct BST with two nodes swapped","m",13,2,1],[0,"maximum-sum-bst-in-binary-tree","Largest BST in Binary Tree","h",13,2,2],[2,"heapify-algorithm","Heapify Algorithm","",14,0,1],[1,"heapify-the-vector--102013","Build heap from a given Array","e",14,0,1],[1,"min-heap-implementation","Implement Min Heap","e",14,0,1],[1,"max-heap-implementation","Implement Max Heap","e",14,0,1],[2,"check-if-an-array-represents-a-min-heap-","Check if an array represents a min heap","",14,0,1],[2,"convert-min-heap-to-max-heap","Convert Min Heap to Max Heap","m",14,0,1],[1,"heap-sort","Heap Sort","m",14,0,1],[2,"k-th-largest-element-in-an-array","K-th Largest element in an array","",14,0,1],[0,"kth-largest-element-in-a-stream","Kth largest element in a stream of running integers","e",14,1,1],[2,"traversal-techniques","Traversal Techniques","",15,0,1],[1,"number-of-provinces","Connected Components","m",15,0,1],[0,"number-of-provinces","Number of provinces","m",15,1,1],[0,"number-of-islands","Number of islands","m",15,1,1],[0,"flood-fill","Flood fill algorithm","e",15,1,1],[0,"number-of-enclaves","Number of enclaves","m",15,1,1],[0,"rotting-oranges","Rotten Oranges","m",15,1,1],[0,"01-matrix","Distance of nearest cell having one","m",15,1,1],[0,"surrounded-regions","Surrounded Regions","m",15,1,1],[1,"number-of-distinct-islands","Number of distinct islands","m",15,1,1],[0,"course-schedule","Detect a cycle in an undirected graph","m",15,2,1],[0,"is-graph-bipartite","Bipartite graph","m",15,2,1],[1,"topological-sort","Topological sort or Kahn's algorithm","m",15,2,1],[0,"find-eventual-safe-states","Find eventual safe states","m",15,3,1],[0,"course-schedule-ii","Course Schedule II","m",15,3,1],[0,"alien-dictionary","Alien Dictionary","h",15,3,1],[1,"shortest-path-in-directed-acyclic-graph","Shortest path in DAG","m",15,3,1],[2,"shortest-path-in-undirected-graph-with-unit-weights","Shortest path in undirected graph with unit weights","",15,3,1],[0,"word-ladder","Word ladder I","h",15,3,1],[0,"word-ladder-ii","Word ladder II","h",15,3,2],[1,"implementing-dijkstra-set-1-adjacency-matrix","Dijkstra's algorithm","m",15,4,1],[1,"shortest-path-in-undirected-graph-having-unit-distance","Print Shortest Path","m",15,4,1],[0,"shortest-path-in-binary-matrix","Shortest Distance in a Binary Maze","m",15,4,1],[0,"path-with-minimum-effort","Path with minimum effort","m",15,4,1],[0,"cheapest-flights-within-k-stops","Cheapest flight within K stops","m",15,4,1],[1,"minimum-multiplications-to-reach-end","Minimum multiplications to reach end","m",15,4,1],[0,"number-of-ways-to-arrive-at-destination","Number of ways to arrive at destination","m",15,4,1],[1,"distance-from-the-source-bellman-ford-algorithm","Bellman ford algorithm","m",15,4,1],[1,"implementing-floyd-warshall2042","Floyd warshall algorithm","m",15,4,2],[0,"find-the-city-with-the-smallest-number-of-neighbors-at-a-threshold-distance","Find the city with the smallest number of neighbors","m",15,4,1],[1,"disjoint-set-union-find","Disjoint Set","m",15,5,1],[2,"find-the-mst-weight","Find the MST weight","",15,5,1],[0,"number-of-operations-to-make-network-connected","Number of operations to make network connected","m",15,6,1],[0,"accounts-merge","Accounts merge","m",15,6,1],[0,"number-of-islands-ii","Number of islands II","h",15,6,2],[0,"making-a-large-island","Making a large island","h",15,6,2],[0,"most-stones-removed-with-same-row-or-column","Most stones removed with same row or column","m",15,6,1],[0,"maximum-number-of-non-overlapping-substrings","Kosaraju's algorithm","h",15,7,2],[0,"critical-connections-in-a-network","Bridges in graph","h",15,7,2],[1,"articulation-point2616","Articulation point in graph","h",15,7,2],[0,"climbing-stairs","Climbing stairs","e",16,0,1],[1,"geek-jump","Frog Jump","m",16,0,1],[2,"frog-jump-with-k-distances","Frog jump with K distances","m",16,0,1],[0,"house-robber","Maximum sum of non adjacent elements","m",16,0,1],[0,"house-robber-ii","House robber","m",16,0,1],[1,"geeks-training","Ninja's training","m",16,1,1],[0,"unique-paths","Grid unique paths","m",16,2,1],[0,"unique-paths-ii","Unique paths II","m",16,2,1],[0,"minimum-path-sum","Minimum Falling Path Sum","m",16,2,1],[0,"triangle","Triangle","m",16,2,1],[1,"chocolate-pickup-ii","Cherry pickup II","h",16,2,2],[0,"best-time-to-buy-and-sell-stock","Best time to buy and sell stock","e",16,3,1],[0,"best-time-to-buy-and-sell-stock-ii","Best time to buy and sell stock II","m",16,3,1],[0,"best-time-to-buy-and-sell-stock-iii","Best time to buy and sell stock III","h",16,3,1],[0,"best-time-to-buy-and-sell-stock-iv","Best time to buy and sell stock IV","h",16,3,2],[0,"best-time-to-buy-and-sell-stock-with-transaction-fee","Best time to buy and sell stock with transaction fees","m",16,3,1],[1,"subset-sum-problem-1611555638","Subset sum equals to target","m",16,4,1],[0,"partition-equal-subset-sum","Partition equal subset sum","m",16,4,1],[0,"partition-array-into-two-arrays-to-minimize-sum-difference","Partition a set into two subsets with minimum absolute sum difference","h",16,4,2],[1,"perfect-sum-problem5633","Count subsets with sum K","m",16,4,1],[1,"partitions-with-given-difference","Count partitions with given difference","m",16,4,1],[1,"0-1-knapsack-problem0945","0 and 1 Knapsack","m",16,4,1],[0,"coin-change","Minimum coins","m",16,4,1],[0,"target-sum","Target sum","m",16,4,1],[0,"coin-change-ii","Coin change II","m",16,4,1],[2,"unbounded-knapsack","Unbounded knapsack","m",16,4,1],[1,"rod-cutting0840","Rod cutting problem","m",16,4,1],[0,"longest-increasing-subsequence","Longest Increasing Subsequence","m",16,5,1],[2,"print-longest-increasing-subsequence","Print Longest Increasing Subsequence","",16,5,1],[0,"largest-divisible-subset","Largest Divisible Subset","m",16,5,1],[0,"longest-string-chain","Longest String Chain","m",16,5,1],[1,"longest-bitonic-subsequence0824","Longest Bitonic Subsequence","m",16,5,1],[0,"number-of-longest-increasing-subsequence","Number of Longest Increasing Subsequences","m",16,5,1],[0,"longest-common-subsequence","Longest common subsequence","m",16,6,1],[1,"longest-common-substring1452","Longest common substring","m",16,6,1],[0,"longest-palindromic-subsequence","Longest palindromic subsequence","m",16,6,1],[0,"minimum-insertion-steps-to-make-a-string-palindrome","Minimum insertions to make string palindrome","h",16,6,1],[0,"delete-operation-for-two-strings","Minimum insertions or deletions to convert string A to B","m",16,6,1],[0,"shortest-common-supersequence","Shortest common supersequence","h",16,6,1],[0,"distinct-subsequences","Distinct subsequences","h",16,6,1],[0,"edit-distance","Edit distance","m",16,6,1],[0,"wildcard-matching","Wildcard matching","h",16,6,1],[1,"matrix-chain-multiplication0303","Matrix chain multiplication","h",16,7,2],[0,"burst-balloons","Burst balloons","h",16,7,2],[0,"palindrome-partitioning-ii","Palindrome partitioning II","h",16,7,2],[0,"partition-array-for-maximum-sum","Partition Array for Maximum Sum","m",16,7,1],[0,"parsing-a-boolean-expression","Different Ways to Evaluate a Boolean Expression","h",16,7,2],[0,"implement-trie-prefix-tree","Trie Implementation and Operations","m",17,0,1],[2,"trie-implementation-and-advanced-operations","Trie Implementation and Advanced Operations","",17,0,1],[1,"longest-valid-word-with-all-prefixes","Longest Word with All Prefixes","m",17,1,1],[1,"count-of-distinct-substrings","Number of distinct substrings in a string","m",17,1,1],[0,"maximum-xor-of-two-numbers-in-an-array","Maximum XOR of two numbers in an array","m",17,1,1],[0,"maximum-xor-with-an-element-from-array","Maximum Xor with an element from an array","h",17,1,2],[0,"reverse-words-in-a-string","Reverse every word in a string","m",18,0,1],[0,"minimum-add-to-make-parentheses-valid","Minimum number of bracket reversals to make an expression balanced","m",18,0,1],[0,"count-and-say","Count and say","m",18,0,1],[0,"repeated-string-match","Rabin Karp Algorithm","m",18,1,1],[2,"z-function","Z function","e",18,1,1],[0,"find-the-index-of-the-first-occurrence-in-a-string","KMP Algorithm or LPS array","e",18,1,1],[0,"shortest-palindrome","Shortest Palindrome","h",18,1,2],[0,"longest-happy-prefix","Longest happy prefix","h",18,1,2],[2,"print-all-primes-till-n","Print all primes till N","",19,0,1],[2,"prime-factorisation-of-a-number","Prime factorisation of a Number","",19,0,1],[0,"count-primes","Count primes in range L to R","m",19,0,1]],};
+
+/* ── The plan, derived from the answers. Pure: same answers + same date → same plan. ───────── */
+var ITEM_MIN = 40;
+var goalOf = function(id){ return GOALS.filter(function(g){return g.id===id})[0]||GOALS[0]; };
+function derive(S){
+  var g=goalOf(S.goal), start=S.start, end=S.deadline;
+  var days=Math.max(7,gap(start,end)+1), weeks=Math.max(1,Math.round(days/7)), wd=S.days||[1,2,3,4,5];
+  var workDays=0; for(var i=0;i<days;i++){ if(wd.indexOf(dow(addDays(start,i)))>-1) workDays++; } workDays=Math.max(1,workDays);
+  var perDay=Math.max(1,Math.floor((S.hours||2)*60/ITEM_MIN));
+  var floorN=clamp(S.floorSet!=null?S.floorSet:Math.round(perDay/3),1,perDay);
+  var total=perDay*workDays;
+  var tracks=g.tracks.map(function(t){
+    var rk=(S.trackRes||{})[t.id]||t.res[0], cu=(S.customRes||{})[t.id];
+    var r=cu&&cu.u?{n:cu.n||"My resource",u:cu.u}:RES[rk]||null;
+    return {id:t.id,name:t.name,unit:t.unit,why:t.why,item:t.item,ladder:t.ladder&&(rk==="a2z"||!rk),res:r,resKey:rk,
+            target:Math.max(3,Math.round(total*(g.share[t.id]||0)))};
+  });
+  var phases=g.phases.map(function(ph,i){
+    return {n:i,name:ph[0],goal:ph[1],from:addDays(start,Math.round(days*i/g.phases.length)),to:addDays(start,Math.round(days*(i+1)/g.phases.length)-1)};
+  });
+  var stones=g.stones.map(function(st,i){
+    return {n:i,at:addDays(start,Math.round(days*st[0])),p:st[0],artifact:st[2],
+            need:tracks.map(function(t){ return {id:t.id,unit:t.unit,name:t.name,n:Math.max(1,Math.round(t.target*st[0]))}; })};
+  });
+  var aspects=(S.aspects||[]).filter(function(a){return a.on}).map(function(a){
+    var b=ASPECTS.filter(function(x){return x.id===a.id})[0]; if(!b) return null;
+    return {id:a.id,ic:b.ic,name:b.name,line:b.line,min:a.min||b.min,days:a.days||b.days,item:a.item||b.item,arc:b.arc,res:a.res||null};
+  }).filter(Boolean);
+  return {g:g,start:start,end:end,days:days,weeks:weeks,workDays:workDays,perDay:perDay,floorN:floorN,tracks:tracks,phases:phases,stones:stones,aspects:aspects,
+          total:tracks.reduce(function(a,t){return a+t.target},0)};
+}
+var phaseAt=function(P,d){ for(var i=P.phases.length-1;i>=0;i--) if(d>=P.phases[i].from) return P.phases[i]; return P.phases[0]; };
+
+/* ── The queue: every track is a numbered run of units; today is the front of it. Missed work waits;
+   it never doubles tomorrow. ───────────────────────────────────────────────────────────────── */
+var LAD=null;
+function ladder(){
+  if(LAD) return LAD;
+  var tp=PX.a2zTopics, sn={}; PX.a2zSteps.forEach(function(s){ sn[s[0]]=s[1]; });
+  var PL=[["lc","LeetCode","https://leetcode.com/problems/","/"],["gfg","GeeksforGeeks","https://www.geeksforgeeks.org/problems/","/1"],["tuf","takeUforward","https://takeuforward.org/plus/dsa/problems/",""]];
+  LAD=PX.a2z.map(function(r,i){ var pl=PL[r[0]];
+    return {key:pl[0]+"-"+r[1],i:i,name:r[2],diff:r[3],step:r[4],stepName:sn[r[4]]||"",topic:((tp[r[4]]||[])[r[5]])||"",tier:r[6],plat:pl[1],url:pl[2]+r[1]+pl[3]}; });
+  return LAD;
+}
+function allDone(S){ var hit={}; Object.keys(S.done||{}).forEach(function(d){ (S.done[d]||[]).forEach(function(x){ hit[x]=d; }); }); return hit; }
+function queue(P,S){
+  var out=[];
+  P.tracks.forEach(function(t){ for(var k=1;k<=t.target;k++) out.push({id:t.id+":"+k,tr:t.id,name:t.item,track:t.name,unit:t.unit,k:k,of:t.target,res:t.res}); });
+  out.sort(function(a,b){ return (a.k/a.of)-(b.k/b.of)||a.tr.localeCompare(b.tr); });
+  var hit=allDone(S);
+  return {all:out,open:out.filter(function(x){return !hit[x.id]}),hit:hit};
+}
+function bindItems(P,S,items){
+  var used={}, prob=S.prob||{};
+  return items.map(function(it){
+    var t=P.tracks.filter(function(x){return x.id===it.tr})[0];
+    if(t&&t.ladder){ var pr=ladder().filter(function(x){ return x.tier===1&&!prob[x.key]&&!used[x.key]; })[0];
+      if(pr){ used[pr.key]=1; return Object.assign({},it,{name:pr.name,url:pr.url,sub:"A2Z · Step "+pr.step+" · "+pr.stepName,pk:pr.key}); } }
+    if(it.res&&it.res.u) return Object.assign({},it,{url:it.res.u,sub:it.res.n});
+    if(it.res) return Object.assign({},it,{sub:it.res.n});
+    return it;
+  });
+}
+/* Weekly floor calibration: the last 14 days decide this week's level (-1 light, 0 normal, +1 stretch). */
+var FLV={"-1":"Light","0":"Normal","1":"Stretch"};
+function lvlOf(S,d){ var c=(S.flCal||{})[monOf(d)]; return c?c.lvl||0:0; }
+function isWork(S,d){ return d>=S.start&&(S.days||[]).indexOf(dow(d))>-1; }
+function floorFor(P,S,d){ if(!isWork(S,d)) return 0; return clamp(P.floorN+lvlOf(S,d),1,Math.max(1,capFor(P,S,d))); }
+function capFor(P,S,d){ return isWork(S,d)?Math.max(1,P.perDay+(S.capAdj||0)):0; }
+function unitsOn(S,d){ return ((S.done||{})[d]||[]).filter(function(x){ return x.indexOf(":")>0&&x.slice(0,2)!=="a:"&&x.slice(0,4)!=="asp:"; }).length; }
+function floorMet(P,S,d){ var f=floorFor(P,S,d); return f>0&&unitsOn(S,d)>=f; }
+function calibrate(P,S,d){
+  var mon=monOf(d), prev=((S.flCal||{})[addDays(mon,-7)]||{}).lvl||0, good=0, n=0;
+  for(var i=1;i<=14;i++){ var x=addDays(mon,-i); if(x<S.start||!isWork(S,x)) continue; n++; if(floorMet(P,S,x)) good++; }
+  var r=n?good/n:0, lvl=prev, why;
+  if(n<5) why="Fewer than five working days to judge yet, so the floor holds.";
+  else if(r<.6){ lvl=Math.max(-1,prev-1); why=good+" of "+n+" floor days met in the last two weeks ("+Math.round(r*100)+"%). A floor missed this often has stopped being a floor, so this week it is lighter."; }
+  else if(prev<0&&r>=.8){ lvl=0; why=good+" of "+n+" met ("+Math.round(r*100)+"%) on the light floor: back to normal."; }
+  else if(r>=.9&&prev<1){ lvl=prev+1; why=good+" of "+n+" met ("+Math.round(r*100)+"%). The floor is easy for you now, so it stretches by one unit."; }
+  else why=good+" of "+n+" met ("+Math.round(r*100)+"%). The right size; it holds.";
+  return {lvl:lvl,prev:prev,good:good,n:n,why:why,at:d};
+}
+/* Today, laid out on a clock: classes are blocked, anchors pinned, then the floor, then the rest, then aspects. */
+function dayPlan(P,S,d){
+  var q=queue(P,S), cap=capFor(P,S,d), fN=floorFor(P,S,d);
+  var doneToday=((S.done||{})[d]||[]);
+  // items ticked today stay visible today
+  var todayDone=q.all.filter(function(x){ return q.hit[x.id]===d; });
+  var openNeed=Math.max(0,cap-todayDone.length);
+  var take=bindItems(P,S,todayDone.concat(q.open.slice(0,openNeed)));
+  var floor=take.slice(0,fN), rest=take.slice(fN);
+  var asp=P.aspects.filter(function(a){ return a.days.indexOf(dow(d))>-1; }).map(function(a){ return {id:"asp:"+a.id,name:a.item,ic:a.ic,min:a.min,aspect:a.id,url:a.res&&a.res.u,sub:a.name}; });
+  var anchors=(S.anchors||[]).map(function(a){ return {id:"a:"+a.id,name:a.label,at:a.at}; }).sort(function(a,b){return hm(a.at)-hm(b.at)});
+  // a simple clock: free windows between wake+30 and sleep, minus class hours on class days
+  var wake=hm(S.wake||"06:30")+30, sleep=hm(S.sleep||"23:00")-30, cls=S.classes||{days:[1,2,3,4,5],from:"09:00",to:"17:00"};
+  var busy=[]; if((cls.days||[]).indexOf(dow(d))>-1&&cls.from&&cls.to) busy.push([hm(cls.from),hm(cls.to)+30]);
+  busy.push([hm("13:00"),hm("13:45")]); busy.push([hm("19:30"),hm("20:15")]); // meals
+  busy.sort(function(a,b){return a[0]-b[0]});
+  var t=wake, place=function(min){ for(var guard=0;guard<40;guard++){ var clash=busy.filter(function(b){ return t<b[1]&&t+min>b[0]; })[0];
+      if(!clash) break; t=clash[1]; } if(t+min>sleep) return null; var a=t; t+=min+10; return a; };
+  var timed=function(arr,min){ return arr.map(function(x){ var a=place(x.min||min); return Object.assign({},x,{a:a,z:a==null?null:a+(x.min||min)}); }); };
+  floor=timed(floor,ITEM_MIN); rest=timed(rest,ITEM_MIN); asp=timed(asp,30);
+  return {floor:floor,rest:rest,aspects:asp,anchors:anchors,cap:cap,floorN:fN,isWork:isWork(S,d),openCount:q.open.length,doneCount:q.all.length-q.open.length,q:q,doneToday:doneToday};
+}
+function weekReport(P,S,d){
+  var mon=monOf(d), rows=[], plan=0, done=0, asp=0, aspDone=0;
+  for(var i=0;i<7;i++){ var day=addDays(mon,i), c=capFor(P,S,day), n=unitsOn(S,day);
+    var ad=P.aspects.filter(function(a){return a.days.indexOf(dow(day))>-1}), an=ad.filter(function(a){ return ((S.done||{})[day]||[]).indexOf("asp:"+a.id)>-1; }).length;
+    if(day<=d){ plan+=c; done+=Math.min(n,c||n); asp+=ad.length; aspDone+=an; }
+    rows.push({d:day,cap:c,n:n,future:day>d,met:floorMet(P,S,day),aspN:ad.length,aspDone:an}); }
+  var pct=plan?Math.round(done*100/plan):0;
+  var verdict=plan===0?"Nothing was planned yet this week.":pct>=95?"You did what you said you would.":pct>=70?"Most of it. The gap is real but small.":pct>=40?"Under half. The plan is bigger than your week.":"The plan did not survive the week. It needs to be smaller, not louder.";
+  return {mon:mon,rows:rows,plan:plan,done:done,pct:pct,verdict:verdict,asp:asp,aspDone:aspDone,advice:plan===0?null:pct<60?-1:pct>=95?1:0};
+}
+function streak(P,S,d){ var n=0; for(var i=0;i<500;i++){ var x=addDays(d,-i); if(x<S.start) break; if(!isWork(S,x)) continue;
+  if(floorMet(P,S,x)) n++; else if(i>0) break; } return n; }
+function trackCount(P,S,t){ var q=queue(P,S), n=0; q.all.forEach(function(x){ if(x.tr===t.id&&q.hit[x.id]) n++; });
+  if(t.ladder){ var solo=Object.keys(S.prob||{}).filter(function(k){return S.prob[k]==="s"}).length; n=Math.max(n,solo); } return n; }
+function stoneStat(P,S,st,d){ var have=st.need.map(function(x){ var t=P.tracks.filter(function(y){return y.id===x.id})[0]; return {id:x.id,n:t?trackCount(P,S,t):0,need:x.n,unit:x.unit,name:x.name}; });
+  var met=have.every(function(x){return x.n>=x.need}); return {have:have,met:met,past:st.at<d}; }
+
+/* ── Storage. The plan and every mark live in this browser only. ───────────────────────────── */
+var KEY="nitya.v2";
+var loadS=function(){ try{ var r=localStorage.getItem(KEY); return r?JSON.parse(r):null; }catch(e){ return null; } };
+var saveS=function(S){ try{ localStorage.setItem(KEY,JSON.stringify(S)); localStorage.setItem("nitya.savedAt",new Date().toISOString()); return true; }catch(e){ return false; } };
+var IN_CLAUDE = !!(window.claude&&window.claude.use);
+/* Backup code: the whole plan as one string you can keep anywhere and paste back on any device. */
+var b64e=function(s){ return btoa(unescape(encodeURIComponent(s))); }, b64d=function(s){ return decodeURIComponent(escape(atob(s))); };
+var backupCode=function(S){ return "NITYA1."+b64e(JSON.stringify(Object.assign({},S,{_at:new Date().toISOString()}))); };
+function readBackup(code){
+  var c=String(code||"").trim().replace(/\s+/g,"");
+  if(c.indexOf("NITYA1.")!==0) throw new Error("This doesn't look like a Nitya backup code (it should start with NITYA1.).");
+  var o=JSON.parse(b64d(c.slice(7)));
+  if(!o||typeof o!=="object"||!o.goal||!o.deadline||!o.start) throw new Error("The code is damaged or incomplete. Copy it again in full.");
+  delete o._at; return o;
+}
+
+/* ── Founder reports: anonymous by construction ─────────────────────────────────────────────
+   1. Identity: a random code made on this device (S.anon, like "u-7f3k9q2m"), built from nothing about you.
+   2. Fields: a fixed allow-list of counts and choices (below). Nothing else can be added by mistake.
+   3. Free text (feedback only) is scrubbed on the device and shown to you before it goes.
+   4. Transport: a script in the founder's Google account that appends a row to his Sheet. Google does not
+      give script owners the sender's IP address. No cookies, no trackers, no third-party analytics.        */
+var FOUNDER_URL = ""; // set when the founder's endpoint is deployed; until then reports wait in the outbox on this device
+var band=function(n,cuts){ for(var i=0;i<cuts.length;i++) if(n<cuts[i]) return (i?cuts[i-1]:0)+"-"+(cuts[i]-1); return cuts[cuts.length-1]+"+"; };
+function scrub(t){
+  return String(t||"").slice(0,1200)
+    .replace(/[\w.+-]+@[\w-]+\.[\w.-]+/g,"[email removed]")
+    .replace(/https?:\/\/\S+|www\.\S+/gi,"[link removed]")
+    .replace(/\+?\d[\d\s().-]{6,}\d/g,"[number removed]")
+    .replace(/\b\d{2}[A-Za-z]{2,5}\d{2,5}\b/g,"[id removed]")
+    .replace(/\b(?=[A-Za-z]*\d)(?=\d*[A-Za-z])[A-Za-z\d]{7,}\b/g,"[id removed]")
+    .replace(/@\w{2,}/g,"[handle removed]")
+    .replace(/\b(my name is|i am|i'm|im|this is|naam|mera naam)\s+([A-Z][a-z]+(\s+[A-Z][a-z]+)?)/gi,function(m,a,b){ return /^[A-Z]/.test(b)?a+" [name removed]":m; })
+    .trim();
+}
+function reportRow(kind,P,S,extra){
+  var d=today(), rep=weekReport(P,S,d), tz=""; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone||""; }catch(e){}
+  var used=S.used||{};
+  var row={ v:1, app:APP_VERSION, kind:kind, id:S.anon, d:d,
+    goal:S.goal, weeks:P.weeks, daysLeft:Math.max(0,gap(d,P.end)), hours:S.hours, workDays:(S.days||[]).length,
+    classDays:((S.classes||{}).days||[]).length, aspects:(P.aspects||[]).map(function(a){return a.id}).join(","),
+    anchors:(S.anchors||[]).length, perDay:P.perDay, floorN:P.floorN, floorLvl:lvlOf(S,d), capAdj:S.capAdj||0,
+    units:dayPlan(P,S,d).doneCount, total:P.total, weekPct:rep.pct, aspPct:rep.asp?Math.round(rep.aspDone*100/rep.asp):null,
+    streak:streak(P,S,d), solo:Object.keys(S.prob||{}).filter(function(k){return S.prob[k]==="s"}).length,
+    cfBand:S.rat&&S.rat.cf?band(+S.rat.cf,[800,1000,1200,1400,1600,1900]):"", lcBand:S.rat&&S.rat.lc?band(+S.rat.lc,[1400,1600,1800,2000,2200]):"",
+    resources:Object.keys(S.trackRes||{}).map(function(k){return k+":"+S.trackRes[k]}).join(","), custom:Object.keys(S.customRes||{}).length,
+    aiApplied:used.ai||0, research:used.research||0, backups:used.backup||0, restores:used.restore||0, tourDone:S.tourDone?1:0,
+    daysActive:Object.keys(S.done||{}).length, tz:tz.split("/")[0]||"", screen:(window.innerWidth<700?"phone":"wide"), lang:(navigator.language||"").slice(0,2) };
+  if(extra&&extra.text!=null) row.text=scrub(extra.text);
+  if(extra&&extra.rating!=null) row.rating=clamp(+extra.rating||0,0,5);
+  return row;
+}
+function outbox(){ try{ return JSON.parse(ls.get("nitya.outbox","[]"))||[]; }catch(e){ return []; } }
+function sendRow(row){
+  var box=outbox(); box.push(row); box=box.slice(-25); ls.set("nitya.outbox",JSON.stringify(box));
+  return flush();
+}
+function flush(){
+  var box=outbox(); if(!FOUNDER_URL||!box.length||!navigator.onLine) return Promise.resolve(box.length);
+  return fetch(FOUNDER_URL,{method:"POST",mode:"no-cors",credentials:"omit",referrerPolicy:"no-referrer",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify({rows:box})})
+    .then(function(){ ls.set("nitya.outbox","[]"); var log=sentLog(); log.unshift({at:new Date().toISOString(),n:box.length,kinds:box.map(function(r){return r.kind}).join(",")}); ls.set("nitya.sent",JSON.stringify(log.slice(0,30))); return 0; })
+    .catch(function(){ return box.length; });
+}
+function sentLog(){ try{ return JSON.parse(ls.get("nitya.sent","[]"))||[]; }catch(e){ return []; } }
+
+/* ── Bring your own AI. The app writes a handoff; you paste it into any AI; you paste its answer back.
+   The answer must be one JSON block in a fixed shape. Every change is checked, shown, and can be undone. ── */
+var AI_SITES=[["ChatGPT","https://chatgpt.com/"],["Gemini","https://gemini.google.com/app"],["Claude","https://claude.ai/new"],["Copilot","https://copilot.microsoft.com/"]];
+function stateSummary(P,S,d){
+  var pl=dayPlan(P,S,d), rep=weekReport(P,S,d), ph=phaseAt(P,d);
+  var last14=[]; for(var i=14;i>=1;i--){ var x=addDays(d,-i); if(isWork(S,x)) last14.push(floorMet(P,S,x)?"1":"0"); }
+  return [
+    "Goal: "+P.g.label+". Deadline "+P.end+" ("+gap(d,P.end)+" days left). Phase: "+ph.name+" ("+ph.goal+")",
+    "Normal day: "+S.hours+" h ("+P.perDay+" units of ~40 min). Work days: "+(S.days||[]).map(function(i){return DOW[i]}).join(" ")+". Classes: "+((S.classes||{}).days||[]).map(function(i){return DOW[i]}).join(" ")+" "+((S.classes||{}).from||"")+"-"+((S.classes||{}).to||"")+".",
+    "Floor: "+floorFor(P,S,d)+" unit(s) a day, level "+FLV[String(lvlOf(S,d))]+". Floor met on the last "+last14.length+" work days: "+last14.join("")+" (1 = met).",
+    "This week so far: "+rep.done+" of "+rep.plan+" planned units ("+rep.pct+"%). Whole plan: "+pl.doneCount+" of "+P.total+" units.",
+    "Tracks: "+P.tracks.map(function(t){ return t.name+" "+trackCount(P,S,t)+"/"+t.target+(t.res?" (resource: "+t.res.n+")":""); }).join("; ")+".",
+    "Other aspects: "+(P.aspects.length?P.aspects.map(function(a){return a.name+" "+a.min+" min on "+a.days.map(function(i){return DOW[i]}).join("/")}).join("; "):"none")+".",
+    "Next up: "+pl.floor.concat(pl.rest).slice(0,5).map(function(x){return x.name}).join(" | ")+"."
+  ].join("\n");
+}
+var SCHEMA = '{\n  "note": "at most 3 short sentences for me",\n  "changes": [\n    {"op": "set_hours", "hours": 1},\n    {"op": "set_floor", "units": 1},\n    {"op": "set_days", "days": [1,2,3,4,5]},\n    {"op": "move_deadline", "date": "YYYY-MM-DD"},\n    {"op": "add_task", "date": "YYYY-MM-DD", "text": "what to do", "min": 30},\n    {"op": "add_event", "date": "YYYY-MM-DD", "name": "contest or deadline", "why": "one line", "url": "https://..."},\n    {"op": "set_resource", "track": "TRACK_ID", "name": "resource name", "url": "https://..."}\n  ]\n}';
+function coachPrompt(P,S,d,ask){
+  return "You are my study coach for a planner app called Nitya. Be honest and specific; no praise without a number behind it.\n\n"+
+    "MY PLAN TODAY ("+d+"):\n"+stateSummary(P,S,d)+"\n\n"+
+    (ask?"WHAT I WANT HELP WITH: "+ask+"\n\n":"WHAT I WANT: look at my numbers and tell me the one change that would help most this week.\n\n")+
+    "Reply with ONE fenced ```json block and nothing outside it, in exactly this shape (include only the changes you recommend; an empty list is fine):\n```json\n"+SCHEMA+"\n```\n"+
+    "Rules: hours is 1-4; floor units is 1-"+P.perDay+"; days are 0=Sun..6=Sat; dates are today or later; track ids are: "+P.tracks.map(function(t){return t.id}).join(", ")+". At most 6 changes. Never ask for my name or any personal details.";
+}
+function researchPrompt(P,S,d){
+  var tz=""; try{ tz=Intl.DateTimeFormat().resolvedOptions().timeZone; }catch(e){}
+  return "Search the web (use your browsing/search tool) for real, upcoming opportunities for me in the next 60 days from "+d+": contests, hackathons, programmes, internships, open-source mentorships, scholarships with no fee, and deadlines.\n"+
+    "Me: a student working on \""+P.g.label+"\" until "+P.end+". Tracks: "+P.tracks.map(function(t){return t.name}).join(", ")+". Other interests: "+(P.aspects.map(function(a){return a.name}).join(", ")||"none")+". Time zone: "+(tz||"unknown")+" (prefer events I can join from there, online or nearby).\n"+
+    "Only include items you found on an official page during this search, with its link. No paid courses, no ads, nothing whose date you are guessing.\n\n"+
+    "Reply with ONE fenced ```json block and nothing else:\n```json\n{\n  \"note\": \"one line: what you looked at\",\n  \"changes\": [\n    {\"op\": \"add_event\", \"date\": \"YYYY-MM-DD (the deadline or the event day)\", \"name\": \"name\", \"why\": \"why it fits me, one line\", \"url\": \"https://official page\"}\n  ]\n}\n```\nAt most 8 items, soonest first.";
+}
+function parseAI(text,P){
+  var t=String(text||""), m=t.match(/```(?:json)?\s*([\s\S]*?)```/i), raw=m?m[1]:t.slice(t.indexOf("{"),t.lastIndexOf("}")+1);
+  var o; try{ o=JSON.parse(raw); }catch(e){ throw new Error("I couldn't read that as the JSON block. Paste the whole reply, including the ```json part."); }
+  if(!o||typeof o!=="object") throw new Error("The reply has no JSON object.");
+  var d=today(), okD=function(x){ return /^\d{4}-\d\d-\d\d$/.test(x||"")&&x>=d&&x<=addDays(d,800); }, okU=function(u){ return !u||/^https:\/\/[^\s"'<>]+$/.test(u); };
+  var tids=P.tracks.map(function(t){return t.id}), out=[], bad=[];
+  (Array.isArray(o.changes)?o.changes:[]).slice(0,10).forEach(function(c){
+    if(!c||typeof c!=="object") return;
+    var op=c.op, ok=false, x={op:op};
+    if(op==="set_hours"&&[1,2,3,4].indexOf(+c.hours)>-1){ x.hours=+c.hours; ok=true; x.label="Normal day becomes "+x.hours+" h"; }
+    else if(op==="set_floor"&&+c.units>=1){ x.units=clamp(Math.round(+c.units),1,P.perDay); ok=true; x.label="Floor becomes "+x.units+" unit(s) a day"; }
+    else if(op==="set_days"&&Array.isArray(c.days)&&c.days.length){ x.days=c.days.map(Number).filter(function(n){return n>=0&&n<=6}).filter(function(v,i,a){return a.indexOf(v)===i}).sort(); ok=x.days.length>0; x.label="Work days: "+x.days.map(function(i){return DOW[i]}).join(" "); }
+    else if(op==="move_deadline"&&okD(c.date)&&gap(d,c.date)>=14){ x.date=c.date; ok=true; x.label="Deadline moves to "+fmtLong(c.date); }
+    else if(op==="add_task"&&okD(c.date)&&c.text){ x.date=c.date; x.text=String(c.text).slice(0,160); x.min=clamp(+c.min||30,10,120); ok=true; x.label="Task on "+fmt(c.date)+": "+x.text; }
+    else if(op==="add_event"&&okD(c.date)&&c.name&&okU(c.url)){ x.date=c.date; x.name=String(c.name).slice(0,120); x.why=String(c.why||"").slice(0,200); x.url=c.url||""; ok=true; x.label="Event "+fmt(c.date)+": "+x.name; }
+    else if(op==="set_resource"&&tids.indexOf(c.track)>-1&&c.name&&okU(c.url)){ x.track=c.track; x.name=String(c.name).slice(0,80); x.url=c.url||""; ok=true; x.label="Resource for "+c.track+": "+x.name; }
+    if(ok) out.push(x); else bad.push(op||"?");
+  });
+  return {note:String(o.note||"").slice(0,400),changes:out,skipped:bad};
+}
+function applyChanges(S,res,source){
+  var n=JSON.parse(JSON.stringify(S)), d=today(), batch="b-"+uid(6), log=[];
+  res.changes.forEach(function(c,i){
+    var id=batch+"-"+i;
+    if(c.op==="set_hours") n.hours=c.hours;
+    if(c.op==="set_floor") n.floorSet=c.units;
+    if(c.op==="set_days") n.days=c.days;
+    if(c.op==="move_deadline") n.deadline=c.date;
+    if(c.op==="add_task") (n.tasks=n.tasks||[]).push({id:"t-"+id,date:c.date,text:c.text,min:c.min});
+    if(c.op==="add_event") (n.events=n.events||[]).push({id:"e-"+id,date:c.date,name:c.name,why:c.why,url:c.url,src:source});
+    if(c.op==="set_resource"){ n.customRes=n.customRes||{}; n.customRes[c.track]={n:c.name,u:c.url}; }
+    log.push({id:id,at:d,what:c.label,source:source});
+  });
+  var snap=Object.assign({},S); delete snap.changes;           // snapshots never nest: undo restores the plan, keeps the change log
+  n.changes=(n.changes||[]).map(function(c,i,a){ return i<a.length-4?Object.assign({},c,{undo:null}):c; }) // only the last few keep an undo
+    .concat([{batch:batch,at:d,source:source,note:res.note,items:log,undo:JSON.stringify(snap)}]).slice(-15);
+  if(res.note&&source==="coach") n.pocNote={at:d,text:res.note};
+  n.used=Object.assign({},n.used||{}); n.used[source==="research"?"research":"ai"]=(n.used[source==="research"?"research":"ai"]||0)+1;
+  return n;
+}
+
+function undoBatch(S,batch){
+  var c=(S.changes||[]).filter(function(x){return x.batch===batch})[0]; if(!c||!c.undo) return S;
+  var back=JSON.parse(c.undo); back.changes=(S.changes||[]).map(function(x){ return x.batch===batch?Object.assign({},x,{undone:today(),undo:null}):x; });
+  back.done=S.done; back.prob=S.prob; back.help=S.help; // ticks made since are kept
+  return back;
+}
+
+/* ── Onboarding: one decision per screen, sensible defaults already chosen, skip anywhere. ─── */
+var HOURS=[[1,"About an hour","One real block. Slow, but it compounds."],[2,"Two hours","The common honest answer for a student with classes."],[3,"Three hours","You have real free time and mean to use it."],[4,"Four or more","Only if last week actually looked like that."]];
+function defaultsFor(goal){
+  var g=goalOf(goal), tr={}; g.tracks.forEach(function(t){ tr[t.id]=t.res[0]; });
+  return {goal:goal,deadline:addDays(today(),180),hours:2,days:[1,2,3,4,5,6],classes:{days:[1,2,3,4,5],from:"09:00",to:"17:00"},wake:"06:30",sleep:"23:00",
+          trackRes:tr,customRes:{},aspects:[],anchors:[{id:"wake",label:"Wake at a fixed time",at:"06:30"},{id:"plan",label:"Close the day: mark what happened",at:"22:00"}]};
+}
+function Onboard(p){
+  var D=useContext(TC), st=useState(0), step=st[0], setStep=st[1];
+  var a=useState(defaultsFor("sde")), A=a[0], setA=a[1];
+  var r=useState(""), rcode=r[0], setRcode=r[1], re=useState(""), rerr=re[0], setRerr=re[1];
+  var share=useState(null), consent=share[0], setConsent=share[1];
+  var set=function(o){ setA(Object.assign({},A,o)); };
+  var next=function(){ setStep(step+1); window.scrollTo(0,0); };
+  var N=9;
+  var frame=function(n,title,sub,body,foot){
+    return h("div",{className:"col"},
+      n>0?h("div",{style:{display:"flex",gap:4,marginBottom:16}},Array.from({length:N},function(_,i){ return h("i",{key:i,style:{flex:1,height:3,borderRadius:2,background:i<n?D.amber:D.s3}}); })):null,
+      n>0?h(Eb,null,"Step "+n+" of "+N):null,
+      h("h2",{className:"serif",style:{margin:"0 0 6px",fontSize:23,fontWeight:700,lineHeight:1.18}},title),
+      sub?h("p",{className:"sm",style:{margin:"0 0 16px",fontSize:12.5}},sub):null, body,
+      h("div",{style:{display:"flex",gap:8,marginTop:14,alignItems:"center",flexWrap:"wrap"}},
+        n>0?h("button",{className:"tbtn",style:{background:"none",border:0,color:D.t3},onClick:function(){setStep(step-1)}},"← Back"):null,
+        h("span",{style:{flex:1}}), foot||null));
+  };
+  var nextBtn=function(label,ok){ return h("button",{className:"big",disabled:ok===false,style:{background:ok===false?D.s3:D.amber,color:ok===false?D.t3:D.onAmber,padding:"11px 20px"},onClick:next},label||"Next →"); };
+  var skipBtn=h("button",{className:"tbtn",style:{background:"none",border:0,color:D.t3},onClick:function(){ setStep(8); }},"Skip, use defaults");
+
+  if(step===0) return frame(0,"A plan that survives a bad week.","Nitya asks a few short questions, builds your plan, and keeps rebuilding it from what actually happened. About two minutes.",
+    h("div",null,
+      [["🧱","A floor","The smallest honest day. On a bad day you do the floor and the day still counts."],
+       ["🔁","It re-plans itself","Missed work moves forward, never piled onto tomorrow. The floor resizes itself every week."],
+       ["🤝","Your AI as your coach","One tap hands your plan to the AI you already use; its answer comes back as changes you approve."],
+       ["🔒","Private by design","Your plan stays on this device. Nothing leaves without your yes, and never your name."]].map(function(x){
+        return h("div",{key:x[1],className:"row",style:{padding:"10px 0",borderTop:"1px solid "+D.b}},
+          h("span",{style:{fontSize:20,width:28,textAlign:"center"}},x[0]),
+          h("div",null,h("p",{style:{margin:0,fontSize:13.5,fontWeight:700}},x[1]),h("p",{className:"sm"},x[2]))); }),
+      h("button",{className:"big",style:{width:"100%",background:D.amber,color:D.onAmber,marginTop:14},onClick:next},"Make my plan →"),
+      h("details",{style:{marginTop:12}},h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"I have a backup code"),
+        h("textarea",{className:"inp",rows:3,value:rcode,placeholder:"NITYA1.…",onChange:function(e){setRcode(e.target.value);setRerr("")},style:{marginTop:8}}),
+        h("button",{className:"tbtn",style:{marginTop:8},onClick:function(){ try{ var o=readBackup(rcode); o.used=Object.assign({},o.used||{}); o.used.restore=(o.used.restore||0)+1; p.onDone(o); }catch(e){ setRerr(e.message); } }},"Restore my plan"),
+        rerr?h("p",{className:"sm",style:{color:D.red,marginTop:6}},rerr):null)),
+    null);
+
+  if(step===1) return frame(1,"What are you aiming at?","Pick the closest. You can change it later without losing your marks.",
+    h("div",null,GOALS.map(function(g){ return h("button",{key:g.id,className:"opt"+(A.goal===g.id?" on":""),onClick:function(){ setA(Object.assign(defaultsFor(g.id),{deadline:A.deadline,days:A.days,classes:A.classes,wake:A.wake,sleep:A.sleep,hours:A.hours,aspects:A.aspects,anchors:A.anchors})); setTimeout(next,120); }},g.label,h("small",null,g.blurb)); })),
+    skipBtn);
+
+  if(step===2){ var pre=[[90,"3 months"],[180,"6 months"],[270,"9 months"],[365,"A year"],[730,"Two years"]];
+    return frame(2,"By when?","A real date you're working towards. A plan without an end date is just a list.",
+      h("div",null,
+        h("div",{style:{display:"flex",flexWrap:"wrap"}},pre.map(function(x){ var d=addDays(today(),x[0]); return h("button",{key:x[0],className:"chip"+(A.deadline===d?" on":""),onClick:function(){set({deadline:d})}},x[1]); })),
+        h("label",{className:"sm",style:{display:"block",margin:"8px 0 4px"}},"Or an exact date"),
+        h("input",{type:"date",className:"inp",min:addDays(today(),14),value:A.deadline,onChange:function(e){ if(e.target.value) set({deadline:e.target.value}); }}),
+        h("p",{className:"sm t3",style:{marginTop:8}},fmtLong(A.deadline)+" · "+Math.round(gap(today(),A.deadline)/7)+" weeks from today")),
+      nextBtn("Next →",gap(today(),A.deadline)>=14)); }
+
+  if(step===3){ var tg=function(arr,i){ var x=arr.slice(), k=x.indexOf(i); if(k>-1) x.splice(k,1); else x.push(i); return x.sort(); };
+    var C=A.classes||{days:[],from:"09:00",to:"17:00"};
+    return frame(3,"Your week","So the plan fits around classes and sleep instead of pretending they don't exist.",
+      h("div",null,
+        h("p",{className:"eb",style:{color:D.t2}},"Days you'll work on this"),
+        h("div",{style:{display:"flex",gap:5,flexWrap:"wrap",marginBottom:14}},[1,2,3,4,5,6,0].map(function(i){ var on=A.days.indexOf(i)>-1; return h("button",{key:i,className:"dayb"+(on?" on":""),"aria-pressed":on,onClick:function(){set({days:tg(A.days,i)})}},DOW[i]); })),
+        h("p",{className:"eb",style:{color:D.t2}},"Class days and hours"),
+        h("div",{style:{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}},[1,2,3,4,5,6,0].map(function(i){ var on=(C.days||[]).indexOf(i)>-1; return h("button",{key:i,className:"dayb"+(on?" on":""),"aria-pressed":on,onClick:function(){set({classes:Object.assign({},C,{days:tg(C.days||[],i)})})}},DOW[i]); })),
+        h("div",{style:{display:"flex",gap:8,alignItems:"center",marginBottom:14,flexWrap:"wrap"}},
+          h("input",{type:"time",className:"inp",style:{width:120},value:C.from,"aria-label":"Classes start",onChange:function(e){set({classes:Object.assign({},C,{from:e.target.value})})}}),
+          h("span",{className:"sm"},"to"),
+          h("input",{type:"time",className:"inp",style:{width:120},value:C.to,"aria-label":"Classes end",onChange:function(e){set({classes:Object.assign({},C,{to:e.target.value})})}})),
+        h("p",{className:"eb",style:{color:D.t2}},"Wake and sleep"),
+        h("div",{style:{display:"flex",gap:8,alignItems:"center",flexWrap:"wrap"}},
+          h("input",{type:"time",className:"inp",style:{width:120},value:A.wake,"aria-label":"Wake time",onChange:function(e){set({wake:e.target.value})}}),
+          h("span",{className:"sm"},"to"),
+          h("input",{type:"time",className:"inp",style:{width:120},value:A.sleep,"aria-label":"Sleep time",onChange:function(e){set({sleep:e.target.value})}}))),
+      nextBtn("Next →",A.days.length>0)); }
+
+  if(step===4) return frame(4,"On a normal day, how long can you really give this?","Not your best day. The day you have most often.",
+    h("div",null,HOURS.map(function(x){ return h("button",{key:x[0],className:"opt"+(A.hours===x[0]?" on":""),onClick:function(){ set({hours:x[0]}); setTimeout(next,120); }},x[1],h("small",null,x[2])); })), null);
+
+  if(step===5){ var g=goalOf(A.goal);
+    return frame(5,"Where do you learn from?","Each part of your plan links straight to its source, so the day starts with one tap. Defaults are free and good; change any.",
+      h("div",null,g.tracks.map(function(t){ var cur=(A.trackRes||{})[t.id], cu=(A.customRes||{})[t.id]||{};
+        return h("div",{key:t.id,className:"card",style:{padding:"12px 14px",marginBottom:10}},
+          h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},t.name),
+          h("div",{style:{display:"flex",flexWrap:"wrap"}},t.res.map(function(k){ var on=cur===k&&!cu.u; return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var cr=Object.assign({},A.customRes); delete cr[t.id]; set({trackRes:Object.assign({},A.trackRes,(function(){var o={};o[t.id]=k;return o})()),customRes:cr}); }},RES[k].n); })),
+          h("details",null,h("summary",{className:"sm",style:{cursor:"pointer"}},cu.u?"Your own: "+(cu.n||cu.u):"Use my own link instead"),
+            h("div",{style:{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}},
+              h("input",{className:"inp",style:{flex:"1 1 140px"},placeholder:"Name (e.g. my course)",defaultValue:cu.n||"",id:"rn-"+t.id}),
+              h("input",{className:"inp",style:{flex:"2 1 200px"},placeholder:"https://…",defaultValue:cu.u||"",id:"ru-"+t.id}),
+              h("button",{className:"tbtn",onClick:function(){ var u=(document.getElementById("ru-"+t.id)||{}).value||"", n=(document.getElementById("rn-"+t.id)||{}).value||"";
+                if(u&&!/^https:\/\//.test(u)) return; var cr=Object.assign({},A.customRes); if(u) cr[t.id]={n:n||"My resource",u:u}; else delete cr[t.id]; set({customRes:cr}); }},"Use")))); })),
+      nextBtn()); }
+
+  if(step===6){ var on=function(id){ return (A.aspects||[]).some(function(x){return x.id===id&&x.on}); };
+    var tgA=function(id){ var arr=(A.aspects||[]).filter(function(x){return x.id!==id}); if(!on(id)) arr.push({id:id,on:true}); set({aspects:arr}); };
+    var n=(A.aspects||[]).filter(function(x){return x.on}).length;
+    return frame(6,"Anything else you want to keep alive?","Small daily or weekly practices beside the main goal. Pick up to three, or none. Each gets its own floor and shows up on the right days.",
+      h("div",null,ASPECTS.map(function(x){ var o=on(x.id);
+        return h("button",{key:x.id,className:"opt"+(o?" on":""),disabled:!o&&n>=3,style:!o&&n>=3?{opacity:.5}:null,onClick:function(){tgA(x.id)}},x.ic+"  "+x.name,
+          h("small",null,x.line+" Default: "+x.min+" min on "+x.days.map(function(i){return DOW[i]}).join("/")+".")); }),
+        h("p",{className:"sm t3"},n+" of 3 chosen. You can change days and minutes later in Settings.")),
+      nextBtn(n?"Next →":"None for now →")); }
+
+  if(step===7){ var has=function(id){ return (A.anchors||[]).some(function(x){return x.id===id}); };
+    var tgN=function(x){ var arr=(A.anchors||[]).filter(function(y){return y.id!==x[0]}); if(!has(x[0])) arr.push({id:x[0],label:x[1],at:x[2]}); set({anchors:arr}); };
+    return frame(7,"Daily anchors","Tiny fixed-time habits the rest of the day hangs on. Two are on already; keep them or not.",
+      h("div",null,ANCHOR_PRESETS.map(function(x){ var o=has(x[0]), cur=(A.anchors||[]).filter(function(y){return y.id===x[0]})[0];
+        return h("div",{key:x[0],className:"row",style:{alignItems:"center",padding:"8px 0",borderTop:"1px solid "+D.b}},
+          h("button",{className:"ck","aria-pressed":o,"aria-label":x[1],style:{border:"2px solid "+(o?D.green:D.b),background:o?D.green:"none",color:"#fff"},onClick:function(){tgN(x)}},o?"✓":""),
+          h("span",{style:{flex:1,fontSize:13,fontWeight:600}},x[1]),
+          o?h("input",{type:"time",className:"inp",style:{width:110},value:cur.at,"aria-label":x[1]+" time",onChange:function(e){ set({anchors:A.anchors.map(function(y){ return y.id===x[0]?Object.assign({},y,{at:e.target.value}):y; })}); }}):null); })),
+      nextBtn()); }
+
+  if(step===8) return frame(8,"Your data, plainly","Your plan and every tick stay on this device. Nitya never asks for your name, email, phone or college ID.",
+    h("div",null,
+      h("div",{className:"card",style:{padding:"14px 16px"}},
+        h("p",{style:{margin:"0 0 6px",fontSize:13.5,fontWeight:700}},"Help improve Nitya, anonymously?"),
+        h("p",{className:"sm",style:{marginBottom:8}},"If you say yes, once a week the app sends the founder (Prince Jha, a student) a row of numbers: your goal type, hours, how many units you ticked, your weekly %, your floor level, which features you used. It's tagged with a random code made on this phone, not with you. He can't tell who you are, and he doesn't get your IP address."),
+        h("details",null,h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"Exactly what is and isn't sent"),
+          h("p",{className:"sm",style:{marginTop:6}},h("b",null,"Sent: "),"goal type, weeks to deadline, hours band, work days count, chosen aspects, floor size and level, units done, weekly %, streak, A2Z solved count, rating band (if you typed one), which resources you picked, features used, app version, region (like \"Asia\"), phone or wide screen."),
+          h("p",{className:"sm",style:{marginTop:4}},h("b",null,"Never sent: "),"your name, email, phone, college or roll number, IP address, location, what you type in tasks or notes, or anything you ask your AI.")),
+        h("div",{style:{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}},
+          h("button",{className:"big",style:{flex:"1 1 160px",background:consent===true?D.green:D.amber,color:"#fff"},onClick:function(){setConsent(true)}},consent===true?"✓ Yes, anonymously":"Yes, share anonymously"),
+          h("button",{className:"big",style:{flex:"1 1 120px",background:consent===false?D.s3:D.s2,color:D.t2,border:"1px solid "+D.b},onClick:function(){setConsent(false)}},consent===false?"✓ Not now":"Not now")),
+        h("p",{className:"sm t3",style:{marginTop:8}},"You can change this any time in Settings → Your data, and see every report that was sent."))),
+    nextBtn("See my plan →",consent!==null));
+
+  // preview
+  var S0=Object.assign({},A,{start:today()}), P=derive(S0);
+  return frame(9,P.weeks+" weeks · "+P.workDays+" working days · "+P.total+" units","This is your plan. Nothing here is fixed: it resizes itself from what you actually do.",
+    h("div",null,
+      h("div",{className:"card"},h(Eb,null,"The floor"),
+        h("p",{style:{margin:"0 0 6px",fontSize:15,fontWeight:700}},P.floorN+(P.floorN===1?" unit":" units")+" a day, about "+P.floorN*ITEM_MIN+" minutes, against "+P.perDay+" on a normal day."),
+        h("p",{className:"sm"},"On a bad day, do the floor and the day counts. Every Monday the floor checks the last two weeks and gets lighter or heavier to match your real pace. You'll see why, and you can undo it.")),
+      h("div",{className:"card"},h(Eb,null,"What gets measured"),
+        P.tracks.map(function(t){ return h("div",{key:t.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},
+          h("div",{style:{display:"flex",justifyContent:"space-between",gap:10}},h("span",{style:{fontSize:13,fontWeight:600}},t.name),h("span",{className:"mono",style:{fontSize:12,color:D.amber,fontWeight:700}},t.target+" "+t.unit)),
+          t.res?h("p",{className:"sm t3",style:{fontSize:11}},"from "+t.res.n):null); })),
+      P.aspects.length?h("div",{className:"card"},h(Eb,null,"Also kept alive"),P.aspects.map(function(x){ return h("p",{key:x.id,className:"sm",style:{color:D.t1,margin:"4px 0"}},x.ic+" "+x.name+" · "+x.min+" min · "+x.days.map(function(i){return DOW[i]}).join("/")); })):null),
+    h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"12px 22px"},onClick:function(){
+      p.onDone(Object.assign({},S0,{v:2,anon:"u-"+uid(8),created:today(),done:{},help:{},prob:{},flCal:{},capAdj:0,changes:[],rev:{},events:[],tasks:[],notes:[],used:{},
+        consent:{usage:!!consent,at:today()},tourDone:false})); }},"Start, this becomes today →"));
+}
+
+/* ── Today ──────────────────────────────────────────────────────────────────────────────── */
+function tickFn(S,save,d){
+  return function(id,withHelp,pk){
+    var nd=Object.assign({},S.done||{}), arr=(nd[d]||[]).slice(), i=arr.indexOf(id);
+    if(i>-1) arr.splice(i,1); else arr.push(id); nd[d]=arr;
+    var nh=Object.assign({},S.help||{}); if(withHelp&&i<0) nh[id]=1; if(i>-1) delete nh[id];
+    var np=Object.assign({},S.prob||{}); if(pk){ if(i>-1) delete np[pk]; else np[pk]=withHelp?"h":"s"; }
+    save(Object.assign({},S,{done:nd,help:nh,prob:np}));
+  };
+}
+function Item(p){
+  var D=useContext(TC), it=p.it, dn=p.done;
+  return h("div",{className:"row",style:{padding:"10px 0",borderTop:"1px solid "+D.b,opacity:dn?.6:1}},
+    h("button",{className:"ck","aria-label":dn?"Mark not done":"Mark done",style:{border:"2px solid "+(dn?D.green:D.b),background:dn?D.green:"none",color:"#fff",marginTop:1},
+      onClick:function(){p.onTick(it.id,false,it.pk)}},dn?"✓":""),
+    h("div",{style:{flex:1,minWidth:0}},
+      it.url?h("a",{href:it.url,target:"_blank",rel:"noopener noreferrer",style:{fontSize:13.5,fontWeight:600,lineHeight:1.4,color:dn?D.t3:D.t1,textDecoration:dn?"line-through":"none"}},(it.ic?it.ic+" ":"")+it.name," ↗")
+        :h("p",{style:{margin:0,fontSize:13.5,fontWeight:600,lineHeight:1.4,textDecoration:dn?"line-through":"none"}},(it.ic?it.ic+" ":"")+it.name),
+      h("div",{style:{display:"flex",alignItems:"center",gap:8,marginTop:3,flexWrap:"wrap"}},
+        it.a!=null?h("span",{className:"mono",style:{fontSize:10.5,color:D.amber,fontWeight:700}},clock(it.a)):null,
+        h("span",{className:"mono",style:{fontSize:10.5,color:D.t3,fontWeight:700}},it.track?it.track+" · "+it.k+"/"+it.of:(it.min?it.min+" min":"")),
+        it.sub?h("span",{className:"sm t3",style:{fontSize:11}},it.sub):null,
+        p.help?h(Pill,{label:"WITH HELP",bg:D.s3,fg:D.t2}):null)),
+    !dn&&it.track?h("button",{className:"tbtn",style:{fontSize:10.5,padding:"5px 8px",flexShrink:0},onClick:function(){p.onTick(it.id,true,it.pk)}},"with help"):null);
+}
+function FloorCal(p){
+  var D=useContext(TC), S=p.S, mon=monOf(p.d), c=(S.flCal||{})[mon]; if(!c) return null;
+  var col=c.lvl<0?D.blue:c.lvl>0?D.purple:D.green, changed=c.lvl!==c.prev;
+  var undo=function(){ var cur=S.flCal[mon], n=Object.assign({},S.flCal); n[mon]=Object.assign({},cur,{lvl:cur.undone?cur.auto:cur.prev,auto:cur.undone?undefined:cur.lvl,undone:!cur.undone}); p.save(Object.assign({},S,{flCal:n})); };
+  return h("div",{className:"row",style:{background:D.s2,border:"1px solid "+D.b,borderRadius:12,padding:"9px 12px",marginBottom:10}},
+    h(Pill,{label:"THIS WEEK: "+FLV[String(c.lvl)].toUpperCase(),bg:col+"22",fg:col}),
+    h("div",{style:{flex:1,minWidth:0}},h(Brief,{t:(c.undone?"You undid this week's change. ":"")+c.why,size:11.5,c:D.t2})),
+    changed||c.undone?h("button",{className:"tbtn",style:{fontSize:10.5,padding:"4px 9px"},onClick:undo},c.undone?"Redo":"Undo"):null);
+}
+function Coach(p){
+  var D=useContext(TC), S=p.S, n=S.pocNote;
+  var rep=weekReport(p.P,S,p.d);
+  return h("div",{className:"card",style:{borderTop:"3px solid "+D.blue}},
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap"}},
+      h("p",{className:"serif",style:{margin:0,fontSize:17,fontWeight:700,color:D.blue}},"Your coach"),
+      h("span",{className:"mono",style:{fontSize:10.5,color:D.t3,fontWeight:700}},"THIS WEEK "+rep.done+"/"+rep.plan+" · "+rep.pct+"%")),
+    n?h("div",{style:{margin:"8px 0 10px"}},h("p",{className:"mono",style:{margin:"0 0 3px",fontSize:10,color:D.t3}},"YOUR AI SAID, "+fmt(n.at).toUpperCase()),h("p",{style:{margin:0,fontSize:13.5,lineHeight:1.55}},n.text))
+      :h("p",{className:"sm",style:{margin:"8px 0 10px"}},"Your coach is the AI you already use (ChatGPT, Gemini, Claude or any other). Nitya hands it your numbers, it answers with changes, and you approve them here."),
+    h("div",{style:{display:"flex",gap:8,flexWrap:"wrap"}},
+      h("button",{className:"big",style:{background:D.blue,color:"#fff",flex:"1 1 160px"},onClick:function(){p.open("coach")}},"Ask my AI for a re-plan"),
+      h("button",{className:"tbtn",style:{flex:"0 1 auto"},onClick:function(){p.go("desk")}},"Research desk")));
+}
+function Changes(p){
+  var D=useContext(TC), S=p.S, list=(S.changes||[]).slice().reverse().filter(function(c){ return c.at>=addDays(p.d,-21); });
+  if(!list.length) return h("div",{className:"card"},h("p",{className:"sm t3",style:{margin:0}},"Nothing has changed your plan yet. When your AI, the research desk or the weekly floor check changes something, it shows here with Undo."));
+  return h("div",{className:"card",style:{padding:"10px 16px"}},list.map(function(c){
+    return h("div",{key:c.batch,style:{padding:"9px 0",borderTop:"1px solid "+D.b,opacity:c.undone?.55:1}},
+      h("div",{style:{display:"flex",justifyContent:"space-between",gap:8,alignItems:"center"}},
+        h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,color:D.t3}},fmt(c.at).toUpperCase()+" · "+String(c.source||"").toUpperCase()+(c.undone?" · UNDONE":"")),
+        c.undo&&!c.undone?h("button",{className:"tbtn",style:{fontSize:10.5,padding:"3px 9px"},onClick:function(){ p.save(undoBatch(S,c.batch)); }},"Undo"):null),
+      c.note?h("p",{className:"sm",style:{margin:"3px 0",color:D.t1}},c.note):null,
+      (c.items||[]).map(function(x){ return h("p",{key:x.id,className:"sm",style:{margin:"2px 0"}},"• "+x.what); })); }));
+}
+function Today(p){
+  var D=useContext(TC), S=p.S, P=p.P, d=p.d, pl=useMemo(function(){ return dayPlan(P,S,d); },[S,P,d]);
+  var done=(S.done||{})[d]||[], help=S.help||{}, tick=tickFn(S,p.save,d);
+  var ph=phaseAt(P,d), left=gap(d,P.end), fDone=pl.floor.length>0&&unitsOn(S,d)>=pl.floorN;
+  var tasks=(S.tasks||[]).filter(function(t){ return t.date===d&&!(S.rev||{})[t.id]; }), evs=(S.events||[]).filter(function(e){ return e.date>=d&&gap(d,e.date)<=7&&!(S.rev||{})[e.id]; });
+  var wk=weekReport(P,S,d);
+  return h("div",{className:"col"},
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap",marginBottom:2}},
+      h("h2",{className:"serif",style:{margin:0,fontSize:21,fontWeight:700}},fmtLong(d)),
+      h("span",{className:"mono",style:{fontSize:10.5,color:D.t3,fontWeight:700}},(left>0?left+" DAYS LEFT":left===0?"DEADLINE TODAY":"PAST THE DATE")+" · "+ph.name.toUpperCase())),
+    h("p",{className:"sm",style:{margin:"0 0 12px"}},ph.goal),
+    h(Fold,{id:"coach",title:"Your coach",tour:"coach"},h(Coach,{S:S,P:P,d:d,open:p.open,go:p.go})),
+    (S.changes||[]).some(function(c){return c.at>=addDays(d,-7)})?h(Fold,{id:"changes",title:"What changed in your plan"},h(Changes,{S:S,d:d,save:p.save})):null,
+    !pl.isWork?h("div",{className:"card"},h(Eb,null,"Rest day"),h("p",{style:{margin:"0 0 4px",fontSize:15,fontWeight:700}},"You said you don't work on "+DOW[dow(d)]+"s."),h("p",{className:"sm"},"Nothing is due and nothing piles up. The plan already counted this day out.")):
+    h(Fold,{id:"floor",title:"Today's floor",tour:"floor"},h("div",{className:"card",style:fDone?{borderColor:D.green}:null},
+      h(FloorCal,{S:S,d:d,save:p.save}),
+      h(Eb,{color:fDone?D.green:D.amber},fDone?"Floor met: today counts":"The floor: "+pl.floorN+" unit"+(pl.floorN>1?"s":"")),
+      h("p",{className:"sm",style:{marginBottom:4}},fDone?"Anything more is a good day, not a debt.":"Do these and today counts, whatever else happens."),
+      pl.floor.map(function(it){ return h(Item,{key:it.id,it:it,done:done.indexOf(it.id)>-1,help:!!help[it.id],onTick:tick}); }))),
+    pl.anchors.length?h(Fold,{id:"anchors",title:"Today's anchors"},h("div",{className:"card",style:{padding:"8px 18px"}},
+      pl.anchors.map(function(a){ var on=done.indexOf(a.id)>-1; return h("div",{key:a.id,className:"row",style:{padding:"9px 0",borderTop:"1px solid "+D.b,alignItems:"center",opacity:on?.6:1}},
+        h("button",{className:"ck","aria-label":a.name,style:{border:"2px solid "+(on?D.green:D.b),background:on?D.green:"none",color:"#fff"},onClick:function(){tick(a.id)}},on?"✓":""),
+        h("span",{style:{flex:1,fontSize:13,fontWeight:600}},a.name),h("span",{className:"mono",style:{fontSize:11,color:D.t3}},clock(hm(a.at)))); }))):null,
+    pl.aspects.length?h(Fold,{id:"aspects",title:"Also today"},h("div",{className:"card",style:{padding:"6px 18px"}},
+      pl.aspects.map(function(it){ return h(Item,{key:it.id,it:it,done:done.indexOf(it.id)>-1,onTick:tick}); }))):null,
+    pl.rest.length||tasks.length?h(Fold,{id:"rest",title:"The rest of today"},h("div",{className:"card",style:{padding:"6px 18px 12px"}},
+      tasks.map(function(t){ return h(Item,{key:t.id,it:{id:t.id,name:t.text,min:t.min,sub:"added by your AI"},done:done.indexOf(t.id)>-1,onTick:tick}); }),
+      pl.rest.map(function(it){ return h(Item,{key:it.id,it:it,done:done.indexOf(it.id)>-1,help:!!help[it.id],onTick:tick}); }),
+      h("p",{className:"sm t3",style:{marginTop:8}},"Not finished? It stays at the front of the queue. Tomorrow never gets a double load."))):null,
+    evs.length?h(Fold,{id:"soon",title:"Coming up"},h("div",{className:"card",style:{padding:"6px 18px"}},evs.map(function(e){
+      return h("div",{key:e.id,style:{padding:"9px 0",borderTop:"1px solid "+D.b}},h("p",{className:"mono",style:{margin:0,fontSize:10.5,color:D.amber,fontWeight:700}},fmtLong(e.date).toUpperCase()+" · IN "+gap(d,e.date)+" DAYS"),
+        e.url?h("a",{href:e.url,target:"_blank",rel:"noopener noreferrer",style:{fontSize:13,fontWeight:600}},e.name+" ↗"):h("p",{style:{margin:0,fontSize:13,fontWeight:600}},e.name),
+        e.why?h("p",{className:"sm"},e.why):null); }))):null,
+    h(Fold,{id:"week",title:"The plan this week"},h("div",{className:"card"},
+      h("div",{style:{display:"flex",justifyContent:"space-between",marginBottom:10}},
+        h("div",null,h("p",{className:"mono",style:{margin:0,fontSize:22,fontWeight:700,color:D.amber}},pl.doneCount),h("p",{className:"sm t3",style:{fontSize:11}},"units done")),
+        h("div",null,h("p",{className:"mono",style:{margin:0,fontSize:22,fontWeight:700}},streak(P,S,d)),h("p",{className:"sm t3",style:{fontSize:11}},"floor streak")),
+        h("div",{style:{textAlign:"right"}},h("p",{className:"mono",style:{margin:0,fontSize:22,fontWeight:700,color:wk.pct>=70?D.green:wk.pct>=40?D.amber:D.red}},wk.pct+"%"),h("p",{className:"sm t3",style:{fontSize:11}},"this week"))),
+      h("div",{style:{display:"flex",gap:4,alignItems:"flex-end",height:46}},wk.rows.map(function(r){ var pc=r.cap?Math.min(1,r.n/r.cap):0;
+        return h("div",{key:r.d,style:{flex:1,textAlign:"center"}},h("div",{style:{height:30,display:"flex",alignItems:"flex-end"}},h("i",{style:{display:"block",width:"100%",height:Math.max(3,pc*30),borderRadius:4,background:!r.cap?D.s3:r.met?D.green:r.n?D.amber:r.future||r.d===d?D.s3:D.red+"88"}})),
+          h("span",{className:"mono",style:{fontSize:9.5,color:r.d===d?D.amber:D.t3,fontWeight:700}},DOW[dow(r.d)][0])); })),
+      h("p",{className:"sm t3",style:{marginTop:8}},"Green = floor met · amber = some work · red = nothing on a work day."))),
+    h(Fold,{id:"next7",title:"Next 7 days",shut0:true},h("div",{className:"card",style:{padding:"6px 18px"}},Array.from({length:7},function(_,i){ var x=addDays(d,i+1), c=capFor(P,S,x), a=P.aspects.filter(function(q){return q.days.indexOf(dow(x))>-1});
+      var ev=(S.events||[]).filter(function(e){return e.date===x&&!(S.rev||{})[e.id]});
+      return h("div",{key:x,style:{display:"flex",gap:10,padding:"8px 0",borderTop:"1px solid "+D.b}},
+        h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,color:D.t3,width:62,flexShrink:0}},fmtLong(x).toUpperCase()),
+        h("span",{className:"sm",style:{flex:1}},c?c+" units (floor "+floorFor(P,S,x)+")":"rest day",a.length?" · "+a.map(function(q){return q.ic}).join(" "):"",ev.length?" · 📅 "+ev.map(function(e){return e.name}).join(", "):"")); }))));
+}
+
+/* ── Practice: the A2Z ladder in its own order, what each platform is for, and your ratings. ── */
+var DIFF={e:["EASY","green"],m:["MEDIUM","amber"],h:["HARD","red"]};
+function Practice(p){
+  var D=useContext(TC), S=p.S, prob=S.prob||{}, L=ladder(), CORE=L.filter(function(x){return x.tier===1});
+  var sa=useState(false), all=sa[0], setAll=sa[1], f=useFilter("ladder"), fv=f[0], setF=f[1];
+  var list=all?L:CORE;
+  var mark=function(k,v){ var n=Object.assign({},prob); if(n[k]===v) delete n[k]; else n[k]=v; p.save(Object.assign({},S,{prob:n})); };
+  var solo=Object.keys(prob).filter(function(k){return prob[k]==="s"}).length, helped=Object.keys(prob).filter(function(k){return prob[k]==="h"}).length;
+  var next=list.filter(function(x){return !prob[x.key]})[0];
+  var groups=[], last=null; list.forEach(function(x){ var g="Step "+x.step+" · "+x.stepName+(x.topic?" · "+x.topic:""); if(g!==last){ groups.push({g:g,items:[]}); last=g; } groups[groups.length-1].items.push(x); });
+  var rat=S.rat||{}, setRat=function(k,v){ var r=Object.assign({},rat); r[k]=clamp(+v||0,0,4000); r[k+"At"]=today(); p.save(Object.assign({},S,{rat:r})); };
+  var counts={open:list.filter(function(x){return !prob[x.key]}).length,done:list.filter(function(x){return !!prob[x.key]}).length,all:list.length};
+  return h("div",{className:"col6"},
+    h("div",{className:"card"},h(Eb,null,"Striver A2Z"),
+      h("div",{style:{display:"flex",gap:22,marginBottom:10,flexWrap:"wrap"}},
+        [[solo,"solved alone",D.green],[helped,"needed help",D.amber],[CORE.length,"in the core ladder",D.t3]].map(function(x){ return h("div",{key:x[1]},h("p",{className:"mono",style:{margin:0,fontSize:24,fontWeight:700,color:x[2]}},x[0]),h("p",{className:"sm t3",style:{fontSize:11}},x[1])); })),
+      h(Bar,{pct:Math.round(solo*100/CORE.length),color:D.green}),
+      h("p",{className:"sm",style:{marginTop:10}},"Only ",h("b",null,"solved alone")," counts. \"Needed help\" is normal; mark it honestly and re-solve it from a blank file a few days later."),
+      next?h("a",{href:next.url,target:"_blank",rel:"noopener noreferrer",className:"big",style:{display:"block",textAlign:"center",textDecoration:"none",background:D.amber,color:D.onAmber,marginTop:12}},"Next: "+next.name+" ↗"):null),
+    h(Fold,{id:"roles",title:"What each platform is for"},h("div",{className:"card"},
+      h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",alignItems:"stretch",marginBottom:12}},
+        [["LEARN","USACO Guide · courses",D.blue],["PRACTISE","A2Z · CSES · GFG",D.purple],["COMPETE","LeetCode · Codeforces contests",D.amber]].map(function(x,i){
+          return h(F,{key:x[0]},i?h("span",{"aria-hidden":true,style:{alignSelf:"center",color:D.t3,fontWeight:700}},"→"):null,
+            h("div",{style:{flex:"1 1 120px",background:D.s2,border:"1px solid "+x[2],borderRadius:10,padding:"8px 10px"}},h("p",{className:"mono",style:{margin:0,fontSize:9.5,fontWeight:700,color:x[2]}},x[0]),h("p",{style:{margin:"2px 0 0",fontSize:12,fontWeight:700}},x[1]))); })),
+      h("p",{className:"sm",style:{marginBottom:10}},h("b",null,"A rating only moves in rated contests on that one site. "),"Solving problems anywhere builds skill; the contest measures it. So nothing needs syncing: practise in the banks, compete in the arenas."),
+      PLATFORM_ROLES.map(function(r){ return h("div",{key:r[1],className:"row",style:{padding:"8px 0",borderTop:"1px solid "+D.b}},h("span",{style:{fontSize:16,width:22}},r[0]),
+        h("div",{style:{flex:1,minWidth:0}},h("p",{style:{margin:0,fontSize:12.5,fontWeight:700}},r[1]," ",h("span",{className:"mono",style:{fontSize:10,color:D.t3}},r[2])),h(Brief,{t:r[3],size:11.5,c:D.t2}))); }))),
+    h(Fold,{id:"ratings",title:"Your ratings"},h("div",{className:"card"},
+      h("p",{className:"sm",style:{marginBottom:10}},"Type your rating after a contest. Nitya only uses it for your milestones; it is never read from your account."),
+      [["cf","Codeforces","https://codeforces.com/contests"],["lc","LeetCode","https://leetcode.com/contest/"]].map(function(x){
+        return h("div",{key:x[0],style:{display:"flex",gap:10,alignItems:"center",padding:"8px 0",borderTop:"1px solid "+D.b,flexWrap:"wrap"}},
+          h("a",{href:x[2],target:"_blank",rel:"noopener noreferrer",style:{fontSize:13,fontWeight:700,width:100}},x[1]+" ↗"),
+          h("span",{className:"mono",style:{fontSize:16,fontWeight:700,color:rat[x[0]]?D.amber:D.t3,width:60}},rat[x[0]]||"—"),
+          h("input",{className:"inp",type:"number",inputMode:"numeric",placeholder:"update",style:{width:100},"aria-label":x[1]+" rating",
+            onKeyDown:function(e){ if(e.key==="Enter"&&e.target.value){ setRat(x[0],e.target.value); e.target.value=""; } },onBlur:function(e){ if(e.target.value){ setRat(x[0],e.target.value); e.target.value=""; } }}),
+          rat[x[0]+"At"]?h("span",{className:"sm t3",style:{fontSize:11}},"updated "+fmt(rat[x[0]+"At"])):null); }))),
+    h("div",{style:{display:"flex",gap:8,margin:"4px 0 12px",flexWrap:"wrap",alignItems:"center"}},
+      h("button",{className:"tbtn",style:!all?{background:D.amber,borderColor:D.amber,color:D.onAmber}:null,onClick:function(){setAll(false)}},"Core ("+CORE.length+")"),
+      h("button",{className:"tbtn",style:all?{background:D.amber,borderColor:D.amber,color:D.onAmber}:null,onClick:function(){setAll(true)}},"Everything ("+L.length+")"),
+      h("span",{style:{flex:1}}),h(Seg,{v:fv,set:setF,counts:counts})),
+    groups.map(function(gr){ var items=gr.items.filter(function(x){return keepBy(fv,!!prob[x.key])}); if(!items.length) return null;
+      var dn=gr.items.filter(function(x){return prob[x.key]}).length;
+      return h("div",{key:gr.g,className:"card",style:{padding:"12px 16px"}},
+        h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",marginBottom:4,gap:8}},h("p",{className:"eb",style:{margin:0}},gr.g),h("span",{className:"mono",style:{fontSize:10.5,color:dn===gr.items.length?D.green:D.t3,fontWeight:700}},dn+"/"+gr.items.length)),
+        items.map(function(x){ var m=prob[x.key], df=DIFF[x.diff];
+          return h("div",{key:x.key,className:"row",style:{padding:"7px 0",borderTop:"1px solid "+D.b,alignItems:"center"}},
+            h("div",{style:{flex:1,minWidth:0}},h("a",{href:x.url,target:"_blank",rel:"noopener noreferrer",style:{fontSize:12.5,fontWeight:600,color:m==="s"?D.t3:D.t1,textDecoration:m==="s"?"line-through":"none"}},x.name),
+              h("div",{style:{display:"flex",gap:6,marginTop:2}},df?h("span",{className:"mono",style:{fontSize:9.5,fontWeight:700,color:D[df[1]]}},df[0]):null,h("span",{className:"mono",style:{fontSize:9.5,color:D.t3}},x.plat),x.tier===2?h(Pill,{label:"BEYOND",bg:D.s3,fg:D.purple}):null)),
+            h("button",{title:"Solved alone","aria-label":"Solved alone","aria-pressed":m==="s",className:"ck",style:{width:26,height:26,border:"1.5px solid "+(m==="s"?D.green:D.b),background:m==="s"?D.green:"none",color:"#fff"},onClick:function(){mark(x.key,"s")}},m==="s"?"✓":""),
+            h("button",{title:"Solved with help","aria-label":"Solved with help","aria-pressed":m==="h",className:"ck",style:{width:26,height:26,fontWeight:700,border:"1.5px solid "+(m==="h"?D.amber:D.b),background:m==="h"?D.amber:"none",color:m==="h"?D.onAmber:D.t3},onClick:function(){mark(x.key,"h")}},"?")); })); }));
+}
+
+/* ── Roadmap: the whole plan on one screen, built to be readable by someone who isn't you. ── */
+var COMP = (typeof COMP_DATA!=="undefined")?COMP_DATA:[];
+function Standing(p){
+  var D=useContext(TC), P=p.P, S=p.S, d=p.d, tp=clamp(Math.round(gap(P.start,d)*100/Math.max(1,P.days)),0,100);
+  var pl=dayPlan(P,S,d), wp=Math.round(pl.doneCount*100/Math.max(1,P.total));
+  var pace=wp>=tp+5?["AHEAD",D.green]:wp>=tp-8?["ON PACE",D.amber]:["BEHIND",D.red];
+  var row=function(lab,have,need,why,k){ var pc=clamp(Math.round(have*100/Math.max(1,need)),0,100), good=k==="time"?null:pc>=tp, col=good==null?D.t3:good?D.green:D.amber;
+    return h("div",{key:k,title:why||""},h("div",{style:{display:"flex",justifyContent:"space-between",gap:8,marginBottom:3}},h("span",{style:{fontSize:12,fontWeight:600,color:k==="time"?D.t3:D.t1}},lab),h("span",{className:"mono",style:{fontSize:11,fontWeight:700,color:col}},k==="time"?tp+"%":have+"/"+need)),
+      h("div",{style:{position:"relative",height:7,borderRadius:4,background:D.s3}},h("i",{style:{position:"absolute",left:0,top:0,bottom:0,width:pc+"%",borderRadius:4,background:col}}),
+        k!=="time"?h("i",{style:{position:"absolute",top:-3,bottom:-3,left:tp+"%",width:2,background:D.t2,opacity:.55}}):null)); };
+  return h("div",{className:"card",style:{borderTop:"3px solid "+D.amber}},
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"baseline",gap:8,flexWrap:"wrap",marginBottom:4}},
+      h("h2",{className:"serif",style:{margin:0,fontSize:19,fontWeight:700}},P.g.label),h(Pill,{label:pace[0],bg:pace[1],fg:"#fff"})),
+    h("p",{className:"sm",style:{marginBottom:12}},fmtLong(P.start)+" → "+fmtLong(P.end)+" · "+P.weeks+" weeks · "+P.workDays+" working days"),
+    h("div",{style:{display:"grid",gap:9}},[row("Time spent",0,1,null,"time"),row("The whole plan",pl.doneCount,P.total,"Every unit across every track","all")].concat(P.tracks.map(function(t){ return row(t.name,trackCount(P,S,t),t.target,t.why,t.id); }))),
+    h("p",{className:"sm t3",style:{marginTop:10}},"Green is ahead of the clock, amber is behind. The thin line is where the clock is ("+tp+"%). Every track is something you do, never a result you hope for."));
+}
+function Milestones(p){
+  var D=useContext(TC), P=p.P, S=p.S, d=p.d, f=useFilter("stones"), fv=f[0], setF=f[1];
+  var st=P.stones.map(function(s){ return Object.assign({},s,stoneStat(P,S,s,d)); }), nx=st.filter(function(s){return !s.met&&s.at>=d})[0];
+  var counts={open:st.filter(function(s){return !s.met}).length,done:st.filter(function(s){return s.met}).length,all:st.length};
+  return h("div",{className:"card"},
+    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,marginBottom:10,flexWrap:"wrap"}},h(Eb,null,"Milestones · each one can be missed"),h(Seg,{v:fv,set:setF,counts:counts})),
+    st.filter(function(s){return keepBy(fv,s.met)}).map(function(s){ var isN=nx&&nx.n===s.n, col=s.met?D.green:s.past?D.red:isN?D.amber:D.b;
+      return h("div",{key:s.n,className:"ms"},h("b",{className:"dot",style:{background:col}}),
+        h("p",{className:"mono",style:{margin:0,fontSize:10.5,fontWeight:700,color:s.met?D.green:s.past?D.red:D.t3}},fmtLong(s.at).toUpperCase()+(s.met?" · CLEARED":s.past?" · MISSED":isN?" · NEXT · IN "+gap(d,s.at)+" DAYS":"")),
+        h("div",{style:{display:"flex",flexWrap:"wrap",gap:6,margin:"5px 0"}},s.have.map(function(x){ var ok=x.n>=x.need;
+          return h("span",{key:x.id,style:{fontSize:11.5,background:ok?D.green+"18":D.s2,border:"1px solid "+(ok?D.green:D.b),borderRadius:7,padding:"3px 8px",color:ok?D.green:D.t1}},h("b",{className:"mono"},x.n+"/"+x.need)," "+x.name.split(" ").slice(0,3).join(" ").toLowerCase()); })),
+        h("p",{className:"sm t3"},"Leaves behind: "+s.artifact)); }));
+}
+function PhaseStrip(p){
+  var D=useContext(TC), P=p.P, d=p.d, cols=[D.blue,D.purple,D.green,D.amber], at=clamp(gap(P.start,d)/Math.max(1,P.days),0,1);
+  return h("div",{className:"card",style:{padding:"14px 16px"}},h(Eb,null,"Phases · tap one"),
+    h("div",{style:{position:"relative",paddingTop:14}},
+      h("div",{style:{position:"absolute",top:0,left:"calc("+(at*100).toFixed(1)+"% - 14px)",fontSize:9.5,fontWeight:700,color:D.amber,fontFamily:"'JetBrains Mono',monospace"}},"NOW ▾"),
+      h("div",{style:{display:"flex",gap:3,height:36}},P.phases.map(function(f,i){ var on=f.n===p.sel.n, w=gap(f.from,f.to)+1;
+        return h("button",{key:f.n,onClick:function(){p.pick(f.n)},"aria-pressed":on,title:f.name,style:{flex:w+" 1 0",minWidth:30,border:on?"2px solid "+D.t1:0,borderRadius:6,background:cols[i%4],opacity:f.to<d&&!on?.45:1,color:"#fff",fontSize:11,fontWeight:700,padding:"0 4px",overflow:"hidden",whiteSpace:"nowrap",textOverflow:"ellipsis"}},f.name); }))));
+}
+function PhaseView(p){
+  var D=useContext(TC), P=p.P, S=p.S, d=p.d, f=p.sel, len=gap(f.from,f.to)+1, inP=f.from<=d&&d<=f.to, pct=inP?Math.round(gap(f.from,d)*100/len):f.to<d?100:0;
+  var mix=P.tracks.map(function(t){ return [t.name,Math.round(P.perDay*ITEM_MIN*(P.g.share[t.id]||0))]; }).concat(P.aspects.map(function(a){ return [a.name,Math.round(a.min*a.days.length/7)]; }));
+  var tot=mix.reduce(function(a,x){return a+x[1]},0), pal=[D.blue,D.purple,D.green,D.amber,D.red,D.t3,D.blue,D.purple];
+  var stone=P.stones.filter(function(s){return s.at>=f.from})[0];
+  var box=function(t,kids,c){ return h("div",{style:{flex:"1 1 170px",minWidth:0,background:D.s2,border:"1px solid "+(c||D.b),borderRadius:12,padding:"11px 12px"}},h("p",{className:"mono",style:{margin:"0 0 6px",fontSize:9.5,fontWeight:700,color:c||D.t3,letterSpacing:".1em"}},t),kids); };
+  var arrow=h("div",{"aria-hidden":true,style:{alignSelf:"center",color:D.t3,fontSize:18,fontWeight:700}},"→");
+  return h("div",{className:"card"},
+    h("div",{style:{display:"flex",justifyContent:"space-between",gap:8,flexWrap:"wrap",alignItems:"baseline"}},h("h3",{className:"serif",style:{margin:0,fontSize:18}},f.name),h("span",{className:"mono",style:{fontSize:10.5,color:D.t3,fontWeight:700}},fmt(f.from)+" – "+fmt(f.to)+" · "+Math.round(len/7)+" WK")),
+    h("div",{className:"bar",style:{margin:"10px 0 4px"}},h("i",{style:{width:pct+"%",background:D.amber}})),
+    h("p",{className:"mono",style:{margin:"0 0 12px",fontSize:10,color:D.t3}},inP?pct+"% through · "+gap(d,f.to)+" days left in this phase":f.to<d?"finished":"starts in "+gap(d,f.from)+" days"),
+    h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",alignItems:"stretch"}},
+      box("AIM",h("p",{style:{margin:0,fontSize:12.5,lineHeight:1.5}},f.goal),D.blue),arrow,
+      box("AN AVERAGE DAY · "+tot+" MIN",h(F,null,h("div",{style:{display:"flex",height:12,borderRadius:6,overflow:"hidden",marginBottom:7}},mix.map(function(x,i){ return h("i",{key:x[0],title:x[0]+" "+x[1]+" min",style:{display:"block",width:(x[1]*100/Math.max(1,tot))+"%",background:pal[i]}}); })),
+        h("div",{style:{display:"flex",flexWrap:"wrap",gap:"3px 10px"}},mix.map(function(x,i){ return h("span",{key:x[0],style:{fontSize:11,color:D.t2,display:"inline-flex",alignItems:"center",gap:4}},h("b",{style:{width:7,height:7,borderRadius:2,background:pal[i],display:"inline-block"}}),x[0]," ",h("span",{className:"mono",style:{fontSize:10,color:D.t3}},x[1])); })))),arrow,
+      box(stone?"CHECKPOINT · "+fmt(stone.at).toUpperCase():"BY ITS END",stone?h("div",{style:{display:"flex",flexWrap:"wrap",gap:5}},stone.need.map(function(x){ return h("span",{key:x.id,style:{fontSize:11.5,background:D.s1,border:"1px solid "+D.b,borderRadius:7,padding:"4px 7px"}},h("b",{className:"mono"},x.n)," "+x.name.split(" ").slice(0,3).join(" ").toLowerCase()); })):h("p",{className:"sm"},"The deadline itself: everything in the plan done."),D.green)));
+}
+function Opportunities(p){
+  var D=useContext(TC), S=p.S, P=p.P, d=p.d, f=useFilter("opps"), fv=f[0], setF=f[1];
+  var mine=(S.events||[]).filter(function(e){return !(S.rev||{})[e.id]});
+  var tracks=P.tracks.map(function(t){return t.id}).concat(P.g.id==="ml"?["ml"]:[], P.g.id==="build"?["startup"]:[], ["dsa","cp","general"]);
+  var cur=COMP.filter(function(c){ var dd=c.deadline||c.event||c.open; return (!dd||dd>=addDays(d,-1))&&(tracks.indexOf(c.track)>-1||P.g.id==="cp"&&c.track==="cp"||P.g.id==="sde"); });
+  var added=function(c){ return mine.some(function(e){return e.ref===c.id}); };
+  var add=function(c){ var dd=c.deadline||c.event||c.open||d; p.save(Object.assign({},S,{events:mine.concat([{id:"e-"+c.id,ref:c.id,date:dd<d?d:dd,name:c.name,why:c.why,url:c.source,src:"curated"}])})); };
+  var drop=function(e){ p.save(Object.assign({},S,{events:mine.filter(function(x){return x.id!==e.id})})); };
+  var counts={open:mine.filter(function(e){return e.date>=d}).length,done:mine.filter(function(e){return e.date<d}).length,all:mine.length};
+  return h(F,null,
+    h("div",{className:"card"},h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8,flexWrap:"wrap",marginBottom:6}},h(Eb,null,"In your plan · "+mine.length),h(Seg,{v:fv,set:setF,counts:counts})),
+      mine.length?mine.filter(function(e){return keepBy(fv,e.date<d)}).sort(function(a,b){return a.date<b.date?-1:1}).map(function(e){
+        return h("div",{key:e.id,className:"row",style:{padding:"9px 0",borderTop:"1px solid "+D.b}},h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,color:e.date<d?D.t3:D.amber,width:56,flexShrink:0}},fmt(e.date).toUpperCase()),
+          h("div",{style:{flex:1,minWidth:0}},e.url?h("a",{href:e.url,target:"_blank",rel:"noopener noreferrer",style:{fontSize:13,fontWeight:600}},e.name+" ↗"):h("p",{style:{margin:0,fontSize:13,fontWeight:600}},e.name),e.why?h(Brief,{t:e.why,size:11.5,c:D.t2}):null,h("p",{className:"mono",style:{margin:"2px 0 0",fontSize:9.5,color:D.t3}},"FROM "+String(e.src||"you").toUpperCase())),
+          h("button",{className:"tbtn",style:{fontSize:10.5,padding:"4px 8px"},onClick:function(){drop(e)}},"Remove")); }):h("p",{className:"sm t3"},"Nothing yet. Add from the list below, or run the research desk with your AI.")),
+    h("div",{className:"card"},h(Eb,null,"Worth a look · "+cur.length),
+      h("p",{className:"sm",style:{marginBottom:8}},"Checked against official pages. Dates marked ~ are estimated from last year's timing; confirm on the link before you plan around them."),
+      cur.length?cur.slice(0,40).map(function(c){ var dd=c.deadline||c.event||c.open;
+        return h("div",{key:c.id,className:"row",style:{padding:"9px 0",borderTop:"1px solid "+D.b}},
+          h("span",{className:"mono",style:{fontSize:10.5,fontWeight:700,color:D.t3,width:56,flexShrink:0}},dd?(c.date_status==="estimated"?"~":"")+fmt(dd).toUpperCase():"ONGOING"),
+          h("div",{style:{flex:1,minWidth:0}},h("a",{href:c.source,target:"_blank",rel:"noopener noreferrer",style:{fontSize:13,fontWeight:600}},c.name+" ↗"),h(Brief,{t:(c.why||"")+(c.eligibility?" Eligibility: "+c.eligibility:""),size:11.5,c:D.t2})),
+          added(c)?h("span",{className:"mono",style:{fontSize:10,color:D.green,fontWeight:700}},"ADDED"):h("button",{className:"tbtn",style:{fontSize:10.5,padding:"4px 8px"},onClick:function(){add(c)}},"Add")); }):h("p",{className:"sm t3"},"The curated list is empty for your goal right now. The research desk finds fresh ones with your AI.")));
+}
+function AspectView(p){
+  var D=useContext(TC), S=p.S, P=p.P, d=p.d, a=p.a, done=S.done||{}, n=0, of=0;
+  for(var i=0;i<28;i++){ var x=addDays(d,-i); if(x<S.start) break; if(a.days.indexOf(dow(x))>-1){ of++; if((done[x]||[]).indexOf("asp:"+a.id)>-1) n++; } }
+  var weeks=Math.max(1,Math.round(gap(S.start,d)/7)), stage=weeks<8?0:weeks<26?1:2;
+  return h(F,null,h("div",{className:"card",style:{borderTop:"3px solid "+D.purple}},
+      h("p",{className:"serif",style:{margin:"0 0 4px",fontSize:19,fontWeight:700,color:D.purple}},a.ic+" "+a.name),h("p",{className:"sm",style:{marginBottom:10}},a.line),
+      h("div",{style:{display:"flex",gap:18,flexWrap:"wrap"}},h("div",null,h("p",{className:"mono",style:{margin:0,fontSize:22,fontWeight:700,color:D.purple}},n+"/"+of),h("p",{className:"sm t3",style:{fontSize:11}},"sessions, last 4 weeks")),
+        h("div",null,h("p",{className:"mono",style:{margin:0,fontSize:22,fontWeight:700}},a.min+" min"),h("p",{className:"sm t3",style:{fontSize:11}},a.days.map(function(i){return DOW[i]}).join(" / "))))),
+    h(Fold,{id:"arc-"+a.id,title:"The arc"},h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:8,marginBottom:14}},a.arc.map(function(t,i){ var now=i===stage;
+      return h("div",{key:i,style:{background:now?D.s1:D.s2,border:"1px solid "+(now?D.purple:D.b),boxShadow:now?"0 0 0 1px "+D.purple:"none",borderRadius:12,padding:"10px 12px",opacity:i<stage?.6:1}},
+        h("p",{className:"mono",style:{margin:"0 0 4px",fontSize:10,fontWeight:700,color:now?D.purple:D.t3}},"STAGE "+(i+1)+(now?" · NOW":"")),h("p",{style:{margin:0,fontSize:12.5,lineHeight:1.45}},t)); }))));
+}
+function Roadmap(p){
+  var D=useContext(TC), S=p.S, P=p.P, d=p.d, sec=p.sec||"main", cur=phaseAt(P,d);
+  var sp=useState(cur.n), sel=P.phases[sp[0]]||cur, setSel=sp[1];
+  if(sec!=="main"){ var a=P.aspects.filter(function(x){return x.id===sec})[0]; if(a) return h("div",{className:"col6"},h(AspectView,{S:S,P:P,d:d,a:a})); }
+  return h("div",{className:"col6"},
+    h(Fold,{id:"rd-stand",title:"Where this stands",tour:"stand"},h(Standing,{S:S,P:P,d:d})),
+    h(Fold,{id:"rd-mile",title:"Milestones"},h(Milestones,{S:S,P:P,d:d})),
+    h(PhaseStrip,{P:P,d:d,sel:sel,pick:setSel}),
+    h(PhaseView,{P:P,S:S,d:d,sel:sel}),
+    h(Fold,{id:"rd-opps",title:"Competitions and opportunities"},h(Opportunities,{S:S,P:P,d:d,save:p.save})),
+    h(Fold,{id:"rd-big",title:"The big picture",shut0:true},h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(200px,1fr))",gap:10,marginBottom:14}},
+      [["🎯","The goal",P.g.label,"Deadline "+fmtLong(P.end)+"."],["🧱","The floor",P.floorN+" unit"+(P.floorN>1?"s":"")+" a day","The smallest honest day. It resizes every Monday from your last two weeks."],
+       ["📏","The measure","One number per track","Each track counts something you do, not a result you hope for. Marks, offers and ranks follow these."],
+       ["🔁","The loop","Plan → do → Sunday truth","Missed work moves forward, never doubled. Sunday shows the real %, and next week is cut to fit."]].map(function(x){
+        return h("div",{key:x[1],className:"card",style:{margin:0}},h("p",{className:"mono",style:{margin:"0 0 4px",fontSize:10,fontWeight:700,color:D.t3}},x[0]+" "+x[1].toUpperCase()),h("p",{className:"serif",style:{margin:"0 0 4px",fontSize:16,fontWeight:700,color:D.amber}},x[2]),h("p",{className:"sm"},x[3])); }))));
+}
+
+/* ── The handoff: your AI, any AI. Copy → paste there → paste its answer back → approve. ───── */
+function Handoff(p){
+  var D=useContext(TC), S=p.S, P=p.P, d=today(), kind=p.kind;
+  var a=useState(""), ask=a[0], setAsk=a[1], r=useState(""), reply=r[0], setReply=r[1], e=useState(""), err=e[0], setErr=e[1];
+  var pv=useState(null), prev=pv[0], setPrev=pv[1], c=useState(""), copied=c[0], setCopied=c[1], b=useState(false), busy=b[0], setBusy=b[1];
+  var prompt=kind==="research"?researchPrompt(P,S,d):coachPrompt(P,S,d,ask);
+  var copy=function(){ copyText(prompt).then(function(ok){ setCopied(ok?"Copied. Now paste it into your AI.":"Couldn't copy automatically: select the text below and copy it."); }); };
+  var check=function(t){ setErr(""); try{ var res=parseAI(t,P); if(!res.changes.length&&!res.note) throw new Error("The reply had no note and no changes I could use."); setPrev(res); }catch(x){ setPrev(null); setErr(x.message); } };
+  var hereAI=function(){ setBusy(true); setErr("");
+    claude.use("sample").then(function(sm){ if(!sm) throw new Error("Claude isn't available in this view."); return sm(prompt,{cache:false}); })
+      .then(function(o){ setReply(o.text||""); check(o.text||""); }).catch(function(x){ setErr("Couldn't reach Claude here ("+(x&&(x.code||x.message)||"error")+"). Use the copy-paste route instead."); }).then(function(){ setBusy(false); }); };
+  return h(Modal,{title:kind==="research"?"Research desk: ask your AI":"Ask your AI for a re-plan",onClose:p.onClose,label:"AI handoff"},
+    kind!=="research"?h(F,null,h("label",{className:"sm",style:{display:"block",marginBottom:4,fontWeight:700}},"Anything specific? (optional, stays between you and your AI)"),
+      h("textarea",{className:"inp",rows:2,value:ask,placeholder:"e.g. exams start in 10 days; I keep missing evenings",onChange:function(e){setAsk(e.target.value)},style:{marginBottom:10}})):null,
+    h("p",{className:"eb",style:{color:D.t2}},"1 · Copy this to your AI"),
+    h("pre",{className:"code"},prompt),
+    h("div",{style:{display:"flex",gap:6,flexWrap:"wrap",margin:"8px 0 4px"}},
+      h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"9px 14px"},onClick:copy},"Copy"),
+      AI_SITES.map(function(x){ return h("a",{key:x[0],href:x[1],target:"_blank",rel:"noopener noreferrer",className:"tbtn",style:{textDecoration:"none"}},x[0]+" ↗"); })),
+    copied?h("p",{className:"sm",style:{color:D.green}},copied):null,
+    kind==="research"?h("p",{className:"sm t3",style:{marginTop:4}},"Use an AI with web search switched on, so it reads real pages instead of remembering."):null,
+    IN_CLAUDE?h("button",{className:"tbtn",style:{marginTop:8},disabled:busy,onClick:hereAI},busy?"Asking Claude…":"Or ask Claude right here"):null,
+    h("p",{className:"eb",style:{color:D.t2,marginTop:14}},"2 · Paste its whole answer"),
+    h("textarea",{className:"inp",rows:5,value:reply,placeholder:"```json { \"note\": …, \"changes\": [ … ] } ```",onChange:function(e){ setReply(e.target.value); if(e.target.value.length>20) check(e.target.value); }}),
+    err?h("p",{className:"sm",style:{color:D.red,marginTop:6}},err):null,
+    prev?h("div",{className:"card",style:{marginTop:10,borderColor:D.green}},
+      h(Eb,{color:D.green},"3 · Check and apply"),
+      prev.note?h("p",{style:{margin:"0 0 8px",fontSize:13,lineHeight:1.5}},prev.note):null,
+      prev.changes.length?prev.changes.map(function(x,i){ return h("p",{key:i,className:"sm",style:{color:D.t1,margin:"3px 0"}},"• "+x.label); }):h("p",{className:"sm t3"},"No changes suggested."),
+      prev.skipped.length?h("p",{className:"sm t3",style:{marginTop:6}},"Ignored "+prev.skipped.length+" change(s) that weren't valid ("+prev.skipped.join(", ")+")."):null,
+      h("button",{className:"big",style:{width:"100%",marginTop:10,background:D.green,color:"#fff"},onClick:function(){ p.save(applyChanges(S,prev,kind==="research"?"research":"coach")); p.onClose(); }},prev.changes.length?"Apply "+prev.changes.length+" change"+(prev.changes.length>1?"s":"")+" (you can undo)":"Save the note")):null,
+    h("p",{className:"sm t3",style:{marginTop:12}},"Nitya sends nothing to the AI itself: you copy, you paste. The handoff holds your plan's numbers only, never your name."));
+}
+function Desk(p){
+  var D=useContext(TC), S=p.S, P=p.P;
+  var src=[["Codeforces contests","https://codeforces.com/contests","Rated rounds, several a week"],["LeetCode contests","https://leetcode.com/contest/","Weekly and biweekly"],["CodeChef contests","https://www.codechef.com/contests","Starters every week"],
+    ["CLIST (every contest, one calendar)","https://clist.by/","All coding contests in one list"],["Unstop","https://unstop.com/competitions","Indian student competitions, hackathons, internships"],["Devfolio","https://devfolio.co/hackathons","Hackathons in India"],
+    ["MLH","https://mlh.io/seasons/2027/events","Student hackathons worldwide, many online"],["Kaggle competitions","https://www.kaggle.com/competitions","ML competitions, incl. beginner ones"],["Google Summer of Code","https://summerofcode.withgoogle.com/","Paid open source, spring applications"],
+    ["Good first issues","https://goodfirstissue.dev/","Beginner-friendly open-source issues"]];
+  return h("div",{className:"col"},
+    h("div",{className:"card",style:{borderTop:"3px solid "+D.purple}},h("p",{className:"serif",style:{margin:"0 0 6px",fontSize:18,fontWeight:700,color:D.purple}},"Research desk"),
+      h("p",{className:"sm",style:{marginBottom:10}},"Once a week, let your own AI search the web for contests, programmes and deadlines that fit your plan. What it finds comes back as events you approve, and each one lands on your Roadmap and in Coming up."),
+      h("button",{className:"big",style:{width:"100%",background:D.purple,color:"#fff"},onClick:function(){p.open("research")}},"Run this week's research with my AI"),
+      h("p",{className:"sm t3",style:{marginTop:8}},"Last run: "+(((S.changes||[]).filter(function(c){return c.source==="research"}).slice(-1)[0]||{}).at||"never")+". Sunday is a good day for it.")),
+    h(Fold,{id:"desk-src",title:"Free places worth checking yourself"},h("div",{className:"card",style:{padding:"6px 18px"}},src.map(function(x){
+      return h("div",{key:x[0],style:{padding:"9px 0",borderTop:"1px solid "+D.b}},h("a",{href:x[1],target:"_blank",rel:"noopener noreferrer",style:{fontSize:13,fontWeight:600}},x[0]+" ↗"),h("p",{className:"sm t3",style:{fontSize:11.5}},x[2])); }))));
+}
+/* ── Sunday: the real number, the correction, and the report to the founder. ─────────────── */
+function Report(p){
+  var D=useContext(TC), S=p.S, P=p.P, d=p.d, rep=weekReport(P,S,d), applied=(S.capApplied||"")===rep.mon;
+  var fb=useState(""), text=fb[0], setText=fb[1], rt=useState(0), rating=rt[0], setRating=rt[1], ms=useState(""), msg=ms[0], setMsg=ms[1];
+  var apply=function(dir){ p.save(Object.assign({},S,{capAdj:clamp((S.capAdj||0)+dir,-(P.perDay-1),3),capApplied:rep.mon})); };
+  var sendWeek=function(){ sendRow(reportRow("weekly",P,S)).then(function(left){ setMsg(left?"Saved to send. It goes the next time you're online.":"Sent, anonymously. Thank you."); }); p.save(Object.assign({},S,{lastWeekly:rep.mon})); };
+  var sendFb=function(){ if(!text.trim()&&!rating) return; sendRow(reportRow("feedback",P,S,{text:text,rating:rating})).then(function(left){ setMsg(left?"Saved to send. It goes the next time you're online.":"Sent, anonymously. Thank you."); setText(""); setRating(0); }); };
+  var clean=scrub(text);
+  return h("div",{className:"col"},
+    h("div",{className:"card"},h(Eb,null,"Week of "+fmt(rep.mon)),
+      h("p",{className:"mono",style:{margin:"0 0 2px",fontSize:40,fontWeight:700,color:rep.pct>=70?D.green:rep.pct>=40?D.amber:D.red}},rep.pct+"%"),
+      h("p",{style:{margin:"0 0 8px",fontSize:14,fontWeight:600}},rep.verdict),
+      h("p",{className:"sm"},rep.done+" of "+rep.plan+" planned units"+(rep.asp?" · "+rep.aspDone+" of "+rep.asp+" aspect sessions":"")+". Not adjusted, not rounded up; days you don't work aren't counted against you.")),
+    h(Fold,{id:"rep-days",title:"Day by day"},h("div",{className:"card"},rep.rows.map(function(r){ var pc=r.cap?Math.round(Math.min(r.n,r.cap)*100/r.cap):0;
+      return h("div",{key:r.d,style:{display:"flex",alignItems:"center",gap:10,padding:"6px 0",opacity:r.future?.4:1}},h("span",{className:"mono",style:{fontSize:11,width:34,color:r.d===d?D.amber:D.t3,fontWeight:700}},DOW[dow(r.d)]),
+        h("div",{style:{flex:1}},h(Bar,{pct:pc,color:!r.cap?D.s3:r.met?D.green:pc>0?D.amber:D.s3})),h("span",{className:"mono",style:{fontSize:11,width:44,textAlign:"right",color:D.t3}},r.cap?r.n+"/"+r.cap:"off")); }))),
+    rep.advice!==null&&!applied?h("div",{className:"card",style:{borderColor:D.amber}},h(Eb,null,"The correction"),
+      rep.advice<0?h(F,null,h("p",{style:{margin:"0 0 6px",fontSize:14,fontWeight:700}},"Next week should be smaller."),h("p",{className:"sm",style:{marginBottom:10}},"A plan you miss every week stops being information. One unit fewer a day makes the number mean something again. The deadline stays; the honesty comes back."),
+        h("button",{className:"big",style:{width:"100%",background:D.amber,color:D.onAmber},onClick:function(){apply(-1)}},"Cut the daily plan by one unit")):
+      rep.advice>0?h(F,null,h("p",{style:{margin:"0 0 6px",fontSize:14,fontWeight:700}},"You have room."),h("p",{className:"sm",style:{marginBottom:10}},"Only take more if last week felt repeatable, not heroic."),
+        h("button",{className:"big",style:{width:"100%",background:D.green,color:"#fff"},onClick:function(){apply(1)}},"Add one unit a day")):
+      h("p",{className:"sm"},"Between 70% and 95%: the plan is the right size. Nothing to change.")):null,
+    applied?h("div",{className:"card"},h("p",{className:"sm"},"Correction applied for this week: the daily plan is now "+capFor(P,S,d)+" units on work days.")):null,
+    h(Fold,{id:"rep-founder",title:"Report to the founder"},h("div",{className:"card"},
+      h("p",{className:"sm",style:{marginBottom:10}},"Nitya is built by one student, Prince Jha. Your numbers and a sentence of feedback are the only way he learns what to fix. Both are anonymous: tagged ",h("span",{className:"mono"},S.anon||"—"),", a code made on this device, never your name."),
+      S.consent&&S.consent.usage?h("button",{className:"big",style:{width:"100%",background:D.blue,color:"#fff",marginBottom:12},onClick:sendWeek},S.lastWeekly===rep.mon?"Sent this week ✓ (send again)":"Send this week's numbers"):
+        h("p",{className:"sm t3",style:{marginBottom:12}},"Sharing numbers is off. You can turn it on in Settings → Your data."),
+      h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},"How useful was Nitya this week?"),
+      h("div",{style:{display:"flex",gap:6,marginBottom:8}},[1,2,3,4,5].map(function(n){ return h("button",{key:n,className:"dayb"+(rating===n?" on":""),"aria-pressed":rating===n,onClick:function(){setRating(n)}},n); })),
+      h("textarea",{className:"inp",rows:3,value:text,placeholder:"What got in your way? What would make it better?",onChange:function(e){setText(e.target.value)}}),
+      text.trim()?h("div",{style:{marginTop:8}},h("p",{className:"sm t3",style:{marginBottom:4}},"This is exactly what will be sent (names, emails, numbers and links are removed on your device):"),h("pre",{className:"code"},clean)):null,
+      h("button",{className:"big",style:{width:"100%",marginTop:10,background:D.s2,border:"1px solid "+D.b,color:D.t1},onClick:sendFb},"Send feedback anonymously"),
+      msg?h("p",{className:"sm",style:{marginTop:8,color:D.green}},msg):null)));
+}
+
+/* ── Settings: everything you chose, editable; your data, visible. ─────────────────────────── */
+function Settings(p){
+  var D=useContext(TC), S=p.S, P=p.P, upd=function(o){ p.save(Object.assign({},S,o)); };
+  var bc=useState(""), code=bc[0], setCode=bc[1], rc=useState(""), rcode=rc[0], setRcode=rc[1], re=useState(""), rmsg=re[0], setRmsg=re[1], cf=useState(false), conf=cf[0], setConf=cf[1];
+  var tg=function(arr,i){ var x=(arr||[]).slice(), k=x.indexOf(i); if(k>-1) x.splice(k,1); else x.push(i); return x.sort(); };
+  var aspOn=function(id){ return (S.aspects||[]).filter(function(x){return x.id===id&&x.on})[0]; };
+  var setAsp=function(id,o){ var arr=(S.aspects||[]).filter(function(x){return x.id!==id}); var cur=aspOn(id)||{id:id,on:true}; if(o) arr.push(Object.assign({},cur,o)); upd({aspects:arr}); };
+  var g=P.g, log=sentLog(), box=outbox();
+  return h("div",{className:"col"},
+    h(Fold,{id:"set-plan",title:"Your plan"},h("div",{className:"card"},
+      h("p",{style:{margin:"0 0 10px",fontSize:14,fontWeight:700}},g.label),
+      h("label",{className:"sm",style:{display:"block",marginBottom:4}},"Goal"),
+      h("select",{className:"inp",value:S.goal,onChange:function(e){ var nd=defaultsFor(e.target.value); upd({goal:e.target.value,trackRes:nd.trackRes,customRes:{}}); }},GOALS.map(function(x){return h("option",{key:x.id,value:x.id},x.label)})),
+      h("label",{className:"sm",style:{display:"block",margin:"10px 0 4px"}},"Deadline"),
+      h("input",{type:"date",className:"inp",value:S.deadline,min:addDays(today(),7),onChange:function(e){ if(e.target.value) upd({deadline:e.target.value}); }}),
+      h("label",{className:"sm",style:{display:"block",margin:"10px 0 4px"}},"Hours on a normal day"),
+      h("div",{style:{display:"flex",gap:6}},[1,2,3,4].map(function(n){ return h("button",{key:n,className:"dayb"+(S.hours===n?" on":""),onClick:function(){upd({hours:n})}},n+(n===4?"+":"")+"h"); })),
+      h("label",{className:"sm",style:{display:"block",margin:"10px 0 4px"}},"Work days"),
+      h("div",{style:{display:"flex",gap:5,flexWrap:"wrap"}},[1,2,3,4,5,6,0].map(function(i){ return h("button",{key:i,className:"dayb"+((S.days||[]).indexOf(i)>-1?" on":""),onClick:function(){ var x=tg(S.days,i); if(x.length) upd({days:x}); }},DOW[i]); })),
+      h("p",{className:"sm t3",style:{marginTop:10}},"Changing these re-sizes the plan. Everything you've ticked stays ticked."))),
+    h(Fold,{id:"set-week",title:"Classes, wake and sleep"},h("div",{className:"card"},
+      h("div",{style:{display:"flex",gap:5,flexWrap:"wrap",marginBottom:8}},[1,2,3,4,5,6,0].map(function(i){ var C=S.classes||{days:[]}; return h("button",{key:i,className:"dayb"+((C.days||[]).indexOf(i)>-1?" on":""),onClick:function(){upd({classes:Object.assign({},C,{days:tg(C.days,i)})})}},DOW[i]); })),
+      h("div",{style:{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center"}},
+        h("span",{className:"sm"},"Classes"),h("input",{type:"time",className:"inp",style:{width:115},value:(S.classes||{}).from||"09:00",onChange:function(e){upd({classes:Object.assign({},S.classes,{from:e.target.value})})}}),
+        h("input",{type:"time",className:"inp",style:{width:115},value:(S.classes||{}).to||"17:00",onChange:function(e){upd({classes:Object.assign({},S.classes,{to:e.target.value})})}})),
+      h("div",{style:{display:"flex",gap:8,flexWrap:"wrap",alignItems:"center",marginTop:8}},
+        h("span",{className:"sm"},"Wake"),h("input",{type:"time",className:"inp",style:{width:115},value:S.wake||"06:30",onChange:function(e){upd({wake:e.target.value})}}),
+        h("span",{className:"sm"},"Sleep"),h("input",{type:"time",className:"inp",style:{width:115},value:S.sleep||"23:00",onChange:function(e){upd({sleep:e.target.value})}})))),
+    h(Fold,{id:"set-floor",title:"The floor"},h("div",{className:"card"},
+      h("p",{className:"sm",style:{marginBottom:10}},"Base floor: "+P.floorN+" unit(s), against "+P.perDay+" on a normal day. Every Monday it adjusts itself for the week (light / normal / stretch) from your last two weeks; you can undo that on Today."),
+      h("div",{style:{display:"flex",gap:8}},h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.max(1,P.floorN-1)})}},"Lower the base"),h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.min(P.perDay,P.floorN+1)})}},"Raise the base")))),
+    h(Fold,{id:"set-res",title:"Your resources"},h("div",{className:"card"},P.tracks.map(function(t){ var cu=(S.customRes||{})[t.id];
+      return h("div",{key:t.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},h("p",{style:{margin:"0 0 5px",fontSize:12.5,fontWeight:700}},t.name),
+        h("div",{style:{display:"flex",flexWrap:"wrap"}},goalOf(S.goal).tracks.filter(function(x){return x.id===t.id})[0].res.map(function(k){ var on=!cu&&(S.trackRes||{})[t.id]===k;
+          return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11,padding:"5px 9px"},onClick:function(){ var cr=Object.assign({},S.customRes); delete cr[t.id]; var tr=Object.assign({},S.trackRes); tr[t.id]=k; upd({trackRes:tr,customRes:cr}); }},RES[k].n); }),
+          cu?h("span",{className:"chip on",style:{fontSize:11,padding:"5px 9px"}},"Yours: "+cu.n):null)); }))),
+    h(Fold,{id:"set-asp",title:"Aspects you keep alive"},h("div",{className:"card"},ASPECTS.map(function(x){ var a=aspOn(x.id), days=a&&a.days||x.days, min=a&&a.min||x.min;
+      return h("div",{key:x.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},
+        h("div",{className:"row",style:{alignItems:"center"}},h("button",{className:"ck","aria-pressed":!!a,"aria-label":x.name,style:{border:"2px solid "+(a?D.green:D.b),background:a?D.green:"none",color:"#fff"},onClick:function(){ setAsp(x.id,a?null:{on:true}); }},a?"✓":""),
+          h("span",{style:{flex:1,fontSize:13,fontWeight:600}},x.ic+" "+x.name),a?h("input",{type:"number",className:"inp",style:{width:70},min:5,max:120,value:min,"aria-label":x.name+" minutes",onChange:function(e){setAsp(x.id,{min:clamp(+e.target.value||x.min,5,120)})}}):null,a?h("span",{className:"sm"},"min"):null),
+        a?h("div",{style:{display:"flex",gap:4,flexWrap:"wrap",marginTop:6,paddingLeft:32}},[1,2,3,4,5,6,0].map(function(i){ return h("button",{key:i,className:"dayb"+(days.indexOf(i)>-1?" on":""),style:{width:34,height:30},onClick:function(){ var dd=tg(days,i); if(dd.length) setAsp(x.id,{days:dd}); }},DOW[i]); })):null); }))),
+    h(Fold,{id:"set-anch",title:"Daily anchors"},h("div",{className:"card"},ANCHOR_PRESETS.map(function(x){ var cur=(S.anchors||[]).filter(function(y){return y.id===x[0]})[0];
+      return h("div",{key:x[0],className:"row",style:{alignItems:"center",padding:"7px 0",borderTop:"1px solid "+D.b}},
+        h("button",{className:"ck","aria-pressed":!!cur,"aria-label":x[1],style:{border:"2px solid "+(cur?D.green:D.b),background:cur?D.green:"none",color:"#fff"},onClick:function(){ var arr=(S.anchors||[]).filter(function(y){return y.id!==x[0]}); if(!cur) arr.push({id:x[0],label:x[1],at:x[2]}); upd({anchors:arr}); }},cur?"✓":""),
+        h("span",{style:{flex:1,fontSize:13,fontWeight:600}},x[1]),cur?h("input",{type:"time",className:"inp",style:{width:110},value:cur.at,onChange:function(e){ upd({anchors:S.anchors.map(function(y){return y.id===x[0]?Object.assign({},y,{at:e.target.value}):y})}); }}):null); }))),
+    h(Fold,{id:"set-backup",title:"Backup and restore",tour:"backup"},h("div",{className:"card"},
+      h("p",{className:"sm",style:{marginBottom:8}},"Your plan lives in this browser. A backup code is the whole plan as one line of text: keep it in your notes or email it to yourself, and paste it on any device to continue. Make one every week."),
+      h("button",{className:"big",style:{width:"100%",background:D.amber,color:D.onAmber},onClick:function(){ var c=backupCode(S); setCode(c); copyText(c); var u=Object.assign({},S.used||{}); u.backup=(u.backup||0)+1; p.save(Object.assign({},S,{used:u,lastBackup:today()})); }},"Make a backup code"),
+      code?h(F,null,h("p",{className:"sm",style:{margin:"8px 0 4px",color:D.green}},"Copied (if your browser allowed it). Here it is too:"),h("pre",{className:"code",style:{maxHeight:90}},code)):null,
+      h("p",{className:"sm t3",style:{marginTop:6}},"Last backup: "+(S.lastBackup?fmtLong(S.lastBackup):"never")),
+      h("details",{style:{marginTop:10}},h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"Restore from a code"),
+        h("textarea",{className:"inp",rows:3,value:rcode,placeholder:"NITYA1.…",onChange:function(e){setRcode(e.target.value);setRmsg("")},style:{marginTop:8}}),
+        h("button",{className:"tbtn",style:{marginTop:8},onClick:function(){ try{ var o=readBackup(rcode); o.used=Object.assign({},o.used||{}); o.used.restore=(o.used.restore||0)+1; p.save(o); setRmsg("Restored."); }catch(x){ setRmsg(x.message); } }},"Replace this plan with the code"),
+        rmsg?h("p",{className:"sm",style:{marginTop:6,color:rmsg==="Restored."?D.green:D.red}},rmsg):null))),
+    h(Fold,{id:"set-data",title:"Your data"},h("div",{className:"card"},
+      h("div",{className:"row",style:{alignItems:"center",marginBottom:8}},h("span",{style:{flex:1,fontSize:13,fontWeight:700}},"Share anonymous numbers with the founder"),
+        h("button",{className:"tbtn","aria-pressed":!!(S.consent||{}).usage,style:(S.consent||{}).usage?{background:D.green,borderColor:D.green,color:"#fff"}:null,onClick:function(){ upd({consent:{usage:!(S.consent||{}).usage,at:today()}}); }},(S.consent||{}).usage?"On":"Off")),
+      h("p",{className:"sm",style:{marginBottom:6}},"Counts and choices only, tagged with your anonymous code ",h("span",{className:"mono"},S.anon),". Never your name, email, phone, college ID, IP address, location, or anything you type in tasks or to your AI."),
+      h("button",{className:"tbtn",style:{fontSize:11},onClick:function(){ upd({anon:"u-"+uid(8)}); }},"Give me a new anonymous code"),
+      h("details",{style:{marginTop:10}},h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"Show me a sample of what is sent"),h("pre",{className:"code",style:{marginTop:6}},JSON.stringify(reportRow("weekly",P,S),null,1))),
+      h("p",{className:"sm",style:{marginTop:10}},h("b",null,"Sent so far: "),log.length?log.slice(0,5).map(function(x){return fmt(x.at.slice(0,10))+" ("+x.kinds+")"}).join(", "):"nothing yet",box.length?" · "+box.length+" waiting to send":""),
+      h("p",{className:"sm t3",style:{marginTop:6}},"Your plan itself never leaves this device unless you copy a backup code or paste a handoff into your AI yourself."))),
+    h(Fold,{id:"set-help",title:"Help"},h("div",{className:"card"},
+      h("button",{className:"tbtn",style:{marginRight:8},onClick:p.tour},"Replay the tour"),h("button",{className:"tbtn",onClick:function(){p.go("guide")}},"How Nitya works"))),
+    h(Fold,{id:"set-reset",title:"Start over",shut0:true},h("div",{className:"card"},
+      h("p",{className:"sm",style:{marginBottom:10}},"Deletes the plan and every mark on this device. Make a backup code first if you might want it back."),
+      conf?h("div",{style:{display:"flex",gap:8}},h("button",{className:"big",style:{flex:1,background:D.red,color:"#fff"},onClick:function(){ ls.del(KEY); location.reload(); }},"Yes, delete it"),h("button",{className:"tbtn",style:{flex:1},onClick:function(){setConf(false)}},"Keep it"))
+        :h("button",{className:"tbtn",style:{width:"100%"},onClick:function(){setConf(true)}},"Delete my plan"))));
+}
+/* ── How Nitya works: every feature, in plain words. ─────────────────────────────────────── */
+var GUIDE=[["☀ Today","The day on a clock: classes blocked, anchors pinned, then your floor, then the rest. Every item links to its source. Tick what you did; \"with help\" counts honestly."],
+ ["🧱 The floor","The smallest honest day. Hit it and the day counts. Every Monday it looks at your last two weeks: under 60% met, it gets lighter; 90%+, it stretches. You see why and can undo it."],
+ ["🔁 Re-planning","Missed work stays at the front of the queue. Tomorrow never gets a double load: the daily size is the daily size."],
+ ["🤝 Your coach","Your own AI. \"Ask my AI\" copies a handoff with your numbers; paste it into ChatGPT, Gemini, Claude or any AI; paste its answer back. Nitya checks it, shows each change, and you approve. Every change can be undone."],
+ ["🔎 Research desk","Once a week your AI searches the web for contests, programmes and deadlines that fit you. You approve each one; they land on your Roadmap and in Coming up."],
+ ["⚔ Practice","Striver's A2Z ladder in order, with what each platform is for. A rating only moves in rated contests; practice builds skill, contests measure it."],
+ ["🗺 Roadmap","The whole plan on one screen: time vs work, one number per track, dated milestones that can be missed, phases, opportunities, and each aspect's arc. Built to be shown to a mentor."],
+ ["📊 Sunday","The real weekly %, unsoftened. Under 60%: next week gets smaller. 95%+: you may add one unit. Plus an anonymous report to the founder, if you choose."],
+ ["🔒 Privacy","Your plan stays in this browser. Back it up with a code. Anonymous numbers go to the founder only if you said yes; never your name or anything you type."],
+ ["▤ Your screen","Everything that repeats can be minimised (▾). The sidebar can be hidden (⇤) for full width, and the theme switches light/dark (☾)."]];
+function Guide(p){ var D=useContext(TC);
+  return h("div",{className:"col"},h("div",{className:"card"},h("p",{className:"serif",style:{margin:"0 0 4px",fontSize:20,fontWeight:700}},"How Nitya works"),h("p",{className:"sm",style:{marginBottom:6}},"Everything it does for you, in one page."),
+    GUIDE.map(function(x){ return h("div",{key:x[0],style:{padding:"10px 0",borderTop:"1px solid "+D.b}},h("p",{style:{margin:"0 0 3px",fontSize:13.5,fontWeight:700}},x[0]),h("p",{className:"sm",style:{color:D.t1}},x[1])); }),
+    h("button",{className:"big",style:{width:"100%",marginTop:10,background:D.amber,color:D.onAmber},onClick:p.tour},"Show me around")));
+}
+var TOUR=[["today","coach","Your coach","This is where your own AI re-plans with you. Tap \"Ask my AI\", paste into any AI, paste its answer back, approve."],
+ ["today","floor","Today's floor","The smallest honest day. Do this and today counts. It resizes itself every Monday from your real pace."],
+ ["road","stand","Where this stands","Time spent against work done, track by track. Green is ahead of the clock; amber is behind."],
+ ["set","backup","Back it up","Your plan lives on this device. Make a backup code every week to keep it safe or move it to another phone."]];
+
+/* ── Shell: sidebar navigation (hideable), header, tour, handoff, the weekly jobs that run on open. ── */
+var Logo=function(p){ return h("svg",{width:20,height:21,viewBox:"0 0 62 64","aria-hidden":true},h("rect",{x:0,y:16,width:10,height:40,fill:"currentColor"}),h("rect",{x:16,y:16,width:10,height:40,fill:"currentColor"}),h("rect",{x:32,y:38,width:10,height:18,fill:p.mute}),h("rect",{x:48,y:4,width:10,height:52,fill:p.amber})); };
+var NAVS=[["today","☀","Today"],["prac","⚔","Practice"],["road","🗺","Roadmap"],["desk","🔎","Research desk"],["rep","📊","Sunday"],["set","⚙","Settings"],["guide","？","How it works"]];
+function SideNav(p){
+  var D=useContext(TC), P=p.P;
+  var item=function(k,ic,l,cls,on){ return h("button",{key:k,className:"si"+(cls?" "+cls:"")+(on?" on":""),"aria-current":on?"page":undefined,onClick:function(){p.go(k)}},h("span",{style:{width:18,textAlign:"center"}},ic),l); };
+  return h("nav",{className:"side","aria-label":"Sections"},
+    h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",padding:"2px 6px 10px",color:D.t1}},
+      h("span",{style:{display:"inline-flex",alignItems:"center",gap:8}},h(Logo,{amber:D.amber,mute:D.t3}),h("span",{className:"serif",style:{fontSize:16,fontWeight:700}},"Nitya")),
+      h("button",{className:"ibtn s","aria-label":"Hide the sidebar",title:"Hide the sidebar",onClick:p.hide},"⇤")),
+    NAVS.map(function(n){ return h(F,{key:n[0]},item(n[0],n[1],n[2],"",p.tab===n[0]&&!(n[0]==="road"&&p.sec!=="main")),
+      n[0]==="road"&&p.tab==="road"?h(F,null,item("road:main","🎯","Main goal","l2",p.sec==="main"),
+        P.aspects.map(function(a){ return item("road:"+a.id,a.ic,a.name,"l2",p.sec===a.id); })):null); }),
+    h("p",{className:"slab"},"View"),
+    h("button",{className:"si",onClick:p.full},h("span",{style:{width:18,textAlign:"center"}},"⤢"),"Full screen"),
+    h("button",{className:"si",onClick:p.theme},h("span",{style:{width:18,textAlign:"center"}},"◐"),"Light / dark"),
+    h("button",{className:"si",onClick:p.hide},h("span",{style:{width:18,textAlign:"center"}},"⇤"),"Hide sidebar"));
+}
+function Tour(p){
+  var D=useContext(TC), t=TOUR[p.i]; if(!t) return null;
+  return h("div",{className:"tour",role:"dialog","aria-label":"Tour"},
+    h("p",{className:"mono",style:{margin:"0 0 4px",fontSize:10,fontWeight:700,color:D.amber}},"TOUR "+(p.i+1)+" OF "+TOUR.length),
+    h("p",{style:{margin:"0 0 4px",fontSize:14.5,fontWeight:700}},t[2]),h("p",{className:"sm",style:{color:D.t1,marginBottom:10}},t[3]),
+    h("div",{style:{display:"flex",gap:8,justifyContent:"flex-end"}},h("button",{className:"tbtn",onClick:p.end},"Skip"),
+      h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"8px 16px"},onClick:p.next},p.i+1<TOUR.length?"Next":"Done")));
+}
+function App(){
+  var sysDark=false; try{ sysDark=matchMedia("(prefers-color-scheme: dark)").matches; }catch(e){}
+  var th=useState(function(){ return ls.get("nitya.theme",sysDark?"dark":"light"); }), theme=th[0], setTheme=th[1], D=TH[theme]||TH.light;
+  var ss=useState(loadS), S=ss[0], setS=ss[1], sv=useState("saved"), saved=sv[0], setSaved=sv[1];
+  var tb=useState(function(){ var h0=(location.hash||"").slice(1); return NAVS.some(function(n){return n[0]===h0})?h0:"today"; }), tab=tb[0], setTab=tb[1];
+  var sc=useState("main"), sec=sc[0], setSec=sc[1];
+  var sd=useState(function(){ return ls.get("nitya.side","1")!=="0"; }), side=sd[0], setSide=sd[1], dr=useState(false), drawer=dr[0], setDrawer=dr[1];
+  var wd=useState(function(){ return window.innerWidth>=980; }), wide=wd[0], setWide=wd[1];
+  var md=useState(null), modal=md[0], setModal=md[1], tr=useState(-1), tour=tr[0], setTour=tr[1];
+  var d=today();
+  useEffect(function(){ var f=function(){ setWide(window.innerWidth>=980); }; window.addEventListener("resize",f); return function(){ window.removeEventListener("resize",f); }; },[]);
+  useEffect(function(){ document.documentElement.setAttribute("data-theme",theme); ls.set("nitya.theme",theme);
+    var r=document.documentElement.style; Object.keys(D).forEach(function(k){ r.setProperty("--"+k,D[k]); }); r.setProperty("--oa",D.onAmber); r.setProperty("--pg",D.bg);
+    var m=document.querySelector('meta[name="theme-color"]'); if(m) m.setAttribute("content",D.bg); },[theme]);
+  var save=useCallback(function(n){ setS(n); setSaved(saveS(n)?"saved":"error"); },[]);
+  var P=useMemo(function(){ return S?derive(S):null; },[S]);
+  // weekly jobs that run when the app opens: the floor's Monday check, the anonymous weekly row (with consent), the outbox
+  useEffect(function(){ if(!S||!P) return; var mon=monOf(d), n=S, ch=false;
+    if(!(S.flCal||{})[mon]){ var c=calibrate(P,S,d); var fc=Object.assign({},S.flCal); fc[mon]=c; n=Object.assign({},n,{flCal:fc}); ch=true; }
+    if(S.consent&&S.consent.usage&&S.autoSent!==mon&&gap(S.start,d)>=3){ sendRow(reportRow("auto",P,n)); n=Object.assign({},n,{autoSent:mon}); ch=true; }
+    if(ch) save(n); flush(); },[S&&S.start,d,P&&P.total]);
+  useEffect(function(){ var f=function(){ flush(); }; window.addEventListener("online",f); return function(){ window.removeEventListener("online",f); }; },[]);
+  useEffect(function(){ if(S&&!S.tourDone&&tour<0) setTour(0); },[!!S]);
+  useEffect(function(){ if(tour<0||!TOUR[tour]) return; var t=TOUR[tour]; if(t[0]!==tab){ setTab(t[0]); setSec("main"); }
+    var x=setTimeout(function(){ var el=document.querySelector('[data-tour="'+t[1]+'"]'); document.querySelectorAll(".hl").forEach(function(e){e.classList.remove("hl")});
+      if(el){ el.classList.add("hl"); el.scrollIntoView({behavior:"smooth",block:"center"}); } },120); return function(){ clearTimeout(x); }; },[tour,tab]);
+  var endTour=function(){ document.querySelectorAll(".hl").forEach(function(e){e.classList.remove("hl")}); setTour(-1); if(S&&!S.tourDone) save(Object.assign({},S,{tourDone:true})); };
+  var go=function(k){ setDrawer(false); if(k.indexOf("road:")===0){ setTab("road"); setSec(k.slice(5)); } else { setTab(k); if(k==="road") setSec("main"); } try{ history.replaceState(null,"","#"+k.split(":")[0]); }catch(e){} window.scrollTo(0,0); };
+  var goSide=function(on){ setSide(on); setDrawer(false); ls.set("nitya.side",on?"1":"0"); };
+  var full=function(){ try{ if(!document.fullscreenElement) document.documentElement.requestFullscreen().catch(function(){}); else document.exitFullscreen().catch(function(){}); }catch(e){} setDrawer(false); };
+  var flipTheme=function(){ setTheme(theme==="dark"?"light":"dark"); };
+  var root=function(kids){ return h(TC.Provider,{value:D},h("div",{className:"mc"},h("style",null,CSS),kids)); };
+
+  if(!S) return root(h("div",{className:"body",style:{paddingTop:28}},
+    h("div",{className:"col",style:{display:"flex",alignItems:"center",justifyContent:"space-between",marginBottom:18,color:D.t1}},
+      h("span",{style:{display:"inline-flex",alignItems:"center",gap:9}},h(Logo,{amber:D.amber,mute:D.t3}),h("span",{className:"serif",style:{fontSize:19,fontWeight:700}},"Nitya")),
+      h("button",{className:"ibtn","aria-label":"Switch light or dark",onClick:flipTheme},theme==="dark"?"☀":"☾")),
+    h(Safe,{name:"Setup"},h(Onboard,{onDone:function(o){ save(o); setTab("today"); }}))));
+
+  var docked=side&&wide;
+  var nm=P.stones.map(function(s){return Object.assign({},s,stoneStat(P,S,s,d))}).filter(function(s){return !s.met&&s.at>=d})[0];
+  var navProps={P:P,tab:tab,sec:sec,go:go,hide:function(){goSide(false)},full:full,theme:flipTheme};
+  var view=tab==="prac"?h(Practice,{S:S,save:save}):tab==="road"?h(Roadmap,{S:S,P:P,d:d,sec:sec,save:save}):tab==="desk"?h(Desk,{S:S,P:P,open:setModal}):
+    tab==="rep"?h(Report,{S:S,P:P,d:d,save:save}):tab==="set"?h(Settings,{S:S,P:P,save:save,go:go,tour:function(){setTour(0)}}):tab==="guide"?h(Guide,{tour:function(){setTour(0)}}):
+    h(Today,{S:S,P:P,d:d,save:save,open:setModal,go:go});
+  var crumb=(NAVS.filter(function(n){return n[0]===tab})[0]||NAVS[0])[2]+(tab==="road"&&sec!=="main"?" › "+((P.aspects.filter(function(a){return a.id===sec})[0]||{}).name||""):"");
+  return root(h(F,null,
+    h("div",{className:"wrap"+(docked?" docked":"")},
+      docked?h(SideNav,navProps):null,
+      h("div",{className:"main"},
+        h("header",{className:"hdr"},h("div",{className:"hin"},
+          h("div",{style:{display:"flex",alignItems:"center",justifyContent:"space-between",gap:10,paddingBottom:8}},
+            h("div",{style:{display:"flex",alignItems:"center",gap:8,minWidth:0}},
+              !docked?h("button",{className:"ibtn s","aria-label":"Open navigation",onClick:function(){ side?setDrawer(true):goSide(true); }},"☰"):null,
+              !docked?h("span",{style:{display:"inline-flex",alignItems:"center",gap:7,color:D.t1}},h(Logo,{amber:D.amber,mute:D.t3}),h("span",{className:"serif",style:{fontSize:16,fontWeight:700}},"Nitya")):null,
+              h("span",{className:"mono",style:{fontSize:11,fontWeight:700,color:D.t2,whiteSpace:"nowrap",overflow:"hidden",textOverflow:"ellipsis"}},(docked?"":"· ")+crumb)),
+            h("div",{style:{display:"flex",gap:6,alignItems:"center"}},
+              h("span",{className:"mono",title:saved==="saved"?"Saved on this device":"Couldn't save: this browser is blocking storage",style:{fontSize:10,fontWeight:700,color:saved==="saved"?D.green:D.red}},saved==="saved"?"● SAVED":"● NOT SAVED"),
+              h("button",{className:"ibtn s","aria-label":"Switch light or dark",onClick:flipTheme},theme==="dark"?"☀":"☾"))),
+          nm?h("div",{className:"scroll",style:{paddingBottom:8}},h("button",{onClick:function(){go("road")},style:{flexShrink:0,background:D.s2,border:"1px solid "+D.green+"66",borderRadius:9,padding:"4px 10px",display:"flex",alignItems:"center",gap:6}},
+            h("span",{className:"mono",style:{fontSize:12.5,fontWeight:700,color:D.green}},"T–"+gap(d,nm.at)),
+            h("span",{style:{fontSize:10,color:D.t3,fontWeight:700}},"next milestone · "+nm.have[0].n+"/"+nm.have[0].need+" "+nm.have[0].unit+(nm.have.length>1?" +"+(nm.have.length-1)+" more":"")))):null)),
+        h("main",{className:"body"},saved!=="saved"?h("div",{className:"card",style:{borderColor:D.red}},h("p",{className:"sm",style:{color:D.red}},"This browser isn't letting Nitya save (private window, or storage blocked). Your ticks will be lost when you close it. Open Nitya in a normal window, and make a backup code in Settings.")):null,
+          h(Safe,{name:"This page"},view)))),
+    side&&drawer&&!docked?h("div",{className:"sidedr"},h(SideNav,navProps),h("button",{className:"scrim","aria-label":"Close navigation",onClick:function(){setDrawer(false)}})):null,
+    modal?h(Handoff,{S:S,P:P,kind:modal,save:save,onClose:function(){setModal(null)}}):null,
+    tour>=0?h(Tour,{i:tour,next:function(){ if(tour+1<TOUR.length) setTour(tour+1); else endTour(); },end:endTour}):null));
+}
+ReactDOM.createRoot(document.getElementById("root")).render(h(App));
+
+</script>
+</body>
+</html>
