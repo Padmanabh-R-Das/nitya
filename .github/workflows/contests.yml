@@ -1,0 +1,31 @@
+name: Contest calendar
+# Collects upcoming contests (Codeforces, LeetCode, CodeChef, AtCoder, HackerRank) into data/contests.json
+# every 6 hours, so the Nitya app and Mission Control can schedule real rounds without a server.
+on:
+  schedule:
+    - cron: "17 */6 * * *"
+  workflow_dispatch: {}
+permissions:
+  contents: write
+concurrency:
+  group: contests
+  cancel-in-progress: false
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+      - run: node scripts/fetch-contests.mjs
+      - name: Commit if changed
+        run: |
+          if [ -n "$(git status --porcelain data/contests.json)" ]; then
+            git config user.name "nitya-calendar-bot"
+            git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+            git add data/contests.json
+            git commit -m "Contest calendar: refresh"
+            git push
+          fi

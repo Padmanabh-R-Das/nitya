@@ -1,0 +1,193 @@
+{
+ "v": 1,
+ "fetchedAt": "2026-11-13T13:37:44.915Z",
+ "sources": {
+  "cf": {
+   "ok": true,
+   "n": 5,
+   "at": "2026-11-13T13:37:44.915Z"
+  },
+  "lc": {
+   "ok": true,
+   "n": 1,
+   "at": "2026-11-13T13:37:44.915Z"
+  },
+  "cc": {
+   "ok": true,
+   "n": 2,
+   "at": "2026-11-13T13:37:44.915Z"
+  },
+  "ac": {
+   "ok": true,
+   "n": 7,
+   "at": "2026-11-13T13:37:44.915Z"
+  },
+  "hr": {
+   "ok": true,
+   "n": 1,
+   "at": "2026-11-13T13:37:44.915Z"
+  }
+ },
+ "contests": [
+  {
+   "p": "ac",
+   "id": "ac-abc484",
+   "name": "AtCoder Beginner Contest 484",
+   "start": "2026-11-14T12:00:00.000Z",
+   "dur": 100,
+   "url": "https://atcoder.jp/contests/abc484",
+   "rated": true,
+   "div": "abc"
+  },
+  {
+   "p": "lc",
+   "id": "lc-weekly-contest-528",
+   "name": "Weekly Contest 528",
+   "start": "2026-11-15T02:30:00.000Z",
+   "dur": 90,
+   "url": "https://leetcode.com/contest/weekly-contest-528",
+   "rated": true,
+   "div": "weekly"
+  },
+  {
+   "p": "cf",
+   "id": "cf2285",
+   "name": "Codeforces Round 1135 (Div. 2)",
+   "start": "2026-11-15T14:35:00.000Z",
+   "dur": 120,
+   "url": "https://codeforces.com/contests/2285",
+   "rated": true,
+   "div": 2
+  },
+  {
+   "p": "cc",
+   "id": "cc-DSAMONDAY029",
+   "name": "Monday Munch - DSA Challenge 029 (Rated)",
+   "start": "2026-11-16T13:30:00.000Z",
+   "dur": 180,
+   "url": "https://www.codechef.com/DSAMONDAY029",
+   "rated": true,
+   "div": "other"
+  },
+  {
+   "p": "cc",
+   "id": "cc-START265",
+   "name": "Starters 265",
+   "start": "2026-11-18T14:30:00.000Z",
+   "dur": 120,
+   "url": "https://www.codechef.com/START265",
+   "rated": true,
+   "div": "starters"
+  },
+  {
+   "p": "ac",
+   "id": "ac-abc485",
+   "name": "AtCoder Beginner Contest 485",
+   "start": "2026-11-21T12:00:00.000Z",
+   "dur": 100,
+   "url": "https://atcoder.jp/contests/abc485",
+   "rated": true,
+   "div": "abc"
+  },
+  {
+   "p": "cf",
+   "id": "cf2287",
+   "name": "Codeforces Round (Div. 1)",
+   "start": "2026-11-21T14:35:00.000Z",
+   "dur": 120,
+   "url": "https://codeforces.com/contests/2287",
+   "rated": true,
+   "div": 1
+  },
+  {
+   "p": "cf",
+   "id": "cf2288",
+   "name": "Codeforces Round (Div. 2)",
+   "start": "2026-11-21T14:35:00.000Z",
+   "dur": 120,
+   "url": "https://codeforces.com/contests/2288",
+   "rated": true,
+   "div": 2
+  },
+  {
+   "p": "ac",
+   "id": "ac-arc234",
+   "name": "AtCoder Regular Contest++ 234",
+   "start": "2026-11-22T12:00:00.000Z",
+   "dur": 150,
+   "url": "https://atcoder.jp/contests/arc234",
+   "rated": true,
+   "div": "arc"
+  },
+  {
+   "p": "ac",
+   "id": "ac-abc486",
+   "name": "AtCoder Beginner Contest 486",
+   "start": "2026-11-28T12:00:00.000Z",
+   "dur": 100,
+   "url": "https://atcoder.jp/contests/abc486",
+   "rated": true,
+   "div": "abc"
+  },
+  {
+   "p": "ac",
+   "id": "ac-ahc075",
+   "name": "AtCoder Heuristic Contest 075",
+   "start": "2026-11-29T10:00:00.000Z",
+   "dur": 240,
+   "url": "https://atcoder.jp/contests/ahc075",
+   "rated": false,
+   "div": "ahc"
+  },
+  {
+   "p": "cf",
+   "id": "cf2286",
+   "name": "Kotlin Heroes: Practice 15",
+   "start": "2026-12-01T14:30:00.000Z",
+   "dur": 10080,
+   "url": "https://codeforces.com/contests/2286",
+   "rated": false,
+   "div": "other"
+  },
+  {
+   "p": "ac",
+   "id": "ac-abc487",
+   "name": "AtCoder Beginner Contest 487",
+   "start": "2026-12-05T12:00:00.000Z",
+   "dur": 100,
+   "url": "https://atcoder.jp/contests/abc487",
+   "rated": true,
+   "div": "abc"
+  },
+  {
+   "p": "cf",
+   "id": "cf2282",
+   "name": "Kotlin Heroes: Episode 15",
+   "start": "2026-12-08T14:35:00.000Z",
+   "dur": 150,
+   "url": "https://codeforces.com/contests/2282",
+   "rated": false,
+   "div": "other"
+  },
+  {
+   "p": "hr",
+   "id": "hr-hackerrank-orchestrate-december26",
+   "name": "Orchestrate December'26",
+   "start": "2026-12-12T12:30:00.000Z",
+   "dur": 1440,
+   "url": "https://www.hackerrank.com/contests/hackerrank-orchestrate-december26",
+   "rated": false,
+   "div": "other"
+  },
+  {
+   "p": "ac",
+   "id": "ac-agc080",
+   "name": "AtCoder Grand Contest 080",
+   "start": "2026-12-13T12:00:00.000Z",
+   "dur": 180,
+   "url": "https://atcoder.jp/contests/agc080",
+   "rated": true,
+   "div": "agc"
+  }
+ ]
+}
