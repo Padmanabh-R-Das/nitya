@@ -290,11 +290,13 @@ var goalOf = function(id){ return GOALS.filter(function(g){return g.id===id})[0]
 /* Several goals at once: the first is primary (its phases and milestones); tracks merge, shared ones once, weights
    averaged and renormalised. Courses from an imported syllabus become their own track with each unit named. */
 function mergedGoal(S){
-  var ids=(S.goals&&S.goals.length?S.goals:[S.goal]).filter(function(x,i,a){return goalOf(x).id===x&&a.indexOf(x)===i}), gs=ids.map(goalOf), g0=gs[0]||GOALS[0];
+  var ids=(S.goals&&S.goals.length?S.goals:[S.goal]).filter(function(x,i,a){return x&&goalOf(x).id===x&&a.indexOf(x)===i}), mg=(S.mainGoals||[]).filter(function(x){return ids.indexOf(x)>-1});
+  if(mg.length) ids=mg.concat(ids.filter(function(x){return mg.indexOf(x)<0}));
+  var gs=ids.map(goalOf), g0=gs[0]||GOALS[0], wt=ids.map(function(x,i){ return mg.length?(mg.indexOf(x)>-1?2:1):(i===0?1:1); }), wsum=wt.reduce(function(a,b){return a+b},0)||1;
   if(gs.length<2&&!(S.courses&&S.courses.length)) return g0;
   var tr={}, sh={}, order=[];
-  gs.forEach(function(g){ g.tracks.forEach(function(t){ if(!tr[t.id]){ tr[t.id]=Object.assign({},t,{res:t.res.slice()}); order.push(t.id); sh[t.id]=0; }
-    else t.res.forEach(function(r){ if(tr[t.id].res.indexOf(r)<0) tr[t.id].res.push(r); }); sh[t.id]+=(g.share[t.id]||0)/gs.length; }); });
+  gs.forEach(function(g,gi){ g.tracks.forEach(function(t){ if(!tr[t.id]){ tr[t.id]=Object.assign({},t,{res:t.res.slice()}); order.push(t.id); sh[t.id]=0; }
+    else t.res.forEach(function(r){ if(tr[t.id].res.indexOf(r)<0) tr[t.id].res.push(r); }); sh[t.id]+=(g.share[t.id]||0)*wt[gi]/wsum; }); });
   if(S.courses&&S.courses.length){ var nu=S.courses.reduce(function(a,c){return a+(c.units||[]).length},0);
     if(nu){ tr.crs={id:"crs",name:"Course units closed",unit:"units",item:"One course unit: notes redone, its problems by hand",why:"Your own syllabus, unit by unit, so exams never arrive on unopened chapters.",res:["notes","nptel"],units:true};
       ["syll","same"].forEach(function(k){ if(tr[k]){ delete tr[k]; delete sh[k]; order.splice(order.indexOf(k),1); } }); // named units replace the generic course tracks
@@ -308,11 +310,13 @@ function derive(S){
   var workDays=0; for(var i=0;i<days;i++){ if(wd.indexOf(dow(addDays(start,i)))>-1) workDays++; } workDays=Math.max(1,workDays);
   var perDay=Math.max(1,Math.floor((S.hours||2)*60/ITEM_MIN));
   var floorN=clamp(S.floorSet!=null?S.floorSet:Math.round(perDay/3),1,perDay);
-  var total=perDay*workDays;
+  var total=0; for(var j=0;j<days;j++){ var dj=addDays(start,j); if(wd.indexOf(dow(dj))<0) continue; var cl=(S.timetable&&Object.keys(S.timetable).length)?!!(S.timetable[String(dow(dj))]||[]).length:((S.classes||{}).days||[]).indexOf(dow(dj))>-1;
+    total+=(!cl&&S.hoursMax&&S.hoursMax>S.hours)?Math.max(1,Math.floor(S.hoursMax*60/ITEM_MIN)):perDay; } total=Math.max(total,perDay);
   var tracks=g.tracks.map(function(t){
-    var rk=(S.trackRes||{})[t.id]||t.res[0], cu=(S.customRes||{})[t.id];
-    var r=cu&&cu.u?{n:cu.n||"My resource",u:cu.u}:RES[rk]||null;
-    return {id:t.id,name:t.name,unit:t.unit,why:t.why,item:t.item,ladder:t.ladder&&(rk==="a2z"||!rk),res:r,resKey:rk,
+    var rks=[].concat((S.trackRes||{})[t.id]||t.res[0]).filter(function(k){return RES[k]}), rk=rks[0]||t.res[0], cu=(S.customRes||{})[t.id];
+    var list=(cu&&cu.u?[{n:cu.n||"My resource",u:cu.u}]:[]).concat(rks.map(function(k){return RES[k]}));
+    var r=list[0]||RES[rk]||null;
+    return {id:t.id,name:t.name,unit:t.unit,why:t.why,item:t.item,ladder:t.ladder&&rks.indexOf("a2z")>-1,res:r,resList:list,resKey:rk,
             target:t.id==="crs"?Math.max(3,(S.courses||[]).reduce(function(a,c){return a+(c.units||[]).length},0)*2):Math.max(3,Math.round(total*(g.share[t.id]||0)))};
   });
   var phases=g.phases.map(function(ph,i){
@@ -346,7 +350,8 @@ function allDone(S){ var hit={}; Object.keys(S.done||{}).forEach(function(d){ (S
 function queue(P,S){
   var out=[];
   var units=[]; (S.courses||[]).forEach(function(c){ (c.units||[]).forEach(function(u,i){ units.push((c.code||c.name)+" · "+u); }); });
-  P.tracks.forEach(function(t){ for(var k=1;k<=t.target;k++) out.push({id:t.id+":"+k,tr:t.id,name:t.id==="crs"&&units.length?"Close "+units[(k-1)%units.length]+(k>units.length?" (second pass: problems only)":""):t.item,track:t.name,unit:t.unit,k:k,of:t.target,res:t.res}); });
+  P.tracks.forEach(function(t){ var L=t.resList&&t.resList.length?t.resList:[t.res];
+    for(var k=1;k<=t.target;k++) out.push({id:t.id+":"+k,tr:t.id,name:t.id==="crs"&&units.length?"Close "+units[(k-1)%units.length]+(k>units.length?" (second pass: problems only)":""):t.item,track:t.name,unit:t.unit,k:k,of:t.target,res:L[(k-1)%L.length]}); });
   var pace=function(x){ return x.tr==="crs"?((x.k-1)/x.of)*.35:(x.k/x.of); }; // your own syllabus units come early: exams don't wait
   out.sort(function(a,b){ return pace(a)-pace(b)||a.tr.localeCompare(b.tr); });
   var hit=allDone(S);
@@ -356,7 +361,7 @@ function bindItems(P,S,items){
   var used={}, prob=S.prob||{};
   return items.map(function(it){
     var t=P.tracks.filter(function(x){return x.id===it.tr})[0];
-    if(t&&t.ladder){ var pr=ladder().filter(function(x){ return x.tier===1&&!prob[x.key]&&!used[x.key]; })[0];
+    if(t&&t.ladder&&(!it.res||it.res===RES.a2z)){ var pr=ladder().filter(function(x){ return x.tier===1&&!prob[x.key]&&!used[x.key]; })[0];
       if(pr){ used[pr.key]=1; return Object.assign({},it,{name:pr.name,url:pr.url,sub:"A2Z · Step "+pr.step+" · "+pr.stepName,pk:pr.key}); } }
     if(it.res&&it.res.u) return Object.assign({},it,{url:it.res.u,sub:it.res.n});
     if(it.res) return Object.assign({},it,{sub:it.res.n});
@@ -368,7 +373,9 @@ var FLV={"-1":"Light","0":"Normal","1":"Stretch"};
 function lvlOf(S,d){ var c=(S.flCal||{})[monOf(d)]; return c?c.lvl||0:0; }
 function isWork(S,d){ return d>=S.start&&(S.days||[]).indexOf(dow(d))>-1; }
 function floorFor(P,S,d){ if(!isWork(S,d)) return 0; return clamp(P.floorN+lvlOf(S,d),1,Math.max(1,capFor(P,S,d))); }
-function capFor(P,S,d){ return isWork(S,d)?Math.max(1,P.perDay+(S.capAdj||0)):0; }
+function capFor(P,S,d){ if(!isWork(S,d)) return 0; var base=P.perDay;
+  if(S.hoursMax&&S.hoursMax>S.hours){ var cl=(S.timetable&&Object.keys(S.timetable).length)?!!(S.timetable[String(dow(d))]||[]).length:((S.classes||{}).days||[]).indexOf(dow(d))>-1; if(!cl) base=Math.max(1,Math.floor(S.hoursMax*60/ITEM_MIN)); }
+  return Math.max(1,base+(S.capAdj||0)); }
 function unitsOn(S,d){ return ((S.done||{})[d]||[]).filter(function(x){ return x.indexOf(":")>0&&!/^(a|asp|ct|up|t):/.test(x)&&x.slice(0,2)!=="t-"; }).length; }
 function contestOn(S,d){ return ((S.done||{})[d]||[]).some(function(x){return x.slice(0,3)==="ct:"}); }
 function floorMet(P,S,d){ var f=floorFor(P,S,d); return f>0&&(unitsOn(S,d)>=f||contestOn(S,d)); }
@@ -657,7 +664,7 @@ function parseProfile(text,base){
   try{ o=JSON.parse(raw); }catch(e){ throw new Error("I couldn't read the JSON block. Paste the AI's final message including the ```json part."); }
   if(!o||o.nitya_profile!==1) throw new Error("That isn't the setup block (it should contain \"nitya_profile\": 1).");
   var A=Object.assign({},base), d=today(), okT=function(x){ return /^\d{1,2}:\d\d$/.test(x||""); }, day=function(n){ n=+n; return n>=0&&n<=6?n:null; }, notes=[];
-  var gl=(Array.isArray(o.goals)?o.goals:[]).filter(function(x){ return GOALS.some(function(g){return g.id===x}); }).slice(0,3);
+  var gl=(Array.isArray(o.goals)?o.goals:[]).filter(function(x){ return GOALS.some(function(g){return g.id===x}); });
   if(gl.length){ var nd=defaultsFor(gl[0]); A.goal=gl[0]; A.goals=gl; A.trackRes={}; gl.forEach(function(x){ Object.assign(A.trackRes,defaultsFor(x).trackRes); }); A.customRes={}; }
   if(/^\d{4}-\d\d-\d\d$/.test(o.deadline||"")&&gap(d,o.deadline)>=14&&gap(d,o.deadline)<=1500) A.deadline=o.deadline;
   if([1,2,3,4].indexOf(+o.hours)>-1) A.hours=+o.hours; else if(+o.hours>4) A.hours=4;
@@ -677,7 +684,7 @@ function parseProfile(text,base){
   if(Array.isArray(o.platforms)){ var pl=o.platforms.filter(function(x){return PLAT[x]}); if(pl.length) A.platforms=pl; }
   if(+o.solved>=100) A.lcReady=true;
   if(o.ratings&&typeof o.ratings==="object"){ A.rat={}; ["cf","lc"].forEach(function(k){ if(+o.ratings[k]>0) A.rat[k]=clamp(+o.ratings[k],0,4000); }); }
-  if(Array.isArray(o.aspects)){ A.aspects=o.aspects.filter(function(x){ return x&&ASPECTS.some(function(y){return y.id===x.id}); }).slice(0,3).map(function(x){ var b=ASPECTS.filter(function(y){return y.id===x.id})[0];
+  if(Array.isArray(o.aspects)){ A.aspects=o.aspects.filter(function(x){ return x&&ASPECTS.some(function(y){return y.id===x.id}); }).map(function(x){ var b=ASPECTS.filter(function(y){return y.id===x.id})[0];
       var ds=(Array.isArray(x.days)?x.days:b.days).map(day).filter(function(v){return v!=null}); return {id:x.id,on:true,min:clamp(+x.min||b.min,5,120),days:ds.length?ds:b.days}; }); }
   if(Array.isArray(o.anchors)){ var an=o.anchors.filter(function(x){return x&&x.label&&okT(x.at)}).slice(0,6).map(function(x,i){ return {id:"x"+i,label:String(x.label).slice(0,60),at:x.at.padStart(5,"0")}; }); if(an.length) A.anchors=an; }
   A.imported=d; return {A:A,notes:notes};
@@ -728,23 +735,42 @@ function Onboard(p){
     null);
 
   if(step===20) return h(AIInterview,{base:A,onBack:function(){setStep(0)},onDone:function(x){ setA(x); setStep(8); }});
-  if(step===1){ var gl=A.goals||[];
-    var tgG=function(id){ var x=gl.slice(), i=x.indexOf(id); if(i>-1){ if(x.length>1) x.splice(i,1); } else if(x.length<3) x.push(id);
-      var tr={}; x.slice().reverse().forEach(function(k){ Object.assign(tr,defaultsFor(k).trackRes); }); set({goal:x[0],goals:x,trackRes:tr,customRes:{}}); };
-    return frame(1,"What are you aiming at?","Pick up to three. The first one you pick leads the plan; the others share the time. You can change this later without losing your marks.",
-      h("div",null,GOALS.map(function(g){ var i=gl.indexOf(g.id); return h("button",{key:g.id,className:"opt"+(i>-1?" on":""),"aria-pressed":i>-1,onClick:function(){tgG(g.id)}},
-        i>-1?h("span",{className:"mono",style:{fontSize:10,color:D.amber,marginRight:6}},i===0?"MAIN":"ALSO"):null,g.label,h("small",null,g.blurb)); })),
+  if(step===1){ var gl=A.goals||[], mg=(A.mainGoals||[]).filter(function(x){return gl.indexOf(x)>-1});
+    var put=function(x,m){ m=m.filter(function(k){return x.indexOf(k)>-1}); if(x.length&&!m.length) m=[x[0]];
+      var ord=m.concat(x.filter(function(k){return m.indexOf(k)<0})), tr={}; ord.slice().reverse().forEach(function(k){ Object.assign(tr,defaultsFor(k).trackRes); });
+      set({goal:ord[0]||null,goals:ord,mainGoals:m,trackRes:tr,customRes:{}}); };
+    var tgG=function(id){ var x=gl.slice(), i=x.indexOf(id); if(i>-1) x.splice(i,1); else x.push(id); put(x,mg.length||i>-1?mg:mg.concat([id])); };
+    var setRole=function(id,main,e){ e.stopPropagation(); var m=mg.filter(function(k){return k!==id}); if(main) m.push(id); else if(!m.length) return; put(gl,m); };
+    var allOn=gl.length===GOALS.length;
+    return frame(1,"What are you aiming at?","Tap to select or deselect, as many as you like. Mark any number as Main (they get double the time); the rest are Also. Change it any time without losing your marks.",
+      h("div",null,
+        h("div",{style:{display:"flex",gap:6,marginBottom:6}},
+          h("button",{className:"tbtn",style:{fontSize:11},onClick:function(){ put(allOn?[]:GOALS.map(function(g){return g.id}),mg); }},allOn?"Deselect all":"Select all"),
+          gl.length>1?h("button",{className:"tbtn",style:{fontSize:11},onClick:function(){ put(gl,mg.length===gl.length?[gl[0]]:gl.slice()); }},mg.length===gl.length?"Only first as Main":"Make all Main"):null),
+        GOALS.map(function(g){ var on=gl.indexOf(g.id)>-1, main=mg.indexOf(g.id)>-1;
+          return h("div",{key:g.id,role:"button",tabIndex:0,className:"opt"+(on?" on":""),"aria-pressed":on,onClick:function(){tgG(g.id)},onKeyDown:function(e){ if(e.key==="Enter"||e.key===" "){ e.preventDefault(); tgG(g.id); } },style:{cursor:"pointer"}},
+            h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"center",gap:8}},
+              h("span",null,(on?"✓ ":"")+g.label),
+              on?h("span",{style:{display:"inline-flex",border:"1px solid "+D.b,borderRadius:8,overflow:"hidden",flexShrink:0}},
+                [["Main",true],["Also",false]].map(function(r){ var act=main===r[1];
+                  return h("button",{key:r[0],"aria-pressed":act,onClick:function(e){setRole(g.id,r[1],e)},style:{border:0,padding:"4px 10px",fontSize:10.5,fontWeight:700,cursor:"pointer",background:act?D.amber:"transparent",color:act?D.onAmber:D.t2}},r[0]); })):null),
+            h("small",null,g.blurb)); }),
+        gl.length?h("p",{className:"sm t3"},gl.length+" selected · Main: "+mg.map(function(k){return goalOf(k).label}).join(", ")):null),
       nextBtn(gl.length>1?"Next: "+gl.length+" goals →":gl.length?"Next →":"Pick at least one",gl.length>0)); }
 
-  if(step===2){ var pre=[[90,"3 months"],[180,"6 months"],[270,"9 months"],[365,"A year"],[730,"Two years"]];
-    return frame(2,"By when?","A real date you're working towards. A plan without an end date is just a list.",
+  if(step===2){ var pre=[[30,"1 month"],[90,"3 months"],[180,"6 months"],[270,"9 months"],[365,"A year"],[730,"Two years"]], ds=A.dates||[A.deadline];
+    var setDs=function(x){ x=x.filter(function(v,i,a){return v&&a.indexOf(v)===i&&gap(today(),v)>=7}).sort(); set(x.length?{dates:x,deadline:x[x.length-1],checkpoints:x.slice(0,-1)}:{dates:[],checkpoints:[]}); };
+    var tgD=function(v){ var x=ds.slice(), i=x.indexOf(v); if(i>-1) x.splice(i,1); else x.push(v); setDs(x); };
+    return frame(2,"By when?","Pick one or more. The latest becomes your deadline; earlier ones become checkpoints the plan aims at on the way (exams, a contest, an interview).",
       h("div",null,
-        h("div",{style:{display:"flex",flexWrap:"wrap"}},pre.map(function(x){ var d=addDays(today(),x[0]); return h("button",{key:x[0],className:"chip"+(A.deadline===d?" on":""),onClick:function(){set({deadline:d})}},x[1]); })),
-        h("label",{className:"sm",style:{display:"block",margin:"8px 0 4px"}},"Or an exact date"),
-        h("input",{type:"date",className:"inp",min:addDays(today(),14),value:A.deadline,onChange:function(e){ if(e.target.value) set({deadline:e.target.value}); }}),
-        h("p",{className:"sm t3",style:{marginTop:8}},fmtLong(A.deadline)+" · "+Math.round(gap(today(),A.deadline)/7)+" weeks from today")),
-      nextBtn("Next →",gap(today(),A.deadline)>=14)); }
-
+        h("div",{style:{display:"flex",flexWrap:"wrap"}},pre.map(function(x){ var d=addDays(today(),x[0]), on=ds.indexOf(d)>-1; return h("button",{key:x[0],className:"chip"+(on?" on":""),"aria-pressed":on,onClick:function(){tgD(d)}},x[1]); })),
+        h("label",{className:"sm",style:{display:"block",margin:"8px 0 4px"}},"Add an exact date"),
+        h("input",{type:"date",className:"inp",min:addDays(today(),7),onChange:function(e){ if(e.target.value) setDs(ds.concat([e.target.value])); }}),
+        h("div",{style:{marginTop:10}},ds.map(function(v,i){ var last=i===ds.length-1; return h("div",{key:v,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"6px 0",borderTop:"1px solid "+D.b}},
+          h("span",{className:"sm",style:{color:D.t1}},(last?"🎯 Deadline · ":"◆ Checkpoint · ")+fmtLong(v)+" · "+Math.round(gap(today(),v)/7)+" wk"),
+          h("button",{className:"tbtn",style:{fontSize:10.5,padding:"3px 8px"},onClick:function(){tgD(v)}},"Remove")); }),
+          !ds.length?h("p",{className:"sm",style:{color:D.amber}},"Pick at least one date."):null)),
+      nextBtn(ds.length?"Next →":"Pick a date",ds.length>0&&gap(today(),A.deadline)>=14)); }
   if(step===3){ var tg=function(arr,i){ var x=arr.slice(), k=x.indexOf(i); if(k>-1) x.splice(k,1); else x.push(i); return x.sort(); };
     var C=A.classes||{days:[],from:"09:00",to:"17:00"};
     return frame(3,"Your week","So the plan fits around classes and sleep instead of pretending they don't exist.",
@@ -770,11 +796,14 @@ function Onboard(p){
           h("input",{type:"time",className:"inp",style:{width:120},value:A.sleep,"aria-label":"Sleep time",onChange:function(e){set({sleep:e.target.value})}}))),
       nextBtn("Next →",A.days.length>0)); }
 
-  if(step===4) return frame(4,"On a normal day, how long can you really give this?","Not your best day. The day you have most often.",
-    h("div",null,HOURS.map(function(x){ return h("button",{key:x[0],className:"opt"+(A.hours===x[0]?" on":""),onClick:function(){ set({hours:x[0]}); setTimeout(next,120); }},x[1],h("small",null,x[2])); })), null);
-
+  if(step===4){ var hs=A.hoursSel||[A.hours];
+    var tgH=function(v){ var x=hs.slice(), i=x.indexOf(v); if(i>-1) x.splice(i,1); else x.push(v); x.sort(function(a,b){return a-b}); set(x.length?{hoursSel:x,hours:x[0],hoursMax:x.length>1?x[x.length-1]:null}:{hoursSel:[],hoursMax:null}); };
+    return frame(4,"How long can you really give this?","Pick every amount that's true for you. If it varies, pick several: the smallest becomes your normal class day, the largest is used on days without classes.",
+      h("div",null,HOURS.map(function(x){ var on=hs.indexOf(x[0])>-1; return h("button",{key:x[0],className:"opt"+(on?" on":""),"aria-pressed":on,onClick:function(){tgH(x[0])}},x[1],h("small",null,x[2])); }),
+        hs.length>1?h("p",{className:"sm",style:{color:D.t1}},"Class days: "+hs[0]+" h · days without classes: "+hs[hs.length-1]+" h."):null),
+      nextBtn(hs.length?"Next →":"Pick at least one",hs.length>0)); }
   if(step===5){
-    return frame(5,"Where do you learn from?","Each part of your plan links straight to its source, so the day starts with one tap. Defaults are free and good; change any.",
+    return frame(5,"Where do you learn from?","Pick as many sources per track as you use: the plan rotates between them, and every task links straight to its source. Defaults are free and good.",
       h("div",null,
         h("div",{className:"card",style:{padding:"12px 14px",marginBottom:10}},h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},"Coding sites you use or want to compete on"),
           h("p",{className:"sm t3",style:{margin:"0 0 6px"}},"Nitya books rated contests on these into your free evenings. Pick any number, or none."),
@@ -783,7 +812,10 @@ function Onboard(p){
         mergedGoal(A).tracks.map(function(t){ var cur=(A.trackRes||{})[t.id], cu=(A.customRes||{})[t.id]||{};
         return h("div",{key:t.id,className:"card",style:{padding:"12px 14px",marginBottom:10}},
           h("p",{style:{margin:"0 0 6px",fontSize:13,fontWeight:700}},t.name),
-          h("div",{style:{display:"flex",flexWrap:"wrap"}},t.res.map(function(k){ var on=cur===k&&!cu.u; return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var cr=Object.assign({},A.customRes); delete cr[t.id]; set({trackRes:Object.assign({},A.trackRes,(function(){var o={};o[t.id]=k;return o})()),customRes:cr}); }},RES[k].n); })),
+          h("div",{style:{display:"flex",flexWrap:"wrap"}},t.res.filter(function(k){return RES[k]}).map(function(k){ var arr=[].concat(cur||[]), on=arr.indexOf(k)>-1;
+            return h("button",{key:k,className:"chip"+(on?" on":""),"aria-pressed":on,style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var x=arr.slice(), i=x.indexOf(k); if(i>-1) x.splice(i,1); else x.push(k);
+              var o={}; o[t.id]=x; set({trackRes:Object.assign({},A.trackRes,o)}); }},RES[k].n); })),
+          !(Array.isArray(cur)?cur.length:cur)&&!cu.u?h("p",{className:"sm t3",style:{margin:"4px 0"}},"None picked, so "+(RES[t.res[0]]||{n:"the default"}).n+" is used."):null,
           h("details",null,h("summary",{className:"sm",style:{cursor:"pointer"}},cu.u?"Your own: "+(cu.n||cu.u):"Use my own link instead"),
             h("div",{style:{display:"flex",gap:6,marginTop:6,flexWrap:"wrap"}},
               h("input",{className:"inp",style:{flex:"1 1 140px"},placeholder:"Name (e.g. my course)",defaultValue:cu.n||"",id:"rn-"+t.id}),
@@ -795,11 +827,11 @@ function Onboard(p){
   if(step===6){ var on=function(id){ return (A.aspects||[]).some(function(x){return x.id===id&&x.on}); };
     var tgA=function(id){ var arr=(A.aspects||[]).filter(function(x){return x.id!==id}); if(!on(id)) arr.push({id:id,on:true}); set({aspects:arr}); };
     var n=(A.aspects||[]).filter(function(x){return x.on}).length;
-    return frame(6,"Anything else you want to keep alive?","Small daily or weekly practices beside the main goal. Pick up to three, or none. Each gets its own floor and shows up on the right days.",
+    return frame(6,"Anything else you want to keep alive?","Small daily or weekly practices beside the main goal. Pick any number, or none. Each shows up on its own days with its own minutes.",
       h("div",null,ASPECTS.map(function(x){ var o=on(x.id);
-        return h("button",{key:x.id,className:"opt"+(o?" on":""),disabled:!o&&n>=3,style:!o&&n>=3?{opacity:.5}:null,onClick:function(){tgA(x.id)}},x.ic+"  "+x.name,
+        return h("button",{key:x.id,className:"opt"+(o?" on":""),onClick:function(){tgA(x.id)}},x.ic+"  "+x.name,
           h("small",null,x.line+" Default: "+x.min+" min on "+x.days.map(function(i){return DOW[i]}).join("/")+".")); }),
-        h("p",{className:"sm t3"},n+" of 3 chosen. You can change days and minutes later in Settings.")),
+        h("p",{className:"sm t3"},n+" chosen. You can change days and minutes later in Settings.")),
       nextBtn(n?"Next →":"None for now →")); }
 
   if(step===7){ var has=function(id){ return (A.anchors||[]).some(function(x){return x.id===id}); };
@@ -820,11 +852,11 @@ function Onboard(p){
         h("details",null,h("summary",{className:"sm",style:{cursor:"pointer",fontWeight:700}},"Exactly what is and isn't sent"),
           h("p",{className:"sm",style:{marginTop:6}},h("b",null,"Sent: "),"goal type, weeks to deadline, hours band, work days count, chosen aspects, floor size and level, units done, weekly %, streak, A2Z solved count, rating band (if you typed one), which resources you picked, features used, app version, region (like \"Asia\"), phone or wide screen."),
           h("p",{className:"sm",style:{marginTop:4}},h("b",null,"Never sent: "),"your name, email, phone, college or roll number, IP address, location, what you type in tasks or notes, or anything you ask your AI.")),
-        h("div",{style:{display:"flex",gap:8,marginTop:12,flexWrap:"wrap"}},
-          h("button",{className:"big",style:{flex:"1 1 160px",background:consent===true?D.green:D.amber,color:"#fff"},onClick:function(){setConsent(true)}},consent===true?"✓ Yes, anonymously":"Yes, share anonymously"),
-          h("button",{className:"big",style:{flex:"1 1 120px",background:consent===false?D.s3:D.s2,color:D.t2,border:"1px solid "+D.b},onClick:function(){setConsent(false)}},consent===false?"✓ Not now":"Not now")),
+        h("p",{style:{margin:"12px 0 6px",fontSize:12.5,fontWeight:700}},"Choose what to share (any, all, or none):"),
+        [["usage","Anonymous weekly numbers","Counts only, tagged with a random code."],["ask","A one-tap feedback question on Sundays","You see and approve the text before it's sent."]].map(function(x){ var on=!!(consent&&consent[x[0]]);
+          return h("button",{key:x[0],className:"opt"+(on?" on":""),"aria-pressed":on,onClick:function(){ var c=Object.assign({usage:false,ask:false},consent||{}); c[x[0]]=!c[x[0]]; setConsent(c); }},(on?"✓ ":"")+x[1],h("small",null,x[2])); }),
         h("p",{className:"sm t3",style:{marginTop:8}},"You can change this any time in Settings → Your data, and see every report that was sent."))),
-    nextBtn("See my plan →",consent!==null));
+    nextBtn(consent&&(consent.usage||consent.ask)?"See my plan →":"Share nothing, see my plan →"));
 
   // preview
   var S0=Object.assign({},A,{start:today()}), P=derive(S0);
@@ -840,7 +872,8 @@ function Onboard(p){
       P.aspects.length?h("div",{className:"card"},h(Eb,null,"Also kept alive"),P.aspects.map(function(x){ return h("p",{key:x.id,className:"sm",style:{color:D.t1,margin:"4px 0"}},x.ic+" "+x.name+" · "+x.min+" min · "+x.days.map(function(i){return DOW[i]}).join("/")); })):null),
     h("button",{className:"big",style:{background:D.amber,color:D.onAmber,padding:"12px 22px"},onClick:function(){
       p.onDone(Object.assign({},S0,{v:2,anon:"u-"+uid(8),created:today(),done:{},help:{},prob:{},flCal:{},capAdj:0,changes:[],rev:{},events:[],tasks:[],notes:[],used:{},
-        consent:{usage:!!consent,at:today()},tourDone:false})); }},"Start, this becomes today →"));
+        consent:{usage:!!(consent&&consent.usage),ask:!!(consent&&consent.ask),at:today()},
+        events:(A.checkpoints||[]).map(function(v,i){ return {id:"e-cp"+i,date:v,name:"Checkpoint",why:"A date you set on the way to your deadline.",src:"you"}; }),tourDone:false})); }},"Start, this becomes today →"));
 }
 function AIInterview(p){
   var D=useContext(TC), r=useState(""), txt=r[0], setTxt=r[1], e=useState(""), err=e[0], setErr=e[1], ok=useState(null), res=ok[0], setRes=ok[1], c=useState(""), cp=c[0], setCp=c[1];
@@ -1292,10 +1325,15 @@ function Settings(p){
     h(Fold,{id:"set-plan",title:"Your plan"},h("div",{className:"card"},
       h("p",{style:{margin:"0 0 10px",fontSize:14,fontWeight:700}},g.label),
       h("label",{className:"sm",style:{display:"block",marginBottom:4}},"Goal"),
-      h("div",{style:{display:"flex",flexWrap:"wrap"}},GOALS.map(function(x){ var gl=S.goals&&S.goals.length?S.goals:[S.goal], i=gl.indexOf(x.id);
-        return h("button",{key:x.id,className:"chip"+(i>-1?" on":""),"aria-pressed":i>-1,style:{fontSize:11.5,padding:"6px 10px"},onClick:function(){ var y=gl.slice(); if(i>-1){ if(y.length>1) y.splice(i,1); } else if(y.length<3) y.push(x.id);
-          var tr={}; y.slice().reverse().forEach(function(k){ Object.assign(tr,defaultsFor(k).trackRes); }); upd({goal:y[0],goals:y,trackRes:Object.assign(tr,S.trackRes||{})}); }},(i===0?"★ ":"")+x.label); })),
-      h("p",{className:"sm t3",style:{margin:"2px 0 0"}},"Up to three; ★ leads the plan."),
+      (function(){ var gl=(S.goals&&S.goals.length?S.goals:[S.goal]).filter(Boolean), mg=(S.mainGoals&&S.mainGoals.length?S.mainGoals:[gl[0]]).filter(function(k){return gl.indexOf(k)>-1});
+        var put=function(x,m){ m=m.filter(function(k){return x.indexOf(k)>-1}); if(!m.length) m=[x[0]]; var ord=m.concat(x.filter(function(k){return m.indexOf(k)<0})), tr={};
+          ord.slice().reverse().forEach(function(k){ Object.assign(tr,defaultsFor(k).trackRes); }); upd({goal:ord[0],goals:ord,mainGoals:m,trackRes:Object.assign(tr,S.trackRes||{})}); };
+        return h("div",null,GOALS.map(function(x){ var on=gl.indexOf(x.id)>-1, main=mg.indexOf(x.id)>-1, last=on&&gl.length===1;
+          return h("div",{key:x.id,style:{display:"flex",alignItems:"center",gap:6,margin:"0 0 6px",flexWrap:"wrap"}},
+            h("button",{className:"chip"+(on?" on":""),"aria-pressed":on,disabled:last,title:last?"Keep at least one goal":"",style:{fontSize:11.5,padding:"6px 10px",margin:0,opacity:last?.7:1},onClick:function(){ var y=gl.slice(), i=y.indexOf(x.id); if(i>-1) y.splice(i,1); else y.push(x.id); put(y,mg); }},(on?"✓ ":"")+x.label),
+            on?h("span",{style:{display:"inline-flex",border:"1px solid "+D.b,borderRadius:8,overflow:"hidden"}},[["Main",true],["Also",false]].map(function(r){ var act=main===r[1];
+              return h("button",{key:r[0],"aria-pressed":act,onClick:function(){ var m=mg.filter(function(k){return k!==x.id}); if(r[1]) m.push(x.id); else if(!m.length) return; put(gl,m); },style:{border:0,padding:"4px 9px",fontSize:10.5,fontWeight:700,cursor:"pointer",background:act?D.amber:"transparent",color:act?D.onAmber:D.t2}},r[0]); })):null); }),
+          h("p",{className:"sm t3",style:{margin:"2px 0 0"}},"Any number of goals; any number can be Main (double the time). At least one goal stays selected.")); })(),
       S.courses&&S.courses.length?h("p",{className:"sm",style:{marginTop:8}},"Imported: "+S.courses.length+" courses · "+S.courses.reduce(function(a,c){return a+c.units.length},0)+" syllabus units"+(S.exams&&S.exams.length?" · "+S.exams.length+" exam dates":"")+(S.timetable?" · your exact timetable":"")+"."):null,
       h("button",{className:"tbtn",style:{marginTop:8},onClick:function(){p.go("import")}},"Re-run the AI interview (timetable, syllabus, everything)"),
       h("label",{className:"sm",style:{display:"block",margin:"10px 0 4px"}},"Deadline"),
@@ -1318,8 +1356,8 @@ function Settings(p){
       h("div",{style:{display:"flex",gap:8}},h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.max(1,P.floorN-1)})}},"Lower the base"),h("button",{className:"tbtn",style:{flex:1},onClick:function(){upd({floorSet:Math.min(P.perDay,P.floorN+1)})}},"Raise the base")))),
     h(Fold,{id:"set-res",title:"Your resources"},h("div",{className:"card"},P.tracks.map(function(t){ var cu=(S.customRes||{})[t.id];
       return h("div",{key:t.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},h("p",{style:{margin:"0 0 5px",fontSize:12.5,fontWeight:700}},t.name),
-        h("div",{style:{display:"flex",flexWrap:"wrap"}},((mergedGoal(S).tracks.filter(function(x){return x.id===t.id})[0]||{}).res||[]).filter(function(k){return RES[k]}).map(function(k){ var on=!cu&&(S.trackRes||{})[t.id]===k;
-          return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11,padding:"5px 9px"},onClick:function(){ var cr=Object.assign({},S.customRes); delete cr[t.id]; var tr=Object.assign({},S.trackRes); tr[t.id]=k; upd({trackRes:tr,customRes:cr}); }},RES[k].n); }),
+        h("div",{style:{display:"flex",flexWrap:"wrap"}},((mergedGoal(S).tracks.filter(function(x){return x.id===t.id})[0]||{}).res||[]).filter(function(k){return RES[k]}).map(function(k){ var on=[].concat((S.trackRes||{})[t.id]||[]).indexOf(k)>-1;
+          return h("button",{key:k,className:"chip"+(on?" on":""),style:{fontSize:11,padding:"5px 9px"},onClick:function(){ var cur=[].concat((S.trackRes||{})[t.id]||[]), i=cur.indexOf(k); if(i>-1){ if(cur.length>1) cur.splice(i,1); } else cur.push(k); var tr=Object.assign({},S.trackRes); tr[t.id]=cur; upd({trackRes:tr}); }},RES[k].n); }),
           cu?h("span",{className:"chip on",style:{fontSize:11,padding:"5px 9px"}},"Yours: "+cu.n):null)); }))),
     h(Fold,{id:"set-asp",title:"Aspects you keep alive"},h("div",{className:"card"},ASPECTS.map(function(x){ var a=aspOn(x.id), days=a&&a.days||x.days, min=a&&a.min||x.min;
       return h("div",{key:x.id,style:{padding:"8px 0",borderTop:"1px solid "+D.b}},
