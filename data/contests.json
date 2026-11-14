@@ -1,44 +1,34 @@
 {
  "v": 1,
- "fetchedAt": "2026-11-13T13:37:44.915Z",
+ "fetchedAt": "2026-11-14T18:14:18.913Z",
  "sources": {
   "cf": {
    "ok": true,
-   "n": 5,
-   "at": "2026-11-13T13:37:44.915Z"
+   "n": 6,
+   "at": "2026-11-14T18:14:18.913Z"
   },
   "lc": {
    "ok": true,
-   "n": 1,
-   "at": "2026-11-13T13:37:44.915Z"
+   "n": 2,
+   "at": "2026-11-14T18:14:18.913Z"
   },
   "cc": {
    "ok": true,
    "n": 2,
-   "at": "2026-11-13T13:37:44.915Z"
+   "at": "2026-11-14T18:14:18.913Z"
   },
   "ac": {
    "ok": true,
-   "n": 7,
-   "at": "2026-11-13T13:37:44.915Z"
+   "n": 6,
+   "at": "2026-11-14T18:14:18.913Z"
   },
   "hr": {
    "ok": true,
    "n": 1,
-   "at": "2026-11-13T13:37:44.915Z"
+   "at": "2026-11-14T18:14:18.913Z"
   }
  },
  "contests": [
-  {
-   "p": "ac",
-   "id": "ac-abc484",
-   "name": "AtCoder Beginner Contest 484",
-   "start": "2026-11-14T12:00:00.000Z",
-   "dur": 100,
-   "url": "https://atcoder.jp/contests/abc484",
-   "rated": true,
-   "div": "abc"
-  },
   {
    "p": "lc",
    "id": "lc-weekly-contest-528",
@@ -90,6 +80,16 @@
    "div": "abc"
   },
   {
+   "p": "lc",
+   "id": "lc-biweekly-contest-196",
+   "name": "Biweekly Contest 196",
+   "start": "2026-11-21T14:30:00.000Z",
+   "dur": 90,
+   "url": "https://leetcode.com/contest/biweekly-contest-196",
+   "rated": true,
+   "div": "biweekly"
+  },
+  {
    "p": "cf",
    "id": "cf2287",
    "name": "Codeforces Round (Div. 1)",
@@ -106,6 +106,16 @@
    "start": "2026-11-21T14:35:00.000Z",
    "dur": 120,
    "url": "https://codeforces.com/contests/2288",
+   "rated": true,
+   "div": 2
+  },
+  {
+   "p": "cf",
+   "id": "cf2289",
+   "name": "Codeforces Round (Div. 2)",
+   "start": "2026-11-22T09:05:00.000Z",
+   "dur": 120,
+   "url": "https://codeforces.com/contests/2289",
    "rated": true,
    "div": 2
   },
