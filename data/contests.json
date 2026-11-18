@@ -1,38 +1,38 @@
 {
  "v": 1,
- "fetchedAt": "2026-11-16T22:15:24.999Z",
+ "fetchedAt": "2026-11-18T07:39:32.499Z",
  "sources": {
   "cf": {
    "ok": true,
    "n": 5,
-   "at": "2026-11-16T22:15:24.999Z"
+   "at": "2026-11-18T07:39:32.499Z"
   },
   "lc": {
    "ok": true,
    "n": 2,
-   "at": "2026-11-16T22:15:24.999Z"
+   "at": "2026-11-18T07:39:32.499Z"
   },
   "cc": {
    "ok": true,
    "n": 1,
-   "at": "2026-11-16T22:15:24.999Z"
+   "at": "2026-11-18T07:39:32.499Z"
   },
   "ac": {
    "ok": true,
-   "n": 6,
-   "at": "2026-11-16T22:15:24.999Z"
+   "n": 7,
+   "at": "2026-11-18T07:39:32.499Z"
   },
   "hr": {
    "ok": true,
    "n": 1,
-   "at": "2026-11-16T22:15:24.999Z"
+   "at": "2026-11-18T07:39:32.499Z"
   }
  },
  "contests": [
   {
    "p": "cc",
    "id": "cc-START265",
-   "name": "Starters 265",
+   "name": "Starters 265 (Rated for 6 Star)",
    "start": "2026-11-18T14:30:00.000Z",
    "dur": 120,
    "url": "https://www.codechef.com/START265",
@@ -158,6 +158,16 @@
    "url": "https://codeforces.com/contests/2282",
    "rated": false,
    "div": "other"
+  },
+  {
+   "p": "ac",
+   "id": "ac-abc488",
+   "name": "AtCoder Beginner Contest 488",
+   "start": "2026-12-12T12:00:00.000Z",
+   "dur": 100,
+   "url": "https://atcoder.jp/contests/abc488",
+   "rated": true,
+   "div": "abc"
   },
   {
    "p": "hr",
