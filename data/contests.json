@@ -1,54 +1,34 @@
 {
  "v": 1,
- "fetchedAt": "2026-11-22T07:01:34.097Z",
+ "fetchedAt": "2026-11-22T19:48:19.387Z",
  "sources": {
   "cf": {
    "ok": true,
-   "n": 4,
-   "at": "2026-11-22T07:01:34.097Z"
+   "n": 3,
+   "at": "2026-11-22T19:48:19.387Z"
   },
   "lc": {
    "ok": true,
    "n": 1,
-   "at": "2026-11-22T07:01:34.097Z"
+   "at": "2026-11-22T19:48:19.387Z"
   },
   "cc": {
    "ok": true,
    "n": 2,
-   "at": "2026-11-22T07:01:34.097Z"
+   "at": "2026-11-22T19:48:19.387Z"
   },
   "ac": {
    "ok": true,
    "n": 7,
-   "at": "2026-11-22T07:01:34.097Z"
+   "at": "2026-11-22T19:48:19.387Z"
   },
   "hr": {
    "ok": true,
    "n": 1,
-   "at": "2026-11-22T07:01:34.097Z"
+   "at": "2026-11-22T19:48:19.387Z"
   }
  },
  "contests": [
-  {
-   "p": "cf",
-   "id": "cf2289",
-   "name": "Codeforces Round 1137 (Div. 2)",
-   "start": "2026-11-22T09:05:00.000Z",
-   "dur": 120,
-   "url": "https://codeforces.com/contests/2289",
-   "rated": true,
-   "div": 2
-  },
-  {
-   "p": "ac",
-   "id": "ac-arc234",
-   "name": "AtCoder Regular Contest++ 234",
-   "start": "2026-11-22T12:00:00.000Z",
-   "dur": 150,
-   "url": "https://atcoder.jp/contests/arc234",
-   "rated": true,
-   "div": "arc"
-  },
   {
    "p": "cc",
    "id": "cc-DSAMONDAY030",
@@ -178,6 +158,16 @@
    "url": "https://atcoder.jp/contests/abc489",
    "rated": true,
    "div": "abc"
+  },
+  {
+   "p": "ac",
+   "id": "ac-agc081",
+   "name": "AtCoder Grand Contest 081",
+   "start": "2026-12-27T12:00:00.000Z",
+   "dur": 180,
+   "url": "https://atcoder.jp/contests/agc081",
+   "rated": true,
+   "div": "agc"
   }
  ]
 }
