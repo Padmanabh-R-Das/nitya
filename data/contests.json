@@ -1,31 +1,31 @@
 {
  "v": 1,
- "fetchedAt": "2026-11-25T21:47:54.296Z",
+ "fetchedAt": "2026-11-27T08:44:49.799Z",
  "sources": {
   "cf": {
    "ok": true,
    "n": 5,
-   "at": "2026-11-25T21:47:54.296Z"
+   "at": "2026-11-27T08:44:49.799Z"
   },
   "lc": {
    "ok": true,
    "n": 1,
-   "at": "2026-11-25T21:47:54.296Z"
+   "at": "2026-11-27T08:44:49.799Z"
   },
   "cc": {
    "ok": true,
-   "n": 0,
-   "at": "2026-11-25T21:47:54.296Z"
+   "n": 5,
+   "at": "2026-11-27T08:44:49.799Z"
   },
   "ac": {
    "ok": true,
    "n": 7,
-   "at": "2026-11-25T21:47:54.296Z"
+   "at": "2026-11-27T08:44:49.799Z"
   },
   "hr": {
    "ok": true,
    "n": 2,
-   "at": "2026-11-25T21:47:54.296Z"
+   "at": "2026-11-27T08:44:49.799Z"
   }
  },
  "contests": [
@@ -80,6 +80,16 @@
    "div": "other"
   },
   {
+   "p": "cc",
+   "id": "cc-START267",
+   "name": "Starters 267",
+   "start": "2026-12-02T14:30:00.000Z",
+   "dur": 120,
+   "url": "https://www.codechef.com/START267",
+   "rated": true,
+   "div": "starters"
+  },
+  {
    "p": "hr",
    "id": "hr-rl-gym-dec-26",
    "name": "RL Gym Hackathon",
@@ -118,6 +128,16 @@
    "url": "https://codeforces.com/contests/2282",
    "rated": false,
    "div": "other"
+  },
+  {
+   "p": "cc",
+   "id": "cc-START268",
+   "name": "Starters 268",
+   "start": "2026-12-09T14:30:00.000Z",
+   "dur": 120,
+   "url": "https://www.codechef.com/START268",
+   "rated": true,
+   "div": "starters"
   },
   {
    "p": "ac",
@@ -160,6 +180,16 @@
    "div": "edu"
   },
   {
+   "p": "cc",
+   "id": "cc-START269",
+   "name": "Starters 269",
+   "start": "2026-12-16T14:30:00.000Z",
+   "dur": 120,
+   "url": "https://www.codechef.com/START269",
+   "rated": true,
+   "div": "starters"
+  },
+  {
    "p": "ac",
    "id": "ac-abc489",
    "name": "UNIQUE VISION Programming Contest 2026 (ChristmasAtCoder Beginner Contest 489)",
@@ -170,6 +200,16 @@
    "div": "abc"
   },
   {
+   "p": "cc",
+   "id": "cc-START270",
+   "name": "Starters 270",
+   "start": "2026-12-23T14:30:00.000Z",
+   "dur": 120,
+   "url": "https://www.codechef.com/START270",
+   "rated": true,
+   "div": "starters"
+  },
+  {
    "p": "ac",
    "id": "ac-agc081",
    "name": "AtCoder Grand Contest 081",
@@ -178,6 +218,16 @@
    "url": "https://atcoder.jp/contests/agc081",
    "rated": true,
    "div": "agc"
+  },
+  {
+   "p": "cc",
+   "id": "cc-START271",
+   "name": "Starters 271",
+   "start": "2026-12-30T14:30:00.000Z",
+   "dur": 120,
+   "url": "https://www.codechef.com/START271",
+   "rated": true,
+   "div": "starters"
   }
  ]
 }
